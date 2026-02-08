@@ -1,0 +1,131 @@
+
+body{
+ font-family: "Roboto", sans-serif;
+
+}
+.about-section {
+  padding: 80px 0;
+background: linear-gradient(to left, #e3f2fc 24%, #ffffff 66%);
+}
+
+/* LEFT IMAGE */
+.image-wrapper {
+  position: relative;
+}
+
+.main-img {
+  width: 100%;
+  border-radius: 20px;
+}
+
+.stat-card {
+  position: absolute;
+  background: #fff;
+  padding: 14px 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.stat-card.top {
+  top: 20px;
+  right: -30px;
+}
+
+.stat-card.bottom {
+  bottom: 20px;
+  left: -30px;
+}
+
+/* RIGHT CONTENT */
+.section-label {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.section-title {
+  font-size: 34px;
+  font-weight: 700;
+  margin: 12px 0;
+}
+
+.section-desc {
+  color: #6b7280;
+  margin-bottom: 30px;
+}
+
+/* LIST STYLE */
+.course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.course-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  border-bottom: 1px solid #acacac;
+}
+
+.course-item .icon {
+  min-width: 28px;
+  height: 28px;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+/* CHECK ICON – IMAGE MATCH */
+
+
+.course-item h6 {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.course-item p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.meta {
+  margin-left: auto;
+  text-align: right;
+}
+
+.meta span {
+  display: block;
+  color: #f97316;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.view-btn {
+  margin-top: 6px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+@media (max-width:500px) {
+  .course-item h6 {
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.course-item p {
+  font-size: 10px;
+  color: #6b7280;
+}
+.meta span {
+  font-size: 11px;
+}
+
+}

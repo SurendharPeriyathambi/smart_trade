@@ -1,0 +1,109 @@
+<div class="auth-card">
+  <div class="card-header">
+    <div class="logo-container">
+      <img src="assets/images/horizontal_logo.png" alt="Smart Trade Academy" class="card-logo" />
+     
+    </div>
+    <p class="welcome-text">Get Started with smart trade !!!</p>
+    <h2 class="form-title">Sign up</h2>
+  </div>
+
+  <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="auth-form">
+    <div class="form-group">
+      <label for="signup-username" class="form-label">User Name <span class="required">*</span></label>
+      <input
+        type="text"
+        id="signup-username"
+        formControlName="username"
+        class="form-input"
+        placeholder="test1@gmail.com"
+        [class.error]="username?.invalid && username?.touched"
+      />
+      <span class="error-message" *ngIf="username?.invalid && username?.touched">
+        <span *ngIf="username?.errors?.['required']">Username is required</span>
+        <span *ngIf="username?.errors?.['minlength']">Username must be at least 3 characters</span>
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="signup-email" class="form-label">Email Address <span class="required">*</span></label>
+      <input
+        type="email"
+        id="signup-email"
+        formControlName="email"
+        class="form-input"
+        placeholder="**********"
+        [class.error]="email?.invalid && email?.touched"
+      />
+      <span class="error-message" *ngIf="email?.invalid && email?.touched">
+        <span *ngIf="email?.errors?.['required']">Email is required</span>
+        <span *ngIf="email?.errors?.['email']">Please enter a valid email</span>
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="signup-password" class="form-label">Create Password <span class="required">*</span></label>
+      <div class="password-input-wrapper">
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          id="signup-password"
+          formControlName="password"
+          class="form-input"
+          placeholder="**********"
+          [class.error]="password?.invalid && password?.touched"
+        />
+      </div>
+      <span class="error-message" *ngIf="password?.invalid && password?.touched">
+        <span *ngIf="password?.errors?.['required']">Password is required</span>
+        <span *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters</span>
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="signup-confirm-password" class="form-label">Confirm Password <span class="required">*</span></label>
+      <div class="password-input-wrapper">
+        <input
+          [type]="showConfirmPassword ? 'text' : 'password'"
+          id="signup-confirm-password"
+          formControlName="confirmPassword"
+          class="form-input"
+          placeholder="**********"
+          [class.error]="(confirmPassword?.invalid && confirmPassword?.touched) || (signUpForm.errors?.['passwordMismatch'] && confirmPassword?.touched)"
+        />
+      </div>
+      <span class="error-message" *ngIf="confirmPassword?.invalid && confirmPassword?.touched">
+        <span *ngIf="confirmPassword?.errors?.['required']">Please confirm your password</span>
+      </span>
+      <span class="error-message" *ngIf="signUpForm.errors?.['passwordMismatch'] && confirmPassword?.touched">
+        Passwords do not match
+      </span>
+    </div>
+
+    <div class="checkbox-group">
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          formControlName="agreeToTerms"
+          class="checkbox-input"
+        />
+        <span class="checkbox-text">
+          I agree to the <a href="#" class="link">Terms & Conditions</a> & <a href="#" class="link">Privacy Policy</a>
+        </span>
+      </label>
+      <span class="error-message" *ngIf="agreeToTerms?.invalid && agreeToTerms?.touched">
+        You must agree to the terms and conditions
+      </span>
+    </div>
+
+   
+<div class="d-flex justify-content-center">
+   <button type="submit" class="submit-btn text-center">
+      SING UP
+     <span class="icons mb-2"> <img src="/assets/images/login_icon.png" width="15" alt=""></span>
+    </button>
+</div>
+    <p class="switch-form">
+      Already have an account? <a href="#" class="switch-link">Sign in</a>
+    </p>
+  </form>
+</div>

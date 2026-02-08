@@ -1,0 +1,60 @@
+<section class="about-section">
+  <div class="container">
+    <div class="row mb-3 ">
+      <div class="d-flex justify-content-center">
+         <h3 class="section-title">Popular Courses</h3>
+      </div>
+     
+    </div>
+    <div class="row align-items-center">
+
+      <!-- LEFT IMAGE (Same as Image-2) -->
+      <div class="col-lg-5 mb-4 mb-lg-0">
+        <div class="image-wrapper">
+          <img src="assets/student.png" class="main-img" />
+
+        
+        </div>
+      </div>
+
+      <!-- RIGHT LIST CONTENT -->
+      <div class="col-lg-7">
+        
+        <h2 class="section-title">
+          Learn From Industry-Ready Programs
+        </h2>
+
+        <p class="section-desc">
+          Explore our most popular courses designed to build practical,
+          job-ready skills.
+        </p>
+
+        <!-- COURSE LIST -->
+        <div class="course-list">
+          <div class="course-item" *ngFor="let course of courses">
+
+<span class="checkbox-icon">
+ <img src="../assets/images/check.png" alt="check" width="20">
+</span>
+
+
+
+
+            <div class="content">
+              <h6>{{ course.title }}</h6>
+              <p>{{ course.desc }}</p>
+            </div>
+
+            <div class="meta">
+              <span>{{ course.lessons }} Lessons</span>
+              <button class="view-btn">View</button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>

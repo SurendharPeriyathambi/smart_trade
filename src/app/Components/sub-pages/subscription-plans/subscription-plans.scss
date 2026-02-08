@@ -1,0 +1,202 @@
+
+.div-box {
+  position: absolute;
+  width: 130px;
+  height: 30px;
+  border-radius: 460px 460px 46px 46px;
+  background-color: #ffffff;
+  top: -10%;
+  left: 45%;
+}
+
+.row {
+  display: flex;
+  align-items: stretch;
+}
+
+.pricing-card {
+  border-radius: 24px;
+  padding: 0;
+  height: 100%;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-content {
+  padding: 40px 32px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+// Basic Card (Blue Gradient)
+.pricing-card.basic {
+  background: linear-gradient(135deg, #2B50C7 0%, #1E3A8A 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// Pro Card (Dark with Glow)
+.pricing-card.pro {
+  background: linear-gradient(135deg, #0A0E27 0%, #1A1F3A 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 
+    0 20px 60px rgba(139, 92, 246, 0.4),
+    0 0 80px rgba(79, 70, 229, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  // transform: scale(1.05) translateY(-8px);
+}
+
+// Premium Card (Blue Gradient)
+.pricing-card.premium {
+  background: linear-gradient(135deg, #2B50C7 0%, #1E3A8A 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// Hover Effects
+.pricing-card.basic:hover,
+.pricing-card.premium:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(43, 80, 199, 0.4);
+}
+
+.pricing-card.pro:hover {
+  // transform: scale(1.08) translateY(-12px);
+   transform: translateY(-5px);
+  box-shadow: 
+    0 25px 70px rgba(139, 92, 246, 0.5),
+    0 0 100px rgba(79, 70, 229, 0.4);
+}
+
+// Plan Name
+.plan-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+  text-align: left;
+}
+
+// Plan Price
+.plan-price {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 32px 0;
+  font-weight: 400;
+  text-align: left;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+// Features List
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 auto 0;
+  text-align: left;
+}
+
+.features-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  font-weight: 400;
+}
+
+.check-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+// Choose Button
+.choose-btn {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.choose-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.pricing-card.basic .choose-btn ,.pricing-card.premium .choose-btn {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.pricing-card.basic .choose-btn:hover , .pricing-card.premium .choose-btn {
+  background: rgba(139, 92, 246, 0.35);
+  border-color: rgba(139, 92, 246, 0.7);
+}
+
+// Responsive Design
+@media (max-width: 991px) {
+  .pricing-card.pro {
+    transform: scale(1.02) translateY(-4px);
+  }
+
+  .pricing-card.pro:hover {
+    transform: scale(1.05) translateY(-8px);
+  }
+}
+
+@media (max-width: 768px) {
+  .pricing-card.pro {
+    transform: none;
+  }
+
+  .pricing-card.pro:hover {
+    transform: translateY(-5px);
+  }
+
+  .card-content {
+    padding: 32px 24px;
+  }
+
+  .plan-name {
+    font-size: 1.5rem;
+  }
+
+  .div-box {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+// Optional: Add subtle pattern overlay
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.pricing-card.pro::before {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(79, 70, 229, 0.08) 0%, transparent 50%);
+}

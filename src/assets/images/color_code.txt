@@ -1,0 +1,6 @@
+4F56FF == why choose us background
+9BEBFF == Demo Start Top Right 
+9BA6FF == Demo Start Bottom Left
+F6F9FF == Footer back ground color
+E9F1FE == Signup Screen Background
+143AA3 == SignIn Button Color

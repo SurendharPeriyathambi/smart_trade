@@ -1,0 +1,51 @@
+<!-- footer.component.html -->
+<footer class="footer">
+  <div class="container my-4">
+    <div class="footer-content  d-md-flex justify-content-md-between">
+     
+
+      <div class="footer-section">
+        <!-- <h4 class="footer-title">Home</h4> -->
+        <ul class="nav footer-links  ">
+          <li class="nav-link px-5" *ngFor="let link of links.company">
+            <a [href]="'#'">{{ link }}</a>
+          </li>
+        </ul>
+      </div>
+
+   
+
+      <div class="footer-section">
+        <div class="social-links">
+        <a [href]="social.url" *ngFor="let social of socialLinks" class="social-icon">
+          <span> <i [class]="social.icon"></i> </span>
+        </a>
+      </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+       <p class="copyright">
+        © {{ currentYear }} Smart Trade Academy. All rights reserved.
+      </p>
+      <div class="footer-section">
+        <div class="logo">
+          <img src="assets/images/horizontal_logo.png" alt="Smart Trade" />
+          <span class="logo-text">Smart Trade</span>
+        </div>
+      </div>
+     
+       <div class="footer-section">
+        <!-- <h4 class="footer-title">Home</h4> -->
+        <ul class="nav footer-links">
+          <li class="nav-link" >
+            <a [href]="'#'">Terms of Service</a>
+          </li>
+          <li class="nav-link" >
+            <a [href]="'#'">Privacy Policy</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>

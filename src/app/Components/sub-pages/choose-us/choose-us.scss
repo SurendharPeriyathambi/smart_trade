@@ -1,0 +1,115 @@
+
+.why-choose {
+  padding: 5rem 0;
+  background: linear-gradient(to right, #e3f2fc 24%, #ffffff 66%);
+}
+.why-choose-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin-bottom: 1rem;
+}
+.section-description {
+  color: #918f8f;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+.image-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 8px;
+  max-width: 420px;
+}
+.grid-item {
+  background: #0f1729;
+  border-radius: 15px;
+  overflow: hidden;
+  min-height: 100px;
+}
+.grid-item:nth-child(1) {
+  grid-column-start: 1;
+  grid-row-start: 1;
+  grid-row: span 2 / span 2;
+}
+.grid-item:nth-child(2) {
+  grid-column-start: 1;
+  grid-row-start: 3;
+  min-height: 120px;
+}
+.grid-item:nth-child(3) {
+  grid-column-start: 2;
+  grid-row-start: 2;
+  grid-row: span 2 / span 2;
+}
+.grid-item:nth-child(4) {
+  grid-column-start: 2;
+  grid-row-start: 1;
+}
+.grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.right-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+.feature-card {
+  padding: 0.5rem;
+}
+.feature-number {
+  font-size: 1.5rem;
+  width: 65px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  border-radius: 5px 0 19px 0;
+  font-style: italic;
+  font-weight: 800;
+  color: #092cc7;
+  margin-bottom: 1rem;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+.feature-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.8rem;
+}
+.feature-description {
+  color: #918f8f;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .why-choose-content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .image-grid {
+    margin: 0 auto;
+  }
+  .right-section {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 768px) {
+  .why-choose {
+    padding: 3rem 0;
+  }
+  .section-title {
+    font-size: 2rem;
+  }
+}

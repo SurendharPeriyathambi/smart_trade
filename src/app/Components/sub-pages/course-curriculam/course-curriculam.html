@@ -1,0 +1,73 @@
+<div class="curriculum-container">
+  <div class="div-box"></div>
+  <h2 class="title">Course Curriculum</h2>
+
+  <div class="section" *ngFor="let section of sections">
+    
+    <!-- Section Header -->
+    <div class="section-header"(click)="toggle(section)">
+      <div class="left">
+        <span class="arrow" [class.open]="section.expanded"><i class="bi bi-chevron-down"></i></span>
+        <span class="section-title">{{ section.title }}</span>
+      </div>
+
+      <div class="right">
+        <span>Lessons: {{ section.lessonsCount }}</span>
+        <span>Duration: {{ section.duration }}</span>
+      </div>
+    </div>
+
+    <!-- Lessons -->
+    <div class="lesson-list" [class.open]="section.expanded">
+      <div class="lesson" (click)="$event.stopPropagation()"  *ngFor="let lesson of section.lessons">
+        
+        <div class="lesson-left">
+          <span class="doc-icon"><img src="assets/images/file.png" width="20" alt=""></span>
+          <span class="lesson-title">{{ lesson.title }}</span>
+        </div>
+
+        <div class="lesson-right">
+          <button *ngIf="lesson.preview" class="preview-btn"   (click)="openPreview(); $event.stopPropagation()">Preview</button>
+          <span *ngIf="lesson.locked" class="lock-icon"><img src="assets/images/lock.png" width="22" alt=""></span>
+          <span class="time">{{ lesson.duration }}</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- Preview Modal -->
+ <ng-container *ngIf="previewOpen">
+<div class="preview-backdrop" *ngIf="previewOpen" (click)="closePreview()">
+  <div class="preview-modal right-popup" (click)="$event.stopPropagation()">
+
+    <!-- Card -->
+    <div class="preview-card">
+      <div class="video-thumb">
+        <span class="play-btn">▶</span>
+      </div>
+
+      <h3 class="card-title">Course Essentials</h3>
+
+      <div class="info">
+        <div class="rows ">
+          <span><i class="bi bi-person"></i> Instructor</span>
+          <span>James Patel</span>
+        </div>
+        <div class="rows ">
+          <span><i class="bi bi-clock"></i> Duration</span>
+          <span>6.5 hours</span>
+        </div>
+        <div class="rows ">
+          <span><i class="bi bi-file-earmark-text"></i> Lessons</span>
+          <span>42</span>
+        </div>
+      </div>
+
+      <button class="buy-btn">Buy Now <i class="bi bi-archive ms-2"></i></button>
+    </div>
+
+  </div>
+</div>
+</ng-container>

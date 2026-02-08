@@ -1,0 +1,256 @@
+body{
+      font-family: "Roboto", sans-serif;
+}
+
+.auth-card {
+  background: linear-gradient(135deg, #e8f0fe 0%, #E9F1FE  100%);
+  border-radius: 24px;
+  padding: 50px 40px 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+  text-align: left;
+  margin-bottom: 35px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.card-logo {
+  width: 255px;
+  height: 55px;
+}
+
+
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+}
+
+.academy {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.tagline {
+  font-size: 8px;
+  font-weight: 500;
+  color: #666;
+  letter-spacing: 0.5px;
+}
+
+.welcome-text {
+  color: #1e40af;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.form-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.required {
+  color: #ef4444;
+}
+
+.form-input {
+  width: 100%;
+  padding: 11px 18px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  font-size: 15px;
+  background: white;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #1e40af;
+  box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
+}
+
+.form-input.error {
+  border-color: #ef4444;
+}
+
+.form-input::placeholder {
+  color: #404041;
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.error-message {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 4px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 5px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkbox-input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #1e40af;
+  margin-top: 2px;
+}
+
+.checkbox-text {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.link {
+  color: #1e40af;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.link:hover {
+  color: #1e3a8a;
+  text-decoration: underline;
+}
+
+.submit-btn {
+  background: #143AA3;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 7px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+}
+
+.submit-btn:hover {
+  background: #1e3a8a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(30, 64, 175, 0.3);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.submit-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.submit-btn:hover svg {
+  transform: translateX(4px);
+}
+
+.switch-form {
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 10px;
+}
+
+.switch-link {
+  color: #1e40af;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.switch-link:hover {
+  color: #1e3a8a;
+  text-decoration: underline;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-card {
+  animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .auth-card {
+    padding: 40px 30px;
+  }
+
+  .form-title {
+    font-size: 36px;
+  }
+}

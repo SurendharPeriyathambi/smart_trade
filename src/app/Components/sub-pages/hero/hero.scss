@@ -1,0 +1,220 @@
+/* hero-banner.component.css */
+*{
+  *{
+    font-family: "Roboto", sans-serif;
+}
+}
+.hero {
+  background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
+  // padding: 4rem 0;
+  overflow: hidden;
+}
+
+.hero-content {
+  background: url('/assets/images/LandingPage.png') center / cover no-repeat;
+  width: 100%;
+  // height: 450px;
+  aspect-ratio: 10/6;
+}
+
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #1a1a2e;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.hero-description {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.btn {
+  padding: 0.9rem 2rem;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background: #4361ee;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #3651d4;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+}
+
+.btn-outline-dark {
+  background: transparent;
+  border: 2px solid #1a1a2e;
+  color: #1a1a2e;
+}
+
+.btn-outline-dark:hover {
+  background: #1a1a2e;
+  color: white;
+}
+
+.stats {
+  display: flex;
+  gap: 3rem;
+}
+
+.stat-item {
+  flex: 1;
+}
+
+.stat-count {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.stat-count.yellow {
+  color: #ffd93d;
+}
+
+.stat-count.blue {
+  color: #4361ee;
+}
+
+.stat-count.orange {
+  color: #ff6b6b;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.hero-image {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.decorative-circle {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: #4361ee;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.student-img {
+  position: relative;
+  z-index: 2;
+  max-width: 450px;
+  width: 100%;
+  height: auto;
+}
+
+.badge {
+  position: absolute;
+  background: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.badge-courses {
+  top: 10%;
+  left: -5%;
+  background: white;
+}
+
+.badge-rating {
+  top: 5%;
+  right: 10%;
+  background: #ffd93d;
+}
+
+.badge-users {
+  bottom: 10%;
+  right: -5%;
+  background: white;
+}
+
+@media (max-width: 992px) {
+  .hero-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-image {
+    order: -1;
+  }
+
+  .decorative-circle {
+    width: 400px;
+    height: 400px;
+  }
+
+  .student-img {
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 2rem 0;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .decorative-circle {
+    width: 300px;
+    height: 300px;
+  }
+
+  .student-img {
+    max-width: 280px;
+  }
+
+  .badge {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}

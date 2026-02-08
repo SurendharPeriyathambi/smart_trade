@@ -1,0 +1,29 @@
+<!-- why-choose-us.component.html -->
+<section class="why-choose">
+  <div class="container">
+    <div class="why-choose-content">
+      <div class="left-section">
+        <h2 class="section-title">Why Choose Us</h2>
+        <p class="section-description">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas eget consequat neque. Fusce ac erat mauris.
+        </p>
+        <div class="image-grid">
+          <div class="grid-item" *ngFor="let i of [1,2,3,4]">
+            <img class="img-fluid rounded" src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?q=80&w=1200&auto=format&fit=crop" alt="Growth chart" />
+          </div>
+                </div>
+
+
+                
+      </div>
+
+      <div class="right-section">
+        <div class="feature-card" *ngFor="let feature of features">
+          <div class="feature-number">{{ feature.number }}</div>
+          <h3 class="feature-title">{{ feature.title }}</h3>
+          <p class="feature-description">{{ feature.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

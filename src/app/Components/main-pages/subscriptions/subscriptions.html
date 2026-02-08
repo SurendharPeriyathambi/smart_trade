@@ -1,0 +1,6 @@
+<app-header />
+    <app-subscription-summary [activePlan]="activePlan" /> 
+    <app-subscription-plans  (planSelected)="onPlanSelected($event)"/>
+    <app-payment-section  
+    *ngIf="selectedPlan" [plan]="selectedPlan"   (paymentDone)="onPaymentDone($event)"/>
+    <app-footer />

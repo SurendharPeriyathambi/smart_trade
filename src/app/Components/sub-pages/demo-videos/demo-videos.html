@@ -1,0 +1,40 @@
+<section class="demo-videos">
+  <div class="container">
+    <h2 class="section-title">Demo Videos</h2>
+    <p class="section-subtitle">
+      Analytics and Business or Creator account - including your competitors - to find the images, visuals, and captions that drive audience engagement.
+    </p>
+
+    <div class="videos-grid">
+      <div class="video-card" *ngFor="let video of videos">
+        <div class="video-thumbnail">
+          <img [src]="video.thumbnail" [alt]="video.title" />
+
+          <button class="play-button" (click)="openVideo(video)">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <circle cx="20" cy="20" r="20" fill="white" />
+              <path d="M16 12L28 20L16 28V12Z" fill="#4361ee" />
+            </svg>
+          </button>
+        </div>
+
+        <h3 class="video-title">{{ video.title }}</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO MODAL -->
+<div class="video-modal" *ngIf="activeVideo">
+  <div class="overlay" (click)="closeVideo()"></div>
+
+  <div class="modal-content">
+    <button class="close-btn" (click)="closeVideo()">✕</button>
+
+    <video
+      [src]="activeVideo.videoUrl"
+      controls
+      autoplay
+    ></video>
+  </div>
+</div>

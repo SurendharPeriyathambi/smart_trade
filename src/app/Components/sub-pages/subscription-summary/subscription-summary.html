@@ -1,0 +1,136 @@
+
+<div class="profile-subscription-container">
+  <!-- Decorative Background Elements -->
+  <div class="decoration-circle circle-1"></div>
+  <div class="decoration-circle circle-2"></div>
+  <div class="decoration-circle circle-3"></div>
+
+  <div class="cards-wrapper">
+    <!-- User Profile Card -->
+    <div class="card profile-card">
+      <div class="card-header bg-white">
+        <h2 class="card-title">User Profile</h2>
+      </div>
+
+      <div class="card-body">
+        <!-- Profile Image -->
+        <div class="profile-image-wrapper">
+          <img [src]="userProfile.profileImage" alt="Profile" class="profile-image">
+          <div class="verified-badge">
+           <i class="bi bi-pencil-fill"></i>
+          </div>
+        </div>
+
+        <!-- Profile Information -->
+        <div class="info-grid rounded-2">
+          <!-- Row 1 -->
+          <div class="info-item">
+            <label class="info-label">
+              <svg class="icon" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              Your Name
+            </label>
+            <p class="info-value">{{ userProfile.name }}</p>
+          </div>
+
+          <div class="info-item">
+            <label class="info-label">
+              <svg class="icon" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              Email
+            </label>
+            <p class="info-value">{{ userProfile.email }}</p>
+          </div>
+
+          <!-- Row 2 -->
+          <div class="info-item ">
+            <label class="info-label">
+              <svg class="icon" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              START DATE
+            </label>
+            <p class="info-value">{{ userProfile.startDate }}</p>
+          </div>
+          <div class="info-item ">
+          
+        <!-- Update Button -->
+        <div class="button-wrapper">
+          <button class="update-btn" (click)="onUpdate()">Update</button>
+        </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Subscription Card -->
+    <div class="card subscription-card" *ngIf="subscription">
+      <div class="card-header bg-white">
+        <h2 class="card-title">My Subscription</h2>
+      </div>
+
+      <div class="card-body">
+        <!-- Plan Header -->
+        <div class="plan-header pt-4">
+          <h3 class="plan-name">{{ subscription.plan }}</h3>
+          <span class="status-badge">{{ subscription.status }}</span>
+        </div>
+
+        <!-- Subscription Information -->
+        <div class="info-grid rounded-2">
+          <!-- Row 1 -->
+          <div class="info-item">
+            <label class="info-label">
+              <svg class="icon" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              DURATION
+            </label>
+            <p class="info-value">{{ subscription.duration }}</p>
+          </div>
+
+          <div class="info-item">
+            <label class="info-label">
+              <svg class="icon" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              PRICE
+            </label>
+            <p class="info-value">{{ subscription.price }}</p>
+          </div>
+
+          <!-- Row 2 -->
+          <div class="info-item">
+            <label class="info-label">
+              <svg class="icon" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              START DATE
+            </label>
+            <p class="info-value">{{ subscription.startDate }}</p>
+          </div>
+
+          <div class="info-item">
+            <label class="info-label">
+              <svg class="icon" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              RENEW DATE
+            </label>
+            <p class="info-value">{{ subscription.renewDate }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

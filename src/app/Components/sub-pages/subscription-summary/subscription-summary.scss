@@ -1,0 +1,274 @@
+
+.profile-subscription-container {
+  // min-height: 100vh;
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+  padding: 60px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+// Decorative Circles
+.decoration-circle {
+  position: absolute;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.circle-1 {
+  width: 400px;
+  height: 400px;
+  top: -150px;
+  left: -100px;
+}
+
+.circle-2 {
+  width: 300px;
+  height: 300px;
+  bottom: -100px;
+  right: -80px;
+}
+
+.circle-3 {
+  width: 200px;
+  height: 200px;
+  top: 50%;
+  right: 10%;
+  transform: translateY(-50%);
+}
+
+// Cards Wrapper
+.cards-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 500px));
+  gap: 32px;
+  position: relative;
+  z-index: 1;
+   justify-content: center; 
+}
+
+// Card Styles
+.card {
+  background: white;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+}
+
+// Card Header
+
+ .card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+  // padding-bottom: 8px;
+  position: relative;
+   display: inline-block;
+}
+
+.card-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 85%;
+  height: 3px;
+  border-radius: 50px;
+  background-color: #1e40af;
+}
+
+// Profile Image
+.profile-image-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 18px;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e5e7eb;
+}
+
+.verified-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background: #1e40af;
+  color: #fff;
+  font-size: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.verified-badge svg {
+  width: 20px;
+  height: 20px;
+}
+
+// Info Grid
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 20px;
+  
+  border: 1px solid #9ca3af;
+
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+   color: #1f2937;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.icon {
+  width: 14px;
+  height: 14px;
+  color: #1f2937;
+}
+
+.info-value {
+  font-size: 0.9375rem;
+  font-weight: 500;
+ 
+  color: #62666e;
+  margin: 0;
+}
+
+// Plan Header
+.plan-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 38px;
+}
+
+.plan-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e40af;
+  margin: 0;
+}
+
+.status-badge {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+// Button Wrapper
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.update-btn {
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+  color: white;
+  border: none;
+  width: 90%;
+  padding: 12px 40px;
+  border-radius: 12px;
+  font-size: .90rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+}
+
+.update-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.4);
+}
+
+.update-btn:active {
+  transform: translateY(0);
+}
+
+// Responsive Design
+@media (max-width: 992px) {
+  .cards-wrapper {
+    grid-template-columns: 1fr;
+    max-width: 600px;
+  }
+
+  .circle-1,
+  .circle-2,
+  .circle-3 {
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 576px) {
+  .profile-subscription-container {
+    padding: 40px 16px;
+  }
+
+  .card {
+    padding: 24px;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .info-item.full-width {
+    grid-column: 1;
+  }
+
+  .plan-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .button-wrapper {
+    justify-content: stretch;
+  }
+
+  .update-btn {
+    width: 100%;
+  }
+}
