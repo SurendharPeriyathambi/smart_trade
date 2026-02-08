@@ -1,9 +1,9 @@
 <div class="auth-card">
   <div class="card-header">
-    <div class="logo-container">
+    <!-- <div class="logo-container">
       <img src="assets/images/horizontal_logo.png" alt="Smart Trade Academy" class="card-logo" />
      
-    </div>
+    </div> -->
     <p class="welcome-text">Get Started with smart trade !!!</p>
     <h2 class="form-title">Sign up</h2>
   </div>
@@ -40,7 +40,23 @@
         <span *ngIf="email?.errors?.['email']">Please enter a valid email</span>
       </span>
     </div>
-
+<div class="form-group">
+      <label for="signup-mobile" class="form-label">Mobile Number </label>
+      <div class="password-input-wrapper">
+        <input
+          type="name"
+          id="signup-mobile"
+          formControlName="mobile"
+          class="form-input"
+          placeholder="**********"
+         
+        />
+      </div>
+      <span class="error-message" *ngIf="password?.invalid && password?.touched">
+        <span *ngIf="password?.errors?.['required']">Password is required</span>
+        <span *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters</span>
+      </span>
+    </div>
     <div class="form-group">
       <label for="signup-password" class="form-label">Create Password <span class="required">*</span></label>
       <div class="password-input-wrapper">
@@ -58,6 +74,7 @@
         <span *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters</span>
       </span>
     </div>
+    
 
     <div class="form-group">
       <label for="signup-confirm-password" class="form-label">Confirm Password <span class="required">*</span></label>

@@ -1,18 +1,18 @@
-* {
-  font-family: "Roboto", sans-serif;
-}
+// * {
+//   font-family: "Roboto", sans-serif;
+// }
 .demo-videos {
   padding: 5rem 0;
   background:
     radial-gradient(
       circle at -3% 42%,
-      #9BEBFF  5%,
-      rgba(255, 255, 255, 0) 20%
+      #9BEBFF  -16%,
+      rgba(255, 255, 255, 0) 17%
     ),
     radial-gradient(
-      circle at 102% 80%,
-      #9BA6FF  0%,
-      rgba(255, 255, 255, 1) 30%
+      circle at 102% 98%,
+      #9BA6FF  -15%,
+      rgba(255, 255, 255, 1) 25%
     );
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -23,7 +23,19 @@
   color: #1a1a2e;
   text-align: center;
   margin-bottom: 1rem;
+  position: relative;
+z-index: 99;
+ background: transparent;
+
 }
+
+ .demo-videos .section-title .star-icon {
+  position: absolute;
+  right: 38%;      /* adjust to move star */
+  top: -2%;
+    z-index:-13;   /* THIS puts it behind text */
+}
+
 .demo-videos .section-subtitle {
   text-align: center;
   color: #666;

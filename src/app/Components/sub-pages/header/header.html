@@ -14,19 +14,20 @@
         <span></span>
       </button>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6 d-flex justify-content-center">
         <nav class="nav" [class.active]="isMenuOpen">
-        <a href="#" class="nav-link">Home</a>
-        <a href="#" class="nav-link">Courses</a>
+        <a routerLink="/home" class="nav-link">Home</a>
+        
         <a href="#" class="nav-link">About Us</a>
+        <a href="#" class="nav-link">Courses</a>
         <a href="#" class="nav-link">Contact Us</a>
       </nav>
       </div>
 
       <div class="col-md-3">
         <div class="auth-buttons" [class.active]="isMenuOpen">
-        <button class="btn btn-outline"  >Login </button>
-        <button class="btn btn-primary">Sign In</button>
+        <button routerLink="/login" class="btn btn-outline"  >Login </button>
+        <button routerLink="/login"  class="btn btn-primary">Sign In</button>
       </div>
       </div>
 

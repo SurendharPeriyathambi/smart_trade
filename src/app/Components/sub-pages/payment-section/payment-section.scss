@@ -1,141 +1,144 @@
-
-.payment-plan-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 50%, #fce7f3 100%);
-  padding: 48px 16px;
+* {
+  box-sizing: border-box;
+  font-family: Inter, Arial, sans-serif;
 }
 
-.content-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Header */
-.header {
+.page-wrapper {
+  width: 100%;
+  padding: 50px 40px;
   text-align: center;
-  margin-bottom: 48px;
 }
 
+/* Title */
 .title {
-  font-size: 3rem;
+  font-size: 40px;
   font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 16px 0;
+  margin-bottom: 10px;
 }
 
-.description {
-  font-size: 1rem;
+/* Subtitle */
+.subtitle {
+  max-width: 900px;
+  margin: 0 auto 50px;
   color: #6b7280;
+  font-size: 15px;
   line-height: 1.6;
-  max-width: 800px;
-  margin: 0 auto;
 }
 
-/* Cards Grid */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-}
-
-.card {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  border: 1px solid #f3f4f6;
-}
-
-/* QR Card */
-.qr-card {
+/* Row */
+.card-row {
   display: flex;
-  align-items: center;
   justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
 }
 
-.qr-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.qr-code {
-  background: white;
-  padding: 20px;
-  border: 4px solid #1f2937;
+/* Shared Card */
+.box {
+  border: 1.5px solid #bfc9ff;
   border-radius: 12px;
+  padding: 25px;
+  background: #fff;
 }
 
-.qr-svg {
-  width: 160px;
-  height: 160px;
-  display: block;
-}
-
-.scan-button {
-  background: #1f2937;
-  color: white;
-  padding: 10px 32px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.scan-button:hover {
-  background: #374151;
-}
-
-/* Amount Card */
-.amount-card {
+/* QR CARD */
+.qr-box {
+  width: 230px;
+  height: 260px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
 }
 
-.amount-label {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #2563eb;
-  margin: 0;
+.qr-box img {
+  width: 150px;
+  margin-bottom: 10px;
+}
+
+.scan-text {
+  background: black;
+  color: white;
+  padding: 5px 18px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+
+/* AMOUNT CARD */
+.amount-box {
+  width: 230px;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.amount-title {
+  font-size: 30px;
+  color: #1e40af;
+  font-weight: 600;
+  margin-bottom: 15px;
 }
 
 .amount-value {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0;
+  font-size: 34px;
+  font-weight: 500;
 }
 
-.amount-period {
-  font-size: 1.875rem;
+/* UPLOAD CARD */
+.upload-box {
+ max-width: 600px;
+  text-align: left;
+}
+
+.upload-box h3 {
+  margin-bottom: 10px;
+}
+
+.upload-desc {
+  font-size: 13px;
   color: #6b7280;
+  margin-bottom: 20px;
 }
 
-/* Upload Card */
-.upload-card {
-  display: flex;
-  flex-direction: column;
+/* Upload Area */
+.upload-area {
+  border: 2px dashed #c7c7c7;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 13px;
 }
 
-.upload-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 8px 0;
+.upload-area span {
+  color: #1d4ed8;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.upload-description {
-  font-size: 0.875rem;
+.upload-area small {
+  display: block;
   color: #6b7280;
-  line-height: 1.5;
-  margin: 0 0 24px 0;
+  margin-top: 8px;
 }
+
+/* Button */
+.done-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: #163aa9;
+  color: white;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.done-btn:hover {
+  background: #102c7a;
+}
+
 
 /* Drop Zone */
 .drop-zone {
@@ -222,35 +225,14 @@
   margin: -8px 0 16px 0;
 }
 
-/* Done Button */
-.done-button {
-  width: 100%;
-  background: #2563eb;
-  color: white;
-  padding: 14px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.done-button:hover {
-  background: #1d4ed8;
-}
-
 /* Responsive */
-@media (max-width: 768px) {
-  .title {
-    font-size: 2rem;
+@media (max-width: 900px) {
+  .card-row {
+    flex-direction: column;
+    align-items: center;
   }
 
-  .cards-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .amount-value {
-    font-size: 2.5rem;
+  .upload-box {
+    width: 100%;
   }
 }

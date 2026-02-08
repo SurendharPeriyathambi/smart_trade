@@ -60,9 +60,9 @@
           <div class="info-item ">
           
         <!-- Update Button -->
-        <div class="button-wrapper">
+        <!-- <div class="button-wrapper">
           <button class="update-btn" (click)="onUpdate()">Update</button>
-        </div>
+        </div> -->
           </div>
         </div>
 
@@ -78,7 +78,7 @@
       <div class="card-body">
         <!-- Plan Header -->
         <div class="plan-header pt-4">
-          <h3 class="plan-name">{{ subscription.plan }}</h3>
+          <h3 class="plan-name">{{ subscription.plan }}  <span class="remaing-days"> Remaining: 04 days</span></h3>
           <span class="status-badge">{{ subscription.status }}</span>
         </div>
 

@@ -1,91 +1,46 @@
 
-<div class="payment-plan-container">
-  <div class="content-wrapper">
-    <!-- Header -->
-    <div class="header">
-      <h1 class="title">{{ plan.name }} plan</h1>
-      <!-- <p class="description">
-        Analyze any Business or Creator account—including your competitors—to find the imagery, 
-        visuals, and captions that drive audience engagement. Get social calendars planned faster 
-        and spend less time testing content strategies.
-      </p> -->
-      <p class="description">  {{ plan.description }}</p>
+<div class="page-wrapper">
+
+  <h1 class="title">{{ plan.name }} plan</h1>
+
+  <!-- <p class="subtitle">
+    Analyze any Business or Creator account—including your competitors—to find the imagery,
+    visuals, and captions that drive audience engagement. Get social calendars planned faster
+    and spend less time testing content strategies.
+  </p> -->
+    <p class="subtitle">
+      {{ plan.description }}
+      </p>
+
+  <div class="card-row">
+
+    <!-- QR CARD -->
+    <div class="box qr-box">
+      <img src="assets/images/qr_code.png" alt="QR Code">
+      <span class="scan-text">SCAN ME</span>
     </div>
 
-    <!-- Cards Grid -->
-    <div class="cards-grid">
-      <!-- QR Code Card -->
-      <div class="card qr-card">
-        <div class="qr-container">
-          <div class="qr-code">
-            <svg viewBox="0 0 200 200" class="qr-svg">
-              <rect width="200" height="200" fill="white"/>
-              
-              <!-- Top-left corner -->
-              <rect x="20" y="20" width="60" height="60" fill="black"/>
-              <rect x="30" y="30" width="40" height="40" fill="white"/>
-              <rect x="40" y="40" width="20" height="20" fill="black"/>
-              
-              <!-- Top-right corner -->
-              <rect x="120" y="20" width="60" height="60" fill="black"/>
-              <rect x="130" y="30" width="40" height="40" fill="white"/>
-              <rect x="140" y="40" width="20" height="20" fill="black"/>
-              
-              <!-- Bottom-left corner -->
-              <rect x="20" y="120" width="60" height="60" fill="black"/>
-              <rect x="30" y="130" width="40" height="40" fill="white"/>
-              <rect x="40" y="140" width="20" height="20" fill="black"/>
-              
-              <!-- Data patterns -->
-              <rect x="90" y="20" width="10" height="10" fill="black"/>
-              <rect x="105" y="20" width="10" height="10" fill="black"/>
-              <rect x="90" y="35" width="10" height="10" fill="black"/>
-              <rect x="20" y="90" width="10" height="10" fill="black"/>
-              <rect x="35" y="90" width="10" height="10" fill="black"/>
-              <rect x="50" y="90" width="10" height="10" fill="black"/>
-              <rect x="65" y="90" width="10" height="10" fill="black"/>
-              <rect x="90" y="90" width="10" height="10" fill="black"/>
-              <rect x="105" y="90" width="10" height="10" fill="black"/>
-              <rect x="120" y="90" width="10" height="10" fill="black"/>
-              <rect x="135" y="90" width="10" height="10" fill="black"/>
-              <rect x="150" y="90" width="10" height="10" fill="black"/>
-              <rect x="165" y="90" width="10" height="10" fill="black"/>
-              <rect x="90" y="105" width="10" height="10" fill="black"/>
-              <rect x="120" y="105" width="10" height="10" fill="black"/>
-              <rect x="150" y="105" width="10" height="10" fill="black"/>
-              <rect x="90" y="120" width="10" height="10" fill="black"/>
-              <rect x="105" y="120" width="10" height="10" fill="black"/>
-              <rect x="135" y="120" width="10" height="10" fill="black"/>
-              <rect x="165" y="120" width="10" height="10" fill="black"/>
-            </svg>
-          </div>
-          <button class="scan-button">SCAN ME</button>
-        </div>
-      </div>
+    <!-- AMOUNT CARD -->
+    <div class="box amount-box">
+      <p class="amount-title">Amount</p>
+      <h2 class="amount-value"> ₹{{ plan.price }}<span class="amount-period">/mo</span></h2>
+    </div>
 
-      <!-- Amount Card -->
-      <div class="card amount-card">
-        <h2 class="amount-label">Amount</h2>
-        <p class="amount-value"> ₹{{ plan.price }}<span class="amount-period">/mo</span></p>
-      </div>
+    <!-- UPLOAD CARD -->
+    <div class="box upload-box">
 
-      <!-- Upload Card -->
-      <div class="card upload-card">
-        <h3 class="upload-title">Upload payment screenshot</h3>
-        <p class="upload-description">
-          Please upload files in pdf, docx or doc format and make sure the file size is under 25 MB.
-        </p>
+      <h3>Upload payment screenshot</h3>
 
-        <!-- Drop Zone -->
-        <div 
-          class="drop-zone"
-          [class.dragging]="isDragging"
-          (dragover)="onDragOver($event)"
-          (dragleave)="onDragLeave($event)"
-          (drop)="onDrop($event)"
-          (click)="triggerFileInput()">
-          
-          <div *ngIf="!selectedFile" class="drop-zone-content">
+      <p class="upload-desc">
+        Please upload files in pdf, docx or doc format and make sure the file size is under 25 MB.
+      </p>
+
+      <div class="upload-area "  (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave($event)"
+           (drop)="onDrop($event)"
+        (click)="triggerFileInput()">
+
+       <div *ngIf="!selectedFile" class="drop-zone-content">
             <p class="drop-text">Drop file or Browse</p>
             <p class="drop-format">Format: pdf, docx, doc & Max file size: 25 MB</p>
           </div>
@@ -101,13 +56,14 @@
             class="file-input"
             accept=".pdf,.doc,.docx"
             (change)="onFileSelected($event)">
-        </div>
-
-        <p *ngIf="fileError" class="error-message">{{ fileError }}</p>
-
-        <!-- Done Button -->
-        <button class="done-button" (click)="onDone()">Done</button>
       </div>
+ <p *ngIf="fileError" class="error-message">{{ fileError }}</p>
+      <button class="done-btn" (click)="onDone()">Done</button>
+
     </div>
+
   </div>
+
 </div>
+
+

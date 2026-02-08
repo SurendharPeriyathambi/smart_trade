@@ -6,13 +6,13 @@ body{
   background: linear-gradient(135deg, #e8f0fe 0%, #E9F1FE  100%);
   border-radius: 24px;
   padding: 50px 40px 30px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  // box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .auth-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+  // box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
 }
 
 .card-header {
@@ -93,7 +93,7 @@ body{
 
 .form-input {
   width: 100%;
-  padding: 11px 18px;
+  padding: 10px 18px;
   border: 2px solid transparent;
   border-radius: 6px;
   font-size: 15px;

@@ -14,7 +14,15 @@
   border-radius: 50%;
   pointer-events: none;
 }
-
+.remaing-days{
+  font-size: 0.75rem;
+  padding: 5px 12px;
+  border: 1px solid #ef4443;
+  border-radius: 5px;
+  color: #ef4444;
+  font-weight: 500;
+  // margin-left: 12px;
+}
 .circle-1 {
   width: 400px;
   height: 400px;
@@ -174,14 +182,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 38px;
+  margin-bottom: 16px;
 }
 
 .plan-name {
   font-size: 1.25rem;
   font-weight: 600;
+  display: flex;
+  align-items: start;
+  flex-direction: column;
   color: #1e40af;
   margin: 0;
+  gap: 4px;
 }
 
 .status-badge {
@@ -189,7 +201,7 @@
   color: white;
   padding: 6px 16px;
   border-radius: 20px;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 

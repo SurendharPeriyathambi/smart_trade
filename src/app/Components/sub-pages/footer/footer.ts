@@ -16,7 +16,7 @@ export class Footer {
   socialLinks = [
     { icon: 'bi bi-facebook', url: '#' },
     { icon: 'bi bi-twitter-x', url: '#' },
-    { icon: 'bi bi-vimeo', url: '#' },
+    // { icon: 'bi bi-vimeo', url: '#' },
     { icon: 'bi bi-youtube', url: '#' },
  
   ];

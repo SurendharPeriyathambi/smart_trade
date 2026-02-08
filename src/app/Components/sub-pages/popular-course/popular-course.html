@@ -1,9 +1,9 @@
 <section class="about-section">
   <div class="container">
     <div class="row mb-3 ">
-      <div class="d-flex justify-content-center">
+      <!-- <div class="d-flex justify-content-center">
          <h3 class="section-title">Popular Courses</h3>
-      </div>
+      </div> -->
      
     </div>
     <div class="row align-items-center">
@@ -11,17 +11,20 @@
       <!-- LEFT IMAGE (Same as Image-2) -->
       <div class="col-lg-5 mb-4 mb-lg-0">
         <div class="image-wrapper">
-          <img src="assets/student.png" class="main-img" />
+          <img src="../../../../assets/images/about.jpeg" class="main-img" />
+          <img src="../../../../assets/images/shape1.png" class="sub-img1" />
+          <img src="../../../../assets/images/shape2.png" class="sub-img2" />
 
         
         </div>
       </div>
 
       <!-- RIGHT LIST CONTENT -->
-      <div class="col-lg-7">
+      <div class="col-lg-7 d-flex  justify-content-end">
+        <div class="content-box">
         
         <h2 class="section-title">
-          Learn From Industry-Ready Programs
+          One Platform. Infinite <br> Learning. Possibilities.
         </h2>
 
         <p class="section-desc">
@@ -34,7 +37,7 @@
           <div class="course-item" *ngFor="let course of courses">
 
 <span class="checkbox-icon">
- <img src="../assets/images/check.png" alt="check" width="20">
+ <svg _ngcontent-ng-c3748185286="" xmlns="http://www.w3.org/2000/svg" width="23" height="22" viewBox="0 0 23 22" fill="none"><path _ngcontent-ng-c3748185286="" d="M9.12945 18.8897C9.04169 18.8897 8.95545 18.8667 8.8793 18.8231C8.80314 18.7795 8.73971 18.7168 8.69528 18.6411C7.01694 15.7816 2.54231 9.69345 2.49736 9.63229C2.4257 9.5349 2.39148 9.41498 2.40097 9.29444C2.41045 9.1739 2.463 9.0608 2.54901 8.97582L3.925 7.61622C4.00874 7.53347 4.11883 7.48268 4.23614 7.4727C4.35345 7.46271 4.47055 7.49415 4.56708 7.56155L9.02463 10.6741C12.0069 6.8495 14.777 4.20773 16.5994 2.64892C18.6509 0.894184 19.9569 0.104511 20.0115 0.0717886C20.0897 0.024819 20.1793 4.61886e-06 20.2705 6.63063e-10H22.4965C22.5985 -5.23576e-06 22.6982 0.0310049 22.7822 0.0889194C22.8662 0.146834 22.9307 0.228918 22.967 0.32429C23.0033 0.419662 23.0098 0.523819 22.9855 0.622952C22.9613 0.722086 22.9075 0.811514 22.8313 0.879383C16.5099 6.50979 9.6356 18.5148 9.56708 18.6354C9.52338 18.7121 9.46025 18.776 9.38404 18.8207C9.30784 18.8653 9.22123 18.8891 9.13292 18.8897H9.12945Z" fill="#1C43FE"></path><path _ngcontent-ng-c3748185286="" d="M17.6202 21.6082H0.503434C0.369915 21.6082 0.241865 21.5551 0.147452 21.4607C0.0530402 21.3663 0 21.2383 0 21.1047V3.98829C0 3.85477 0.0530402 3.72672 0.147452 3.63231C0.241865 3.5379 0.369915 3.48486 0.503434 3.48486H11.6036C11.7371 3.48486 11.8652 3.5379 11.9596 3.63231C12.054 3.72672 12.107 3.85477 12.107 3.98829C12.107 4.12181 12.054 4.24985 11.9596 4.34426C11.8652 4.43867 11.7371 4.49171 11.6036 4.49171H1.00687V20.6013H17.1168V10.0048C17.1168 9.87131 17.1698 9.74326 17.2642 9.64885C17.3586 9.55444 17.4867 9.5014 17.6202 9.5014C17.7537 9.5014 17.8818 9.55444 17.9762 9.64885C18.0706 9.74326 18.1236 9.87131 18.1236 10.0048V21.1047C18.1236 21.2383 18.0706 21.3663 17.9762 21.4607C17.8818 21.5551 17.7537 21.6082 17.6202 21.6082Z" fill="#1C43FE"></path></svg>
 </span>
 
 
@@ -45,16 +48,16 @@
               <p>{{ course.desc }}</p>
             </div>
 
-            <div class="meta">
+            <!-- <div class="meta">
               <span>{{ course.lessons }} Lessons</span>
               <button class="view-btn">View</button>
-            </div>
+            </div> -->
 
           </div>
         </div>
-
+        <button class="btn btn-primary mt-3">View Details <i class="bi bi-chevron-right  ms-2"></i></button>
       </div>
-
+</div>
     </div>
   </div>
 </section>
