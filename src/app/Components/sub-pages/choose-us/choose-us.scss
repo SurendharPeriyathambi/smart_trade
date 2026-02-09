@@ -93,23 +93,36 @@
   line-height: 1.6;
 }
 /* Responsive Styles */
-@media (max-width: 992px) {
+@media (max-width: 199px) {
+  .image-grid{
+    max-width: 100%;
+  }
   .why-choose-content {
     grid-template-columns: 1fr;
     gap: 3rem;
-  }
-  .image-grid {
-    margin: 0 auto;
   }
   .right-section {
     grid-template-columns: 1fr;
   }
 }
 @media (max-width: 768px) {
+  .why-choose-content{
+     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .right-section{
+    gap: 1rem;
+  }
   .why-choose {
     padding: 3rem 0;
   }
   .section-title {
     font-size: 2rem;
+  }
+  .image-grid{
+    min-height: 300px !important;
+    max-height: 300px !important;
+    max-width: 100%;
+    
   }
 }

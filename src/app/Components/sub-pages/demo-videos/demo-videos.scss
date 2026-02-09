@@ -36,8 +36,10 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
+  width: 100%;
 }
 .video-card {
+  width: 100%;
   background: white;
   border-radius: 20px;
   overflow: hidden;
@@ -85,7 +87,7 @@
   text-align: center;
 }
 /* Tablet View - 2 columns with side spacing */
-@media (max-width: 992px) and (min-width: 600px) {
+@media (max-width: 1199px) and (min-width: 768px) {
   .demo-videos .container {
     padding-left: 3rem;
     padding-right: 3rem;
@@ -94,9 +96,20 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
   }
+   .video-card{
+    width: 100%;
+  }
 }
 /* Mobile View */
-@media (max-width: 600px) {
+@media (max-width: 767px) {
+  .videos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+   .video-card{
+    width: 94%;
+  }
+  
   .demo-videos {
     padding: 3rem 0;
   }

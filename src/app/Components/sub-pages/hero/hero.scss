@@ -158,7 +158,7 @@
   background: white;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 199px) {
   .hero-content {
     grid-template-columns: 1fr;
     gap: 2rem;
@@ -184,7 +184,7 @@
 
 @media (max-width: 768px) {
   .hero {
-    padding: 2rem 0;
+    padding:  0;
   }
 
   .hero-title {
