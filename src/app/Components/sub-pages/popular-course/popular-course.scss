@@ -150,6 +150,11 @@
 }
 
 @media (max-width:500px) {
+  .image-wrapper {
+  position: relative;
+  width: auto;
+  height: auto;
+}
   .course-item h6 {
   font-weight: 600;
   font-size: 12px;
@@ -163,4 +168,10 @@
   font-size: 11px;
 }
 
+}
+@media (min-width:992px) and (max-width:1200px) {
+  
+  .content-box{
+  max-width: 450px;
+}
 }

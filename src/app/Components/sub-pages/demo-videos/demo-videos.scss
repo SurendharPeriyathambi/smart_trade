@@ -20,6 +20,7 @@
 .demo-videos .section-title {
   font-size: 2.5rem;
   font-weight: 800;
+  max-width: 600px;
   color: #1a1a2e;
   text-align: center;
   margin-bottom: 1rem;
@@ -31,7 +32,7 @@ z-index: 99;
 
  .demo-videos .section-title .star-icon {
   position: absolute;
-  right: 38%;      /* adjust to move star */
+  right: -8%;      /* adjust to move star */
   top: -2%;
     z-index:-13;   /* THIS puts it behind text */
 }
