@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, output, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -9,10 +9,11 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './subscription-plans.scss',
 })
 export class SubscriptionPlans {
+@Output() planSelected = new EventEmitter<any>();
 
-  @Output() planSelected = new EventEmitter<any>();
+
   isMonthly = true;
-  selectedPlan: any = null;
+ selectedPlan:any=null;
 
   plans = [
     {
@@ -55,8 +56,9 @@ export class SubscriptionPlans {
     }
   ];
 
-  selectPlan(plan: any) {
-    this.planSelected.emit(plan);
+  
+  selectPlan(plan:any){
+    this.selectedPlan.emit(plan);
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
 }
