@@ -65,7 +65,7 @@
               left: 16%;
     bottom: 15%;
 
-        }
+ }
 
         .step-2 {
                 left: 54%;
@@ -78,33 +78,33 @@
                right: 3%;
     top: -14%;
 
-        }
+ }
 
-        .step-circle {
-            width: 50px;
-            height: 50px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            background-color: #dbdfff;
-            border-radius: 10px;
+ .step-circle {
+     width: 50px;
+     height: 50px;
+     position: relative;
+     display: flex;
+     align-items: center;
+     background-color: #dbdfff;
+     border-radius: 10px;
 
             justify-content: center;
             transition: all 0.3s ease;
              z-index: 5;
         }
 
-        .step-circle:hover {
-            transform: scale(1.1);
-        }
+ .step-circle:hover {
+     transform: scale(1.1);
+ }
 
-        .oval-bg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            z-index: 1;
-        }
+ .oval-bg {
+     position: absolute;
+     width: 100%;
+     height: 100%;
+     object-fit: contain;
+     z-index: 1;
+ }
 
         .step-icon {
             position: relative;
@@ -119,19 +119,19 @@
             margin-top: 20px;
         }
 
-        .step-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 8px;
-        }
+ .step-title {
+     font-size: 1.25rem;
+     font-weight: 700;
+     color: #1e293b;
+     margin-bottom: 8px;
+ }
 
-        .step-description {
-            font-size: 0.95rem;
-            color: #64748b;
-            line-height: 1.6;
-            margin: 0;
-        }
+ .step-description {
+     font-size: 0.95rem;
+     color: #64748b;
+     line-height: 1.6;
+     margin: 0;
+ }
 
         .central-image {
             margin-top: 30px;
@@ -156,79 +156,103 @@
 
         
 
-        .trading-visual {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+ .trading-visual {
+     width: 100%;
+     height: 100%;
+     position: relative;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     padding: 20px;
+ }
 
-        .chart-background {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
+ .chart-background {
+     position: relative;
+     width: 100%;
+     height: 100%;
+ }
 
-        .chart-grid {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
-            opacity: 0.3;
-        }
+ .chart-grid {
+     position: absolute;
+     width: 100%;
+     height: 100%;
+     background-image:
+         linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+         linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+     background-size: 20px 20px;
+     opacity: 0.3;
+ }
 
-        .data-points {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
+ .data-points {
+     position: absolute;
+     width: 100%;
+     height: 100%;
+ }
 
-        .data-point {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background: linear-gradient(135deg, #60a5fa, #3b82f6);
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
-            animation: pulse 2s ease-in-out infinite;
-        }
+ .data-point {
+     position: absolute;
+     width: 12px;
+     height: 12px;
+     background: linear-gradient(135deg, #60a5fa, #3b82f6);
+     border-radius: 50%;
+     box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+     animation: pulse 2s ease-in-out infinite;
+ }
 
-        .data-point:nth-child(2) { animation-delay: 0.5s; }
-        .data-point:nth-child(3) { animation-delay: 1s; }
-        .data-point:nth-child(4) { animation-delay: 1.5s; }
+ .data-point:nth-child(2) {
+     animation-delay: 0.5s;
+ }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
-        }
+ .data-point:nth-child(3) {
+     animation-delay: 1s;
+ }
 
-        .trend-arrow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation: arrowPulse 2s ease-in-out infinite;
-        }
+ .data-point:nth-child(4) {
+     animation-delay: 1.5s;
+ }
 
-        @keyframes arrowPulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
-        }
+ @keyframes pulse {
 
-        /* Background Images */
-        .bg-image {
-            position: absolute;
-            z-index: 0;
-            opacity: 0.5;
-            pointer-events: none;
-            width: 80px;
-        }
+     0%,
+     100% {
+         transform: scale(1);
+         opacity: 1;
+     }
+
+     50% {
+         transform: scale(1.3);
+         opacity: 0.7;
+     }
+ }
+
+ .trend-arrow {
+     position: absolute;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     animation: arrowPulse 2s ease-in-out infinite;
+ }
+
+ @keyframes arrowPulse {
+
+     0%,
+     100% {
+         transform: translate(-50%, -50%) scale(1);
+     }
+
+     50% {
+         transform: translate(-50%, -50%) scale(1.1);
+     }
+ }
+
+ /* Background Images */
+ .bg-image {
+     position: absolute;
+     z-index: 0;
+     opacity: 0.5;
+     pointer-events: none;
+     width: 80px;
+ }
 
         .bg-image-1 {
             // width: 300px;
@@ -251,113 +275,252 @@
             right: -2%;
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+ @keyframes fadeInUp {
+     from {
+         opacity: 0;
+         transform: translateY(30px);
+     }
 
-        .step-item {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
+     to {
+         opacity: 1;
+         transform: translateY(0);
+     }
+ }
 
-        .step-1 { animation-delay: 0.2s; }
-        .step-2 { animation-delay: 0.4s; }
-        .step-3 { animation-delay: 0.6s; }
+ .step-item {
+     animation: fadeInUp 0.6s ease-out forwards;
+ }
 
-        /* Responsive */
-        @media (max-width: 991px) {
-            .flow-container {
-                min-height: 900px;
-            }
+ .step-1 {
+     animation-delay: 0.2s;
+ }
 
-            .curved-line-image {
-                display: none;
-            }
+ .step-2 {
+     animation-delay: 0.4s;
+ }
 
-            .step-item {
-                position: relative;
-                left: auto !important;
-                right: auto !important;
-                top: auto !important;
-                bottom: auto !important;
-                transform: none !important;
-                margin: 40px auto;
-                max-width: 400px;
-            }
+ .step-3 {
+     animation-delay: 0.6s;
+ }
 
-            .flow-container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
+ /* Responsive */
+ @media (max-width: 1199px) and (min-width:768px) {
+     .flow-container {
+         min-height: 0px !important;
+     }
 
-            .bg-image-1, .bg-image-2 {
-                width: 200px;
-            }
 
-            .bg-image-3 {
-                width: 180px;
-            }
-        }
+     /* show zigzag line */
+     .curved-line-image {
+         position: absolute;
+         top: 0;
+         left: 50%;
+         transform: translateX(-50%) rotate(90deg);
 
-        @media (max-width: 767px) {
-            .step-circle {
-                width: 70px;
-                height: 70px;
-            }
+         height: 100%;
+         width: 450px;
 
-            .step-icon {
-                width: 28px;
-                height: 28px;
-            }
+         z-index: 1;
+         pointer-events: none;
+         display: none;
+     }
 
-            .step-title {
-                font-size: 1.1rem;
-            }
+     .image-card {
+         display: none;
+     }
 
-            .step-description {
-                font-size: 0.9rem;
-            }
+     .flow-container {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         position: relative;
+     }
 
-            .image-card {
-                width: 180px;
-                height: 180px;
-            }
 
-            .bg-image {
-                opacity: 0.3;
-            }
+     .step-item {
+         position: relative !important;
+         margin: 40px 0;
+         z-index: 5;
+     }
 
-            .bg-image-1 {
-                width: 150px;
-            }
+     .step-1 {
+         align-self: flex-start;
+         margin-left: 5%;
+     }
 
-            .bg-image-2, .bg-image-3 {
-                width: 120px;
-            }
-        }
+     .step-2 {
+         align-self: flex-end;
+         margin-right: 43%;
+     }
 
-        @media (max-width: 575px) {
-            .step-circle {
-                width: 60px;
-                height: 60px;
-            }
+     .step-3 {
+         align-self: flex-start;
+         margin-left: 2%;
+     }
+          .bg-image-1 {
+         width: 100px;
+         height: 140px;
+         top: 3%;
+         left: 54%;
+     }
 
-            .step-icon {
-                width: 24px;
-                height: 24px;
-            }
+     .bg-image-2{
+         width: 100px;
+         top: 36%;
+         right: 58%;
+     }
 
-            .image-card {
-                width: 160px;
-                height: 160px;
-            }
+     .bg-image-3 {
+         width: 100px;
+         top: 70%;
+         right: 30%;
+     }
+     .step-icon{
+        width: 40px;
+        height: 40px;
+     }
+     .flow-container {
+         padding: 0px !important;
+     }
+ .flow-container{
+        min-height:0px !important;
+     }
+     .how-it-works-section{
+        padding-top: 10% !important;
+        min-height: 10vh;
+     }
+ }
 
-            h1.display-4 {
-                font-size: 2rem;
-            }
+ @media (max-width: 767px) {
+     .curved-line-image {
+         position: absolute;
+         top: 0;
+         left: 50%;
+         transform: translateX(-50%) rotate(90deg);
 
-            .lead {
-                font-size: 1rem;
-            }
-        }
+         height: 100%;
+         width: 450px;
+
+         z-index: 1;
+         pointer-events: none;
+         display: none;
+     }
+     .image-card {
+         display: none;
+     }
+
+     .flow-container {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         position: relative;
+     }
+
+
+     .step-item {
+         position: relative !important;
+         margin: 40px 0;
+         z-index: 5;
+     }
+
+     .step-1 {
+         align-self: flex-start;
+         margin-left: 5%;
+     }
+
+     .step-2 {
+         align-self: flex-end;
+         margin-right: 43%;
+     }
+
+     .step-3 {
+         align-self: flex-start;
+         margin-left: 2%;
+     }
+    .step-icon{
+        width: 30px;
+        height: 30px;
+     }
+
+     .flow-container {
+         padding: 0px !important;
+     }
+
+     .step-circle {
+         width: 70px;
+         height: 70px;
+     }
+
+     .step-icon {
+         width: 28px;
+         height: 28px;
+     }
+
+     .step-title {
+         font-size: 1.1rem;
+     }
+
+     .step-description {
+         font-size: 0.9rem;
+     }
+
+     .image-card {
+         width: 180px;
+         height: 180px;
+     }
+
+     .bg-image {
+         opacity: 0.3;
+     }
+
+     .bg-image-1 {
+         width: 100px;
+         height: 140px;
+         top: 3%;
+         left: 50%;
+     }
+
+     .bg-image-2{
+         width: 100px;
+         top: 36%;
+         right: 54%;
+     }
+
+     .bg-image-3 {
+         width: 100px;
+         top: 72%;
+         right: 5%;
+     }
+     .flow-container{
+        min-height:0px !important;
+     }
+     .how-it-works-section{
+        padding: 0% !important;
+     }
+     
+ }
+
+ @media (max-width: 575px) {
+     .step-circle {
+         width: 60px;
+         height: 60px;
+     }
+
+     .step-icon {
+         width: 24px;
+         height: 24px;
+     }
+
+     .image-card {
+         width: 160px;
+         height: 160px;
+     }
+
+     h1.display-4 {
+         font-size: 2rem;
+     }
+
+     .lead {
+         font-size: 1rem;
+     }
+ }

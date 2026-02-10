@@ -9,7 +9,7 @@ import { Component } from '@angular/core';
 })
 export class Footer {
  links = {
-    company: ['Home', 'About Us', 'Courses', 'Pricing'],
+    company: ['Home', 'About Us', 'Courses'],
     support: ['Reviews', 'Contact', 'Terms of Service', 'Privacy Policy']
   };
 

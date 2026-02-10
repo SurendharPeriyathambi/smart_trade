@@ -1,4 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
-*{
-   font-family: "Inter", sans-serif !important;
+* {
+  box-sizing: border-box;
+    font-family: "Inter", sans-serif !important;
+
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: none;
 }
