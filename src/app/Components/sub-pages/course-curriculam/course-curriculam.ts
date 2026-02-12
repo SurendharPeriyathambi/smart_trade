@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-course-curriculam',
@@ -8,15 +8,32 @@ import { Component } from '@angular/core';
   styleUrl: './course-curriculam.scss',
 })
 export class CourseCurriculam {
-previewOpen = false;
+  @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
+  
+  previewOpen = false;
+  videoPlayerOpen = false;
 
-openPreview() {
-  this.previewOpen = true;
-}
+  openPreview() {
+    this.previewOpen = true;
+  }
 
-closePreview() {
-  this.previewOpen = false;
-}
+  closePreview() {
+    this.previewOpen = false;
+  }
+
+  openVideoPlayer() {
+    this.videoPlayerOpen = true;
+    this.previewOpen = false; // Close the preview card when video opens
+  }
+
+  closeVideoPlayer() {
+    this.videoPlayerOpen = false;
+    // Pause the video when closing
+    if (this.videoPlayer?.nativeElement) {
+      this.videoPlayer.nativeElement.pause();
+    }
+  }
+
   sections = [
     {
       title: 'Introduction to Options Foundations',
@@ -46,17 +63,7 @@ closePreview() {
     }
   ];
 
-// toggle(section: any) {
-//   this.sections.forEach(sec => {
-//     if (sec !== section) {
-//       sec.expanded = false;
-//     }
-//   });
-//   section.expanded = !section.expanded;
-// }
-toggle(section: any) {
-  section.expanded = !section.expanded;
-}
-
-
+  toggle(section: any) {
+    section.expanded = !section.expanded;
+  }
 }

@@ -25,10 +25,12 @@
       </div>
 
       <div class="col-md-3">
-        <div class="auth-buttons" [class.active]="isMenuOpen">
+       @if(isAuthButton) {
+        <div class="auth-buttons" [class.active]="isMenuOpen" >
         <button class="btn btn-outline" routerLink="/login" >Login </button>
         <button class="btn btn-primary" routerLink="/login">Sign In</button>
       </div>
+       } 
       </div>
 
       

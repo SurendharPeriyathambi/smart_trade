@@ -1,25 +1,81 @@
-
 .div-box {
-  position: absolute;
+  position: relative;
   width: 130px;
   height: 30px;
   border-radius: 460px 460px 46px 46px;
   background-color: #ffffff;
-  top: -8%;
-  left: 60%;
+  top: 0; // Changed from -8%
+  transform: translateY(-50%); // NEW: Better positioning
+  left: 45%;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .curriculum-container {
   max-width: 850px;
- margin-left: 5%;
- margin-top: 2%;
- margin-bottom: 2%;
-//   background: #f8fbff;
+  margin-left: 5%;
+  margin-top: 2%;
+  margin-bottom: 2%;
   padding: 24px;
+  padding-top: 40px; // NEW: Give space for the div-box
   border-radius: 12px;
-     font-family: "Roboto", sans-serif;
-     position: relative;
+  font-family: "Roboto", sans-serif;
+  position: relative;
 }
+
+.top-info-bar {
+  // background: #1e40af; 
+  color: #000;
+  padding: 6px 13px;
+  border-radius: 10px;
+  display: flex;
+  // justify-content: space-between;
+      column-gap: 10px;
+  align-items: center;
+  font-family: system-ui, sans-serif;
+  max-width: 443px;
+  border: 1px solid #000;
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  // border: 1px solid #000;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(46, 45, 45, 0.4);
+}
+
 
 .title {
   font-size: 34px;
@@ -42,8 +98,7 @@
   align-items: center;
   padding: 14px 16px;
   cursor: pointer;
-  // font-weight: 600;
-  
+ 
 }
 .section-header .section-title{
   font-size: 20px;
@@ -237,5 +292,180 @@ i{
   to {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+@media (max-width:499px) {
+  .div-box{
+    display: none !important;
+  }
+  .top-info-bar {
+ display: flex;
+  flex-direction: column;
+   max-width: 443px;
+   gap: 10px;
+}
+.divider {
+ display: none;
+}
+.right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.section-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  gap: 10px;
+  cursor: pointer;
+ 
+}
+.section-header .section-title{
+  font-size: 14px;
+}
+.section-header .right {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+ width: 100%;
+  color: #1a1a1a;
+}
+
+.lesson {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+     gap: 10px;
+}
+.lesson-right {
+  display: flex;
+   justify-content: space-between;
+  align-items: center;
+ 
+  width: -webkit-fill-available;
+}
+}
+
+// ... keep all your existing styles ...
+
+// Video Player Modal Styles
+.video-player-backdrop {
+  position: fixed;
+  inset: 0;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.video-player-modal {
+  background: #1a1a1a;
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 90vw;
+  max-height: 90vh;
+  width: 900px;
+  position: relative;
+  animation: scaleIn 0.35s ease;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s ease;
+  z-index: 10;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+  }
+}
+
+.video-container {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+
+  video {
+    width: 100%;
+    height: auto;
+    max-height: 70vh;
+    display: block;
+  }
+}
+
+.video-info {
+  margin-top: 20px;
+  color: #fff;
+
+  .video-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .video-description {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+  }
+}
+
+// Make video thumb clickable
+.video-thumb {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+    
+    .play-btn {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+  }
+}
+
+.play-btn {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+// Responsive styles for video player
+@media (max-width: 768px) {
+  .video-player-modal {
+    width: 95vw;
+    padding: 15px;
+  }
+
+  .video-info {
+    .video-title {
+      font-size: 18px;
+    }
+
+    .video-description {
+      font-size: 13px;
+    }
   }
 }

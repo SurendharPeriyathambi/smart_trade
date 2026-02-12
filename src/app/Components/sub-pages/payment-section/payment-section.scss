@@ -194,6 +194,9 @@
   font-size: 0.875rem;
   color: #1f2937;
   font-weight: 500;
+    word-break: break-all;     /* old support */
+  overflow-wrap: break-word; /* modern */
+  white-space: normal;
 }
 
 .remove-button {
