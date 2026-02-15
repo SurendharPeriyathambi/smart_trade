@@ -6,6 +6,7 @@ import { Footer } from "../../sub-pages/footer/footer";
 import { PopularCourse } from "../../sub-pages/popular-course/popular-course";
 import { DemoVideos } from "../../sub-pages/demo-videos/demo-videos";
 import { HowIts } from "../../sub-pages/how-its/how-its";
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -14,5 +15,18 @@ import { HowIts } from "../../sub-pages/how-its/how-its";
   styleUrl: './home.scss',
 })
 export class Home {
+constructor(private route: ActivatedRoute) {}
 
+  ngOnInit(): void {
+    this.route.fragment.subscribe(fragment => {
+      if (fragment) {
+        const element = document.getElementById(fragment);
+        if (element) {
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }
+      }
+    });
+}
 }

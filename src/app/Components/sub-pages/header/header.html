@@ -16,11 +16,11 @@
       </div>
       <div class="col-md-6 d-flex justify-content-center">
         <nav class="nav" [class.active]="isMenuOpen">
-        <a routerLink="/home" class="nav-link">Home</a>
+        <a routerLink="/home" fragment="hero" class="nav-link">Home</a>
         
-        <a href="#" class="nav-link">About Us</a>
-        <a href="#" class="nav-link">Courses</a>
-        <a href="#" class="nav-link">Contact Us</a>
+        <a routerLink="/home"  fragment="about" class="nav-link">About Us</a>
+        <a routerLink="/home" fragment="courses" class="nav-link">Courses</a>
+        <a routerLink="/home" fragment="contact" class="nav-link">Contact Us</a>
       </nav>
       </div>
 
