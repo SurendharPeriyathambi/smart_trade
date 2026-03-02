@@ -25,17 +25,19 @@
   </div>
 </section>
 
+
 <!-- VIDEO MODAL -->
-<div class="video-modal" *ngIf="activeVideo">
+<div class="video-modal" *ngIf="isModalOpen">
   <div class="overlay" (click)="closeVideo()"></div>
 
   <div class="modal-content">
     <button class="close-btn" (click)="closeVideo()">✕</button>
 
     <video
-      [src]="activeVideo.videoUrl"
+     
       controls
       autoplay
+      #videoPlayer
     ></video>
   </div>
 </div>

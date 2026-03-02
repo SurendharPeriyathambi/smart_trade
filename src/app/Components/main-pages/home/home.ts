@@ -18,6 +18,7 @@ export class Home {
 constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    // getWebData();
     this.route.fragment.subscribe(fragment => {
       if (fragment) {
         const element = document.getElementById(fragment);

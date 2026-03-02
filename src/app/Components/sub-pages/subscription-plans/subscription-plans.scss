@@ -156,9 +156,16 @@
   .pricing-card.pro:hover {
     transform: scale(1.05) translateY(-8px);
   }
+  .div-box {
+ 
+  top: -6%;
+  left: 45%;
+}
 }
 
 @media (max-width: 768px) {
+  
+
   .pricing-card.pro {
     transform: none;
   }
@@ -176,6 +183,7 @@
   }
 
   .div-box {
+    display: none;
     left: 50%;
     transform: translateX(-50%);
   }

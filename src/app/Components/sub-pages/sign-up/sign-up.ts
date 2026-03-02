@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { AuthServices } from '../../main-pages/login/auth.service';
+import { ToastService } from '../../../../services/engine/toast.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -12,9 +14,18 @@ import { RouterLink } from '@angular/router';
 export class SignUp {
 signUpForm: FormGroup;
   showPassword = false;
+  isLoading=false
+  errorMessage = '';
+
   showConfirmPassword = false;
 
-  constructor(private fb: FormBuilder) {
+      constructor
+       (private fb: FormBuilder,
+        private autheService:AuthServices,
+        private router : Router,
+         private toast: ToastService
+         
+        ) {
     this.signUpForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
@@ -50,6 +61,30 @@ signUpForm: FormGroup;
     if (this.signUpForm.valid) {
       console.log('Sign Up Form Data:', this.signUpForm.value);
       // Add your registration logic here
+
+      const payload={
+        name:this.signUpForm.value.username,
+         email: this.signUpForm.value.email,
+        mobile: this.signUpForm.value.mobile,
+        password: this.signUpForm.value.password
+      };
+
+      this.autheService.signIn(payload).subscribe({
+        next:(res)=>{
+          this.isLoading=false
+           console.log('Registration successful:', res);
+             this.toast.success(res.message || 'Registration successful!');
+        setTimeout(() => this.router.navigate(['/subscriptions']), 1500);
+        },
+         error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err?.error?.message || 'Registration failed. Please try again.';
+          console.error('Registration error:', err);
+          this.toast.error(this.errorMessage)
+        }
+      }
+    
+    )
     } else {
       Object.keys(this.signUpForm.controls).forEach(key => {
         this.signUpForm.get(key)?.markAsTouched();

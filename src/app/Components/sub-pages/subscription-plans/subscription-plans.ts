@@ -57,6 +57,8 @@ export class SubscriptionPlans {
 
   selectPlan(plan: any) {
     this.planSelected.emit(plan);
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+   if (typeof window !== 'undefined') {
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
   }
 }

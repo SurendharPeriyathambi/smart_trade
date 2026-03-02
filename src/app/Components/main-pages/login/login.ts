@@ -13,7 +13,9 @@ import { Footer } from "../../sub-pages/footer/footer";
 export class Login {
  constructor() {
    afterNextRender(() => {
-      window.scrollTo({ top: 0, behavior: 'instant' });
+     if (typeof window !== 'undefined') {
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
     });

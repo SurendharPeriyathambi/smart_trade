@@ -1,7 +1,14 @@
 <!-- hero-banner.component.html -->
-<section class="hero">
+<!-- <section class="hero" *ngIf="activeBanner">
  
-    <div class="hero-content">
+    <div class="hero-content" [ngStyle]="{'background-image': 'url(' + activeBanner?.path + ')'}">
+     
+    </div>
+ 
+</section> -->
+<section class="hero" >
+ 
+    <div class="hero-content" [ngStyle]="{'background-image': 'url(' + homeData[0]?.path + ')'}">
      
     </div>
  

@@ -11,10 +11,13 @@
 }
 
 .hero-content {
-  background: url('/assets/images/LandingPage.png') center / cover no-repeat;
+  // background: url('/assets/images/LandingPage.png') center / cover no-repeat;
   width: 100%;
   // height: 450px;
   aspect-ratio: 10/6;
+   background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 
