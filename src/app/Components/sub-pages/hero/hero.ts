@@ -38,9 +38,11 @@
 
 // }
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, inject, PLATFORM_ID, HostListener, makeStateKey, TransferState } from '@angular/core';
+import { Component, OnInit, inject, PLATFORM_ID, HostListener, makeStateKey, TransferState, signal, effect } from '@angular/core';
 import { BannerService } from './banner.service';
 import { Banner } from '../../../../interfaces/banner_interface';
+import { HomeService } from '../../main-pages/home/home_service';
+import { LoaderService } from '../../../../services/engine/loader.service';
 const BANNER_KEY = makeStateKey<Banner[]>('banners');
 @Component({
   selector: 'app-hero',
@@ -48,43 +50,43 @@ const BANNER_KEY = makeStateKey<Banner[]>('banners');
   templateUrl: './hero.html',
   styleUrl: './hero.scss',
 })
-export class Hero implements OnInit {
-  homeData: Banner[]=[];
-activeBanner : Banner | null = null;
-  private bannerService = inject(BannerService);
-   private transferState = inject(TransferState);
-  private platformId = inject(PLATFORM_ID);
+export class Hero  {
+  
 
-  ngOnInit(): void {
-   
-      this.getBanners();
-    
-    //  if (this.transferState.hasKey(BANNER_KEY)) {
-    //   this.homeData = this.transferState.get(BANNER_KEY, []);
-    //   this.transferState.remove(BANNER_KEY);
-    // } else {
-    //   this.getBanners();
-    // }
-  }
+ protected homeService = inject(HomeService);
+ private loaderService = inject (LoaderService)
+ protected imageReady = signal(false);      // only true when fully decoded
+  protected imageSrc = signal<string | null>(null); // set only after decode
 
-  getBanners() {
-    this.bannerService.getHomeData().subscribe({
-      next: (res) => {
-        if (res.status) {
-          this.homeData = res.data?.banner ;
-          // this.setActiveBanner();
-          //  if (!isPlatformBrowser(this.platformId)) {
-          //   this.transferState.set(BANNER_KEY, this.homeData);
-          // }
-        
-        }
-      },
-      error: (err) => {
-        console.error(err);
+  constructor() {
+    effect(() => {
+      const path = this.homeService.banner()[0]?.path;
+
+      if (path && !this.imageReady()) {
+        this.loaderService.show();
+        this.preloadImage(path);
       }
     });
   }
 
+  private preloadImage(url: string) {
+    const img = new Image();        // off-screen Image object
+    img.src = url;
+
+    img.decode()                    // waits until FULLY decoded, ready to paint
+      .then(() => {
+        this.imageSrc.set(url);     // now safe to show
+        this.imageReady.set(true);
+        this.loaderService.hide();
+      })
+      .catch(() => {
+        this.imageSrc.set(url);     // show anyway on error
+        this.imageReady.set(true);
+        this.loaderService.hide();
+      });
+  }
+
+ 
 
 //   @HostListener('window:resize',)
 //   onResize() {
@@ -95,4 +97,6 @@ activeBanner : Banner | null = null;
 //     const mobileWidth =window.innerWidth <= 768;
 //     this.activeBanner = mobileWidth? this.homeData.find(b=>b.title === 'mobile') ??this.homeData[0] : this.homeData.find(b=>b.title === 'website') ?? this.homeData[0]; // Define your mobile width threshold
 //   }
+
+ 
 }

@@ -8,8 +8,15 @@
 </section> -->
 <section class="hero" >
  
-    <div class="hero-content" [ngStyle]="{'background-image': 'url(' + homeData[0]?.path + ')'}">
+    <!-- <div class="hero-content" [ngStyle]="{'background-image': 'url(' + homeService.banner()[0]?.path + ')'}">
      
+    </div> -->
+ 
+  @if (imageReady() && imageSrc()) {
+      <div class="hero-content" >
+     <img class="hero-content" [src]="homeService.banner()[0].path"  alt="">
     </div>
+  }
+  
  
 </section>

@@ -1,8 +1,11 @@
-import { afterNextRender, Component } from '@angular/core';
+import { afterNextRender, Component, inject, OnInit } from '@angular/core';
 import { SignIn } from "../../sub-pages/sign-in/sign-in";
 import { SignUp } from "../../sub-pages/sign-up/sign-up";
 import { Header } from "../../sub-pages/header/header";
 import { Footer } from "../../sub-pages/footer/footer";
+import { AuthServices } from './auth.service';
+import { AuthStateService } from './auth-state.service';
+import { error } from 'console';
 
 @Component({
   selector: 'app-login',
@@ -10,7 +13,12 @@ import { Footer } from "../../sub-pages/footer/footer";
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-export class Login {
+export class Login implements OnInit {
+
+  private authService =inject (AuthServices);
+  private authState = inject (AuthStateService);
+ ip : string = '';
+
  constructor() {
    afterNextRender(() => {
      if (typeof window !== 'undefined') {
@@ -20,4 +28,10 @@ export class Login {
       document.body.scrollTop = 0;
     });
  }
+  ngOnInit(): void {
+   this.authService.getIp().subscribe({
+    next: (res)=> this.ip = res,
+    error: err => console.log('Failed to get Ip',err)
+   })
+  }
 }

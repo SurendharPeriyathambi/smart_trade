@@ -111,14 +111,16 @@
         You must agree to the terms and conditions
       </span>
     </div>
-
-   <div class="error-message text-center" *ngIf="errorMessage">
-  {{ errorMessage }}
+@if(authState.error()){
+   <div class="error-message text-center">
+  {{ authState.error() }}
 </div>
+}
+  
 
 <div class="d-flex justify-content-center">
-   <button type="submit" class="submit-btn text-center"  [disabled]="isLoading">
-      {{ isLoading ? 'Signing Up...' : 'SIGN UP' }}
+   <button type="submit" class="submit-btn text-center"  [disabled]="authState.loading()">
+      {{ authState.loading()  ? 'Signing Up...' : 'SIGN UP' }}
      <span class="icons mb-2"> <img src="/assets/images/login_icon.png" width="15" alt=""></span>
     </button>
 </div>
