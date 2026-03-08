@@ -8,7 +8,7 @@ import { ApiResponce, HomeData, VideoUrlResponce } from "../../../../interfaces/
 })
 export class BannerService{
 
-    private apiUrl = "api/admin/initial_data";
+    private apiUrl = "api/initial_data";
     private videoUrlApi = "api/get_video_url";
 
     constructor(private http : HttpEngine){
