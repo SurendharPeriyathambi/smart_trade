@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { SubscriptionService } from '../../main-pages/subscriptions/subscription.service';
+import { SubscriptionState,  } from '../../main-pages/subscriptions/subscription_state.service';
+import { Subscription } from '../../../../interfaces/subscriptions_interface';
 
 @Component({
   selector: 'app-subscription-plans',
@@ -9,56 +12,26 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './subscription-plans.scss',
 })
 export class SubscriptionPlans {
-
+ @Input() isPending: boolean = false;
   @Output() planSelected = new EventEmitter<any>();
-  isMonthly = true;
-  selectedPlan: any = null;
 
-  plans = [
-    {
-      type: 'basic',
-      name: 'Basic',
-      price: 999,
-      description: 'Perfect for beginners starting trading',
-      features: [
-        'All beginner courses',
-        'Recorded video access',
-        'Basic risk management',
-        'Community access'
-      ]
-    },
-    {
-      type: 'pro',
-      name: 'Pro',
-      price: 1999,
-      description: 'Advanced tools for serious traders',
-      features: [
-        'All courses included',
-        'Strategy modules',
-        'Trade breakdown videos',
-        'Psychology training',
-        'Priority support'
-      ]
-    },
-    {
-      type: 'premium',
-      name: 'Premium',
-      price: 2999,
-      description: 'Complete trading ecosystem',
-      features: [
-        'Everything in Pro',
-        'Advanced strategy content',
-        'Live session recordings',
-        'Case studies & reviews',
-        'Multi-user access'
-      ]
-    }
-  ];
 
+ 
+  selectedPlan: Subscription | null = null;
+
+private SubState = inject (SubscriptionState);
+
+plans = this.SubState.subscription;
+ 
   selectPlan(plan: any) {
     this.planSelected.emit(plan);
    if (typeof window !== 'undefined') {
   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
   }
+
+  getPlanClass(planName: string): string {
+  const knownPlans = ['Elite', 'pro', 'premium'];
+  return knownPlans.includes(planName) ? planName : 'Elite'; // default = Elite
+}
 }

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, effect, EventEmitter, inject, Input, Output } from '@angular/core';
+import { SubscriptionState, } from '../../main-pages/subscriptions/subscription_state.service';
 
 @Component({
   selector: 'app-payment-section',
@@ -10,12 +11,30 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class PaymentSection {
   @Input() plan!: any;
 
-  // Emits the chosen plan back to the parent when payment is done
+  
   @Output() paymentDone = new EventEmitter<any>();
+    private subState = inject(SubscriptionState);
+    private hasEmitted = false;
+ isUploading = this.subState.isUploading;
+  uploadError = this.subState.uploadErrors;
+  isUploadSuccess = this.subState.isUploadSuccess;
+
 
   selectedFile: File | null = null;
   isDragging = false;
   fileError = '';
+
+  constructor() {
+    // effect() must be in constructor or field initializer
+    effect(() => {
+       
+      if (this.isUploadSuccess() && !this.hasEmitted) {
+           console.log('✅ emitting paymentDone');
+         this.hasEmitted = true; 
+        this.paymentDone.emit(this.plan);
+      }
+    });
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -49,8 +68,7 @@ export class PaymentSection {
   validateAndSetFile(file: File): void {
     this.fileError = '';
 
-    const validTypes = ['application/pdf', 'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    const validTypes = ['image/png', 'image/jpg',];
     if (!validTypes.includes(file.type)) {
       this.fileError = 'Please upload files in pdf, docx or doc format';
       return;
@@ -71,15 +89,18 @@ export class PaymentSection {
   }
 
   onDone(): void {
+     console.log('1. selectedFile:', this.selectedFile);         // is file here?
+    console.log('2. uploading signal:', this.subState.isUploading());
     if (!this.selectedFile) {
       alert('Please upload a payment screenshot first');
       return;
     }
 
     console.log('Uploading file:', this.selectedFile);
-
+    
     // Emit the plan back to parent → triggers subscription card to appear
-    this.paymentDone.emit(this.plan);
+  this.hasEmitted = false;
+  this.subState.uploadImage(this.selectedFile);
   }
 
   triggerFileInput(): void {

@@ -27,13 +27,15 @@ export class HttpEngine {
     }
 
     post<T>(url: string, body: any, isProtected: boolean = true): Observable<T> {
+       const isFormData = body instanceof FormData;
+      
         return this.http.post<T>(
             `${this.baseurl}${url}`,
             body,
             {
-                headers: {
-                    'x-protected': String(isProtected)
-                },
+               headers: isFormData 
+                ? { 'x-protected': String(isProtected) }  
+                : { 'x-protected': String(isProtected) },
                 withCredentials: true
             }
         );

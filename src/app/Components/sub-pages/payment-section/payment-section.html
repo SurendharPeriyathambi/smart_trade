@@ -1,7 +1,7 @@
 
 <div class="page-wrapper">
 
-  <h1 class="title">{{ plan.name }} plan</h1>
+  <h1 class="title">{{ plan.plan_name }} plan</h1>
 
   <!-- <p class="subtitle">
     Analyze any Business or Creator account—including your competitors—to find the imagery,
@@ -23,7 +23,7 @@
     <!-- AMOUNT CARD -->
     <div class="box amount-box">
       <p class="amount-title">Amount</p>
-      <h2 class="amount-value"> ₹{{ plan.price }}<span class="amount-period">/mo</span></h2>
+      <h2 class="amount-value"> ₹{{ plan.amount }}<span class="amount-period">/mo</span></h2>
     </div>
 
     <!-- UPLOAD CARD -->
@@ -54,12 +54,12 @@
             type="file" 
             id="fileInput"
             class="file-input"
-            accept=".pdf,.doc,.docx"
+            accept=".png,.jpg,.jpeg"
             (change)="onFileSelected($event)">
       </div>
  <p *ngIf="fileError" class="error-message">{{ fileError }}</p>
-      <button class="done-btn" (click)="onDone()">Done</button>
-
+      <button class="done-btn" (click)="onDone()" [disabled]="isUploading()"> {{ isUploading() ? 'Uploading...' : 'Done' }}</button>
+<p *ngIf="uploadError()" class="error-message">{{ uploadError() }}</p>
     </div>
 
   </div>

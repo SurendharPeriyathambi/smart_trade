@@ -1,11 +1,14 @@
-
+.plans-wrapper {
+  position: relative;  
+  padding-top: 20px;   
+}
 .div-box {
   position: absolute;
   width: 130px;
   height: 30px;
   border-radius: 460px 460px 46px 46px;
   background-color: #ffffff;
-  top: -10%;
+  top: -12px;
   left: 45%;
 }
 
@@ -31,7 +34,7 @@
 }
 
 // Basic Card (Blue Gradient)
-.pricing-card.basic {
+.pricing-card.Elite ,.pricing-card.default-plan{
   background: linear-gradient(135deg, #2B50C7 0%, #1E3A8A 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -54,7 +57,7 @@
 }
 
 // Hover Effects
-.pricing-card.basic:hover,
+.pricing-card.Elite:hover,.pricing-card.default-plan:hover
 .pricing-card.premium:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 40px rgba(43, 80, 199, 0.4);
@@ -70,22 +73,23 @@
 
 // Plan Name
 .plan-name {
-  font-size: 1.75rem;
+  font-size: 2.5rem;
+  // font-size: 1.75rem;
   font-weight: 700;
   color: #ffffff;
-  margin: 0 0 12px 0;
+  // margin: 0 0 12px 0;
   text-align: left;
 }
 
 // Plan Price
 .plan-price {
-  font-size: 1.125rem;
+  font-size: 1.3rem;
   color: rgba(255, 255, 255, 0.85);
-  margin: 0 0 32px 0;
+  // margin: 0 0 32px 0;
   font-weight: 400;
   text-align: left;
   padding-bottom: 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  // border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 // Features List
@@ -127,7 +131,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 24px;
+  // margin-top: 24px;
   backdrop-filter: blur(10px);
 }
 
@@ -137,12 +141,12 @@
   transform: translateY(-2px);
 }
 
-.pricing-card.basic .choose-btn ,.pricing-card.premium .choose-btn {
+.pricing-card.Elite .choose-btn ,.pricing-card.premium .choose-btn,.pricing-card.default-plan .choose-btn  {
   background: rgba(139, 92, 246, 0.2);
   border-color: rgba(139, 92, 246, 0.5);
 }
 
-.pricing-card.basic .choose-btn:hover , .pricing-card.premium .choose-btn {
+.pricing-card.Elite .choose-btn:hover , .pricing-card.premium .choose-btn,.pricing-card.default-plan .choose-btn  {
   background: rgba(139, 92, 246, 0.35);
   border-color: rgba(139, 92, 246, 0.7);
 }
@@ -157,8 +161,6 @@
     transform: scale(1.05) translateY(-8px);
   }
   .div-box {
- 
-  top: -6%;
   left: 45%;
 }
 }

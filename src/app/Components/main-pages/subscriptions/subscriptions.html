@@ -1,8 +1,21 @@
-<app-header  [isAuthButton]="false"/>
-    <app-subscription-summary [activePlan]="activePlan" /> 
-    <app-subscription-plans  *ngIf="!isPaymentCompleted"  (planSelected)="onPlanSelected($event)"/>
-    <app-payment-section  
-    *ngIf="selectedPlan && !isPaymentCompleted" [plan]="selectedPlan"   (paymentDone)="onPaymentDone($event)"/>
+<app-header [isAuthButton]="false"/>
 
-    <app-course-curriculam  *ngIf="isPaymentCompleted" />
-    <app-footer />
+<app-subscription-summary [activePlan]="activePlan" [subscriptionStatus]="subscriptionStatus()"/>
+
+<!-- Show plans with Choose btn → before any action OR when pending (no choose btn) -->
+<app-subscription-plans
+  *ngIf=" subscriptionStatus() !== 'active'"
+  [isPending]="subscriptionStatus() === 'pending'"
+  (planSelected)="onPlanSelected($event)"/>
+
+<!-- Show payment section only after choosing a plan and before API response -->
+<app-payment-section
+  *ngIf="selectedPlan"
+  [plan]="selectedPlan"
+  (paymentDone)="onPaymentDone($event)"/>
+
+<!-- Show curriculum ONLY when active -->
+<app-course-curriculam
+  *ngIf="subscriptionStatus() === 'active'"/>
+
+<app-footer/>
