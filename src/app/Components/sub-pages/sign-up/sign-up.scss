@@ -2,6 +2,16 @@ body{
       font-family: "Roboto", sans-serif;
 }
 
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #000 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
 .auth-card {
   background: linear-gradient(135deg, #e8f0fe 0%, #E9F1FE  100%);
   border-radius: 24px;
@@ -97,7 +107,7 @@ body{
   border: 2px solid transparent;
   border-radius: 6px;
   font-size: 15px;
-  background: white;
+  background: white !important;
   transition: all 0.3s ease;
   font-family: inherit;
 }
@@ -253,4 +263,21 @@ body{
   .form-title {
     font-size: 36px;
   }
+}
+
+.password-input-wrapper {
+  position: relative;
+
+  .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    font-size: 16px;
+  }
+}
+.password-input-wrapper input {
+  padding-right: 40px;
 }

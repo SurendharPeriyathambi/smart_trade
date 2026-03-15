@@ -17,6 +17,13 @@ protected authState = inject(AuthStateService);
   showPassword = false;
   showConfirmPassword = false;
 
+togglePassword(){
+  this.showPassword = !this.showPassword;
+}
+toggleConfirmPassword(){
+  this.showConfirmPassword=!this.showConfirmPassword;
+}
+
   signUpForm: FormGroup = inject(FormBuilder).group({
     username: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
@@ -34,12 +41,14 @@ protected authState = inject(AuthStateService);
   }
 
   onSubmit() {
+
     if (this.signUpForm.invalid) {
       this.signUpForm.markAllAsTouched();
       return;
     }
     const { username, email, mobile, password } = this.signUpForm.value;
-    this.authState.register({ name: username, email, mobile, password }); // ✅ delegate
+    this.authState.register({ name: username, email, mobile, password }); //  delegate
+     this.signUpForm.reset();
   }
 
   get username() { return this.signUpForm.get('username'); }

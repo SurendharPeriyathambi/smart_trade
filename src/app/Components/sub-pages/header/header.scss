@@ -1,7 +1,3 @@
-/* header.component.css */
-// *{
-//     font-family: "Roboto", sans-serif;
-// }
 .header {
   background: white;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -11,22 +7,10 @@
   padding: 1rem 0;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
 .header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
- 
 }
 
 .logo img {
@@ -34,31 +18,29 @@
   width: auto;
 }
 
-.logo-text {
-  font-weight: 700;
-  color: #1a1a2e;
-  font-size: 1.1rem;
-}
-
+// ===== HAMBURGER =====
 .menu-toggle {
   display: none;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0.5rem;
+  z-index: 1100;
+
+  span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background: #1a1a2e;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
 }
 
-.menu-toggle span {
-  width: 25px;
-  height: 3px;
-  background: #1a1a2e;
-  border-radius: 2px;
-  transition: 0.3s;
-}
-
-.nav {
+// ===== DESKTOP NAV =====
+.desktop-nav {
   display: flex;
   gap: 1rem;
   align-items: center;
@@ -69,19 +51,19 @@
   color: #4a4a4a;
   font-weight: 600;
   transition: color 0.3s;
+
+  &:hover { color: #4361ee; }
 }
 
-.nav-link:hover {
-  color: #4361ee;
-}
-
-.auth-buttons {
+// ===== DESKTOP AUTH =====
+.desktop-auth {
   display: flex;
-  justify-content: center;
   gap: 1rem;
   align-items: center;
+  justify-content: center;
 }
 
+// ===== BUTTONS =====
 .btn {
   padding: 0.3rem 1.5rem;
   border-radius: 25px;
@@ -94,76 +76,120 @@
 
 .btn-outline {
   background: transparent;
-  border: 2px solid #143AA3 ;
-  color: #143AA3 ;
-}
+  border: 2px solid #143AA3;
+  color: #143AA3;
 
-.btn-outline:hover {
-  background: #143AA3 ;
-  color: white;
+  &:hover {
+    background: #143AA3;
+    color: white;
+  }
 }
 
 .btn-primary {
-  background: #143AA3 ;
-  border: 2px solid #143AA3 ;
+  background: #143AA3;
+  border: 2px solid #143AA3;
   color: white;
+
+  &:hover {
+    background: #3651d4;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+  }
 }
 
-.btn-primary:hover {
-  background: #3651d4;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+// ===== MOBILE MENU — single dropdown panel =====
+.mobile-menu {
+  display: none; // hidden on desktop
 }
 
+// ===== BACKDROP =====
+.menu-backdrop {
+  display: none;
+}
+
+// ===== MOBILE BREAKPOINT =====
 @media (max-width: 1199px) {
+
   .menu-toggle {
+    display: flex; // show hamburger
+  }
+
+  // Hide desktop nav and auth
+  .desktop-nav,
+  .desktop-auth {
+    display: none !important;
+  }
+
+  // ✅ Single mobile dropdown
+  .mobile-menu {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    z-index: 999;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.3s ease;
+    opacity: 0;
+
+    &.open {
+      max-height: 500px; // large enough for all content
+      opacity: 1;
+      overflow-y: auto; // ✅ scroll if content overflows
+    }
+  }
+
+  // Mobile nav links
+  .mobile-nav {
     display: flex;
-  }
-
-  .nav {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
     flex-direction: column;
-    padding: 1rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transform: translateY(-100%);
+    padding: 1rem 1.5rem;
+    gap: 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    .nav-link {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f5f5f5;
+      font-size: 1rem;
+
+      &:last-child { border-bottom: none; }
+    }
+  }
+
+  // Mobile auth section
+  .mobile-auth {
+    padding: 1rem 1.5rem;
+  }
+
+  // ✅ Auth buttons side by side — never full width stacked
+  .mobile-auth-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+
+    .btn {
+      flex: 1;           // equal width
+      max-width: 160px;  // don't stretch too wide
+      text-align: center;
+    }
+  }
+
+  // ✅ Backdrop — covers page behind menu
+  .menu-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 998;
     opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s;
-  }
+    transition: opacity 0.3s ease;
 
-  .nav.active {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .auth-buttons {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    flex-direction: column;
-    padding: 1rem;
-    margin-top: 200px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transform: translateY(-100%);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s;
-  }
-
-  .auth-buttons.active {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .auth-buttons .btn {
-    width: 100%;
+    &.show {
+      display: block;
+      opacity: 1;
+    }
   }
 }

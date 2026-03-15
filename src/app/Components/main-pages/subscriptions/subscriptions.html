@@ -1,21 +1,28 @@
 <app-header [isAuthButton]="false"/>
 
-<app-subscription-summary [activePlan]="activePlan" [subscriptionStatus]="subscriptionStatus()"/>
 
-<!-- Show plans with Choose btn → before any action OR when pending (no choose btn) -->
-<app-subscription-plans
-  *ngIf=" subscriptionStatus() !== 'active'"
-  [isPending]="subscriptionStatus() === 'pending'"
-  (planSelected)="onPlanSelected($event)"/>
 
-<!-- Show payment section only after choosing a plan and before API response -->
-<app-payment-section
-  *ngIf="selectedPlan"
-  [plan]="selectedPlan"
-  (paymentDone)="onPaymentDone($event)"/>
 
-<!-- Show curriculum ONLY when active -->
-<app-course-curriculam
-  *ngIf="subscriptionStatus() === 'active'"/>
+  <app-subscription-summary/> 
+
+  <!-- ✅ FIX 3: Correct condition — hide entire plans section when active OR approved -->
+  <app-subscription-plans
+    *ngIf="subscriptionStatus() !== 'active' && subscriptionStatus() !== 'approved'"
+    [isPending]="subscriptionStatus() === 'pending'"
+    (planSelected)="onPlanSelected($event)"/>
+
+  <!-- Payment section: shown after choosing a plan, only when status is null/pending -->
+  <div #paymentSectionRef>
+    <app-payment-section
+      *ngIf="selectedPlan && subscriptionStatus() !== 'active' && subscriptionStatus() !== 'approved'"
+      [plan]="selectedPlan"
+      (paymentDone)="onPaymentDone()"/>
+  </div>
+
+  <!-- ✅ FIX 3: Course shown only when active or approved -->
+  <app-course-curriculam
+    *ngIf="subscriptionStatus() === 'active' || subscriptionStatus() === 'approved'"/>
+
+
 
 <app-footer/>

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { Header } from "../../sub-pages/header/header";
 import { SubscriptionSummary } from "../../sub-pages/subscription-summary/subscription-summary";
 import { SubscriptionPlans } from "../../sub-pages/subscription-plans/subscription-plans";
@@ -7,47 +7,40 @@ import { Footer } from "../../sub-pages/footer/footer";
 import { CommonModule } from '@angular/common';
 import { CourseCurriculam } from "../../sub-pages/course-curriculam/course-curriculam";
 import { SubscriptionState } from './subscription_state.service';
-
-
 @Component({
   selector: 'app-subscriptions',
-  imports: [Header, SubscriptionSummary, SubscriptionPlans, PaymentSection, Footer, CommonModule, CourseCurriculam],
+  imports: [Header, SubscriptionSummary, SubscriptionPlans,
+            PaymentSection, Footer, CommonModule, CourseCurriculam],
   templateUrl: './subscriptions.html',
   styleUrl: './subscriptions.scss',
 })
 export class Subscriptions implements OnInit {
 
   private subService = inject(SubscriptionState);
+  @ViewChild('paymentSectionRef') paymentSectionRef!: ElementRef;
 
-  selectedPlan: any = null;      
-  activePlan: any = null;         
-
+  selectedPlan: any = null;
 
   subscriptionStatus = this.subService.subscriptionStatus;
-  userSubscription = this.subService.currentUserSubscription;
-
-
+  profileLoading = this.subService.profileLoading;
   onPlanSelected(plan: any) {
     this.selectedPlan = plan;
     this.subService.setSelectedPlan(plan.id);
-    console.log('Plan selected:', plan);
+     setTimeout(() => {
+      this.paymentSectionRef?.nativeElement?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
   }
 
-  // Called when user clicks "Done" in payment section (after uploading receipt)
-  onPaymentDone(plan: any) {
-    this.activePlan = plan;       // Now the subscription card gets populated
-    this.selectedPlan = null;     // Hide the payment section
-    console.log('Payment done, activePlan:', plan);   // ← add
-    console.log('subscriptionStatus:', this.subscriptionStatus());
+  onPaymentDone() {
+    this.selectedPlan = null;
+    this.subService.resetUploadState(); 
+  this.subService.loadUserProfile(); 
   }
-
 
   ngOnInit(): void {
-    this.subService.getSubscriptionList()
-
+    this.subService.loadUserProfile(); 
   }
-
-
-
-
 }

@@ -36,7 +36,11 @@
           placeholder="********"
           [class.error]="password?.invalid && password?.touched"
         />
+       <span class="toggle-password" (click)="togglePassword()">
+    <i class="bi" [ngClass]="showPassword ? ' bi-eye-slash' : 'bi-eye'"></i>
+  </span>
       </div>
+      
       <span class="error-message" *ngIf="password?.invalid && password?.touched">
         <span *ngIf="password?.errors?.['required']">Password is required</span>
         <span *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters</span>

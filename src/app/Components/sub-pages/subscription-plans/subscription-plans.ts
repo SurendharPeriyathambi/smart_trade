@@ -1,37 +1,33 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SubscriptionService } from '../../main-pages/subscriptions/subscription.service';
-import { SubscriptionState,  } from '../../main-pages/subscriptions/subscription_state.service';
-import { Subscription } from '../../../../interfaces/subscriptions_interface';
+import { SubscriptionState } from '../../main-pages/subscriptions/subscription_state.service';
+import { SubscriptionList } from '../../../../interfaces/subscriptions_interface';
 
 @Component({
   selector: 'app-subscription-plans',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './subscription-plans.html',
   styleUrl: './subscription-plans.scss',
 })
 export class SubscriptionPlans {
- @Input() isPending: boolean = false;
+  @Input() isPending: boolean = false;
   @Output() planSelected = new EventEmitter<any>();
 
+  private subState = inject(SubscriptionState);
 
- 
-  selectedPlan: Subscription | null = null;
+  // ✅ Updated signal name from our refactor
+  plans = this.subState.plans;
 
-private SubState = inject (SubscriptionState);
-
-plans = this.SubState.subscription;
- 
-  selectPlan(plan: any) {
+  selectPlan(plan: SubscriptionList) {
     this.planSelected.emit(plan);
-   if (typeof window !== 'undefined') {
-  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-}
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
   }
 
   getPlanClass(planName: string): string {
-  const knownPlans = ['Elite', 'pro', 'premium'];
-  return knownPlans.includes(planName) ? planName : 'Elite'; // default = Elite
-}
+    const knownPlans = ['Elite', 'pro', 'premium'];
+    return knownPlans.includes(planName) ? planName : 'Elite';
+  }
 }

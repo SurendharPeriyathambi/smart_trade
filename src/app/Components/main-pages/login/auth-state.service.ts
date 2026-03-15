@@ -4,6 +4,8 @@ import { StorageEngine } from "../../../../services/engine/storage_engine";
 import { Router } from "@angular/router";
 import { LoaderService } from "../../../../services/engine/loader.service";
 import { ToastService } from "../../../../services/engine/toast.service";
+import { HttpEngine } from "../../../../services/engine/http_engine";
+import { switchMap } from "rxjs";
 
 
 
@@ -11,7 +13,7 @@ import { ToastService } from "../../../../services/engine/toast.service";
 export class AuthStateService {
    
     private authService = inject (AuthServices);
-    
+   
     private storage = inject (StorageEngine);
     private router =  inject (Router);
     private loader = inject (LoaderService);
@@ -30,18 +32,26 @@ export class AuthStateService {
     this._error.set(null);
     this.loader.show();
 
-    this.authService.login({email,password,login_ip:'12'}).subscribe({
+ this.authService.getIp().pipe(
+    switchMap((ip: string) => {
+      const payload = { email, password, login_ip: ip };
+      console.log('Login payload:', payload); // ← check this
+      return this.authService.login(payload);
+    })
+  ).subscribe({
         next:(res)=>{
          this._loading.set(false);
          this.loader.hide();
          this.storage.setAccessToken(res.data.access_token ?? '');
          this.storage.setRefreshToken(res.data.refresh_token ?? '');
+         this.storage.setEmail(email)
          this.toast.success(res.message || "Loggin Successfull !..")
           setTimeout(() => this.router.navigate(['/subscriptions'], { replaceUrl: true }), 2000);
         },
         error:(err)=>{
             this._loading.set(false);
             this.loader.hide();
+            console.log('Login error body:', JSON.stringify(err.error));
             this._error.set(err.error?.message?? 'Invalid email Or password')
             this.toast.error(this._error()!)
         }
@@ -59,6 +69,7 @@ export class AuthStateService {
             this._loading.set(false);
             this.loader.hide();
             this.toast.success(res.message || 'Registration Successful !..')
+            setTimeout(() => this.router.navigate(['/login'], { replaceUrl: true }), 1000);
         },
         error:(err)=>{
             this._loading.set(false);

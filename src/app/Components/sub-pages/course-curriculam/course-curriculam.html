@@ -1,21 +1,19 @@
 <div class="div-box"></div>
 <div class="curriculum-container">
+  <h2 class="fw-bold">{{course()?.title}}</h2>
   <div class="details-container">
     <div class="top-info-bar mb-3">
       <div class="left-section">
         <img src="https://i.pravatar.cc/40" alt="profile" class="avatar">
-        <span class="name">James Patel</span>
+        <span class="name">{{course()?.expert}}</span>
       </div>
       <div class="divider"></div>
-
       <div class="right-section">
         <div class="info-item">
           <span class="icon"><i class="bi bi-calendar4"></i></span>
           <span>Last Updated Dec 25, 2025</span>
         </div>
-
         <div class="divider"></div>
-
         <div class="info-item">
           <span class="icon"><i class="bi bi-globe"></i></span>
           <span>English</span>
@@ -24,89 +22,89 @@
     </div>
   </div>
 
-  <div class="section" *ngFor="let section of sections">
-    <!-- Section Header -->
-    <div class="section-header" (click)="toggle(section)">
+  <div class="section" *ngFor="let section of course()?.lesson">
+    <div class="section-header" (click)="toggleLesson(section.id)">
       <div class="left">
-        <span class="arrow" [class.open]="section.expanded"><i class="bi bi-chevron-down"></i></span>
+        <span class="arrow" [class.open]="expandedLessonId === section.id">
+          <i class="bi bi-chevron-down"></i>
+        </span>
         <span class="section-title">{{ section.title }}</span>
       </div>
-
       <div class="right">
-        <span>Lessons: {{ section.lessonsCount }}</span>
-        <span>Duration: {{ section.duration }}</span>
+        <span>Lessons: {{ section.videos.length }}</span>
+        <span>Duration: {{ getTotalDuration(section.videos) }}</span>
       </div>
     </div>
 
-    <!-- Lessons -->
-    <div class="lesson-list" [class.open]="section.expanded">
-      <div class="lesson" (click)="$event.stopPropagation()" *ngFor="let lesson of section.lessons">
+    <div class="lesson-list" [class.open]="expandedLessonId === section.id">
+      <div class="lesson" (click)="$event.stopPropagation()" *ngFor="let lesson of section.videos">
         <div class="lesson-left">
           <span class="doc-icon"><img src="assets/images/file.png" width="20" alt=""></span>
           <span class="lesson-title">{{ lesson.title }}</span>
         </div>
-
-        <div class="lesson-right">
-          <button *ngIf="lesson.preview" class="preview-btn" (click)="openPreview(); $event.stopPropagation()">Preview</button>
-          <span *ngIf="lesson.locked" class="lock-icon"><img src="assets/images/lock.png" width="22" alt=""></span>
-          <span class="time">{{ lesson.duration }}</span>
+        <div class="lesson-right">  
+          <span class="lock-icon" (click)="openPreview(lesson)">
+            <img src="assets/images/lock.png" width="22" alt="">
+          </span>
+          <span class="time">{{ formatDuration(lesson.durations) }}</span>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Preview Modal -->
-<ng-container *ngIf="previewOpen">
+<!-- Preview Modal — your existing design, just wire playVideo -->
+<ng-container *ngIf="previewVideo">
   <div class="preview-backdrop" (click)="closePreview()">
     <div class="preview-modal right-popup" (click)="$event.stopPropagation()">
-      <!-- Card -->
       <div class="preview-card">
-        <div class="video-thumb" (click)="openVideoPlayer()">
-          <span class="play-btn">▶</span>
+
+        <!-- ✅ click thumbnail → playVideo -->
+        <div class="video-thumb" (click)="playVideo(previewVideo!)">
+          <img [src]="previewVideo.image" alt="thumbnail" style="width:100%;border-radius:8px;">
+          <span class="play-btn" style="cursor:pointer;">▶</span>
         </div>
 
-        <h3 class="card-title">Course Essentials</h3>
+        <h3 class="card-title">{{ previewVideo.title || 'Lesson Preview' }}</h3>
 
         <div class="info">
           <div class="rows">
             <span><i class="bi bi-person"></i> Instructor</span>
-            <span>James Patel</span>
+            <span>{{ course()?.expert }}</span>
           </div>
           <div class="rows">
             <span><i class="bi bi-clock"></i> Duration</span>
-            <span>6.5 hours</span>
-          </div>
-          <div class="rows">
-            <span><i class="bi bi-file-earmark-text"></i> Lessons</span>
-            <span>42</span>
+            <span>{{ previewVideo.durations }} min</span>
           </div>
         </div>
 
-        <button class="buy-btn">Buy Now <i class="bi bi-archive ms-2"></i></button>
+        <!-- ✅ buy btn triggers playVideo -->
+        <button class="buy-btn" (click)="playVideo(previewVideo!)" [disabled]="videoLoading()">
+          {{ videoLoading() ? 'Loading...' : 'Play Now' }}
+          <i class="bi bi-play-circle ms-2"></i>
+        </button>
+
       </div>
     </div>
   </div>
 </ng-container>
 
-<!-- Video Player Modal -->
+<!-- ✅ Your existing video player modal — wired to videoPlayerOpen -->
 <ng-container *ngIf="videoPlayerOpen">
-  <div class="video-player-backdrop" (click)="closeVideoPlayer()">
+  <div class="video-player-backdrop" (click)="closeVideo()">
     <div class="video-player-modal" (click)="$event.stopPropagation()">
-      <button class="close-btn" (click)="closeVideoPlayer()">
+      <button class="close-btn" (click)="closeVideo()">
         <i class="bi bi-x-lg"></i>
       </button>
-      
+
       <div class="video-container">
-        <video #videoPlayer controls autoplay>
-          <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
+        <!-- ✅ #videoPlayer ref here for ViewChild setter -->
+        <video #videoPlayer controls autoplay></video>
       </div>
 
       <div class="video-info">
-        <h3 class="video-title">Course Essentials - Introduction</h3>
-        <p class="video-description">Learn the fundamentals of trading and options in this comprehensive course.</p>
+        <h3 class="video-title">{{ selectedVideo()?.title || 'Lesson Video' }}</h3>
+        <p class="video-description">{{ course()?.title }}</p>
       </div>
     </div>
   </div>

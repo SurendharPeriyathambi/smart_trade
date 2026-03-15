@@ -1,16 +1,23 @@
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpBackend, HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { environment } from '../../app/environment';
 
 @Injectable({ providedIn: 'root' })
 export class HttpEngine {
     private baseurl = environment.apiUrl;
+     private rawHttp: HttpClient;
+    constructor(private http: HttpClient, private handler: HttpBackend) { 
+          this.rawHttp = new HttpClient(handler);
+    }
 
-    constructor(private http: HttpClient) { }
-
-    getIp(): Observable<string> {
-        return this.http.get('https://api.ipify.org', { responseType: 'text',withCredentials: false });
+    // getIp(): Observable<string> {
+    //     return this.http.get('https://api.ipify.org', { responseType: 'text',withCredentials: false });
+    // }
+getIp(): Observable<string> {
+        return this.rawHttp.get<{ ip: string }>('https://api.ipify.org?format=json').pipe(
+            map(res => res.ip)
+        );
     }
 
     get<T>(url: string, isProtected: boolean = true): Observable<T> {

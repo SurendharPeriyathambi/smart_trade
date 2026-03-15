@@ -1,4 +1,3 @@
-
 <div class="page-wrapper">
 
   <h1 class="title">{{ plan.plan_name }} plan</h1>
@@ -8,9 +7,9 @@
     visuals, and captions that drive audience engagement. Get social calendars planned faster
     and spend less time testing content strategies.
   </p> -->
-    <p class="subtitle">
-      {{ plan.description }}
-      </p>
+  <p class="subtitle">
+    {{ plan.description }}
+  </p>
 
   <div class="card-row">
 
@@ -35,35 +34,29 @@
         Please upload files in pdf, docx or doc format and make sure the file size is under 25 MB.
       </p>
 
-      <div class="upload-area "  (dragover)="onDragOver($event)"
-           (dragleave)="onDragLeave($event)"
-           (drop)="onDrop($event)"
-        (click)="triggerFileInput()">
+      <div class="upload-area " [class.dragging]="isDragging" (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" (click)="triggerFileInput($event)">
 
-       <div *ngIf="!selectedFile" class="drop-zone-content">
-            <p class="drop-text">Drop file or Browse</p>
-            <p class="drop-format">Format: pdf, docx, doc & Max file size: 25 MB</p>
-          </div>
+        <div *ngIf="!selectedFile" class="drop-zone-content">
+          <p class="drop-text">Drop file or Browse</p>
+          <p class="drop-format">Format: pdf, docx, doc & Max file size: 25 MB</p>
+        </div>
 
-          <div *ngIf="selectedFile" class="file-selected">
-            <span class="file-name">{{ selectedFile.name }}</span>
-            <button class="remove-button" (click)="removeFile(); $event.stopPropagation()">✕</button>
-          </div>
+        <div *ngIf="selectedFile" class="file-selected">
+          <span class="file-name">{{ selectedFile.name }}</span>
+          <button class="remove-button" (click)="removeFile($event); $event.stopPropagation()">✕</button>
+        </div>
 
-          <input 
-            type="file" 
-            id="fileInput"
-            class="file-input"
-            accept=".png,.jpg,.jpeg"
-            (change)="onFileSelected($event)">
+        
       </div>
- <p *ngIf="fileError" class="error-message">{{ fileError }}</p>
-      <button class="done-btn" (click)="onDone()" [disabled]="isUploading()"> {{ isUploading() ? 'Uploading...' : 'Done' }}</button>
-<p *ngIf="uploadError()" class="error-message">{{ uploadError() }}</p>
+      <input #fileInputRef type="file" accept=".png,.jpg,.jpeg" class="file-input" accept=".png,.jpg,.jpeg"
+          (change)="onFileSelected($event)">
+      <p *ngIf="fileError" class="error-message">{{ fileError }}</p>
+      <button class="done-btn" (click)="onDone($event)" [disabled]="isUploading()"> {{ isUploading() ? 'Uploading...' :
+        'Done' }}</button>
+      <p *ngIf="uploadError()" class="error-message">{{ uploadError() }}</p>
     </div>
 
   </div>
 
 </div>
-
-

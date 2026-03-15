@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpEngine } from "../../../../services/engine/http_engine";
 import { Observable } from "rxjs";
-import { ImageUploadResponse, SubResponse, Subscription, UserSubscription, UserSubscriptionRequest } from "../../../../interfaces/subscriptions_interface";
+import { CourseResponse, ImageUploadResponse, Profile, SubResponse,  SubscriptionList, UserSubscription, UserSubscriptionRequest } from "../../../../interfaces/subscriptions_interface";
 import { environment } from "../../../environment";
+import { ApiResponce, VideoUrlResponce } from "../../../../interfaces/banner_interface";
 
 @Injectable({
     providedIn: 'root'
@@ -19,8 +20,12 @@ export class SubscriptionService {
 
     }
 
-    getSubscriptionList(): Observable<SubResponse<Subscription[]>> {
-        return this.http.get<SubResponse<Subscription[]>>(this.subsUrl, true)
+    getSubscriptionList(): Observable<SubResponse<SubscriptionList[]>> {
+        return this.http.get<SubResponse<SubscriptionList[]>>(this.subsUrl, true)
+    }
+
+    getSubscriptionProfile():Observable<SubResponse<Profile[]>>{
+        return this.http.get<SubResponse<Profile[]>>('api/user/profile',true)
     }
 
     uploadImage(image: File): Observable<ImageUploadResponse> {
@@ -37,4 +42,13 @@ export class SubscriptionService {
         return this.http.post<SubResponse<UserSubscription>>(this.userUrl,body)
     }
   
+
+    getCourseDetails():Observable<CourseResponse>{
+        return this.http.get<CourseResponse>('api/course_details',true)
+    }
+
+    getCourseVideoUrl(videoPath: string): Observable<ApiResponce<VideoUrlResponce>> {
+    return this.http.get<ApiResponce<VideoUrlResponce>>(`api/get_video_url?path=${videoPath}`);
+}
+
 }

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpEngine } from "../../../../services/engine/http_engine";
-import { Observable } from "rxjs";
+import { Observable, switchMap, tap } from "rxjs";
 import { Datas, LoginResponce } from "../../../../interfaces/login.interface";
 import { environment } from "../../../environment";
 import { signData, SignInResponce } from "../../../../interfaces/signIn.interface";
@@ -13,13 +13,16 @@ import { Router } from "@angular/router";
 })
 export class AuthServices{
 baseUrl = environment.apiUrl;
+private cachedIp: string = ''; 
     constructor (private http:HttpEngine,private storage:StorageEngine,private router:Router){}
 
     getIp():Observable<string>{
-        return this.http.getIp();
+        return this.http.getIp().pipe(tap((ip:string)=>{this.cachedIp=ip; localStorage.setItem('cached_ip', ip)}));
     }
 
     login(payload:{email:string;password:string;login_ip:string}):Observable<LoginResponce<Datas>>{
+           
+   
         return this.http.post(`api/auth/login`,payload,false)
     }
 
@@ -28,8 +31,32 @@ baseUrl = environment.apiUrl;
     }
 
 
-    logout(): void {
-    this.storage.clear();             // clears all cookies + localStorage
-    this.router.navigate(['/login']); // redirect to login
+logout(): Observable<any> {
+    return this.http.getIp().pipe(
+        switchMap((ip: string) => {
+            const payload = {
+                email: this.storage.getEmail(),
+                login_ip: ip
+            };
+            return this.http.post(`api/auth/logout`, payload, true);
+        })
+    );
+}
+
+logoutSync(email: string): void {
+  const url = `${this.baseUrl}api/auth/logout`;
+  const token = this.storage.getAccessToken(); // ✅ get token
+    const ip = this.cachedIp || localStorage.getItem('cached_ip') || '';
+  // ✅ fetch with keepalive — supports headers unlike sendBeacon
+  // keepalive: true ensures request completes even after tab closes
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}` // ✅ auth header included
+    },
+    body: JSON.stringify({ email, login_ip: ip }),
+    keepalive: true  // ✅ THIS is the key — survives tab close
+  });
 }
 }

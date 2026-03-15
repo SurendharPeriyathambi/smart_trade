@@ -1,52 +1,70 @@
-<!-- header.component.html -->
 <header class="header sticky-top">
   <div class="container-fluid">
     <div class="row header-content">
-      <div class="col-12 col-lg-3  d-flex justify-content-between ">
+
+      <!-- Logo + Toggle -->
+      <div class="col-12 col-lg-3 d-flex justify-content-between align-items-center">
         <div class="logo ms-3">
-        <img src="assets/images/horizontal_logo.png" alt="Smart Trade" />
-        
+          <img src="assets/images/horizontal_logo.png" alt="Smart Trade" />
+        </div>
+        <button class="menu-toggle" (click)="toggleMenu()">
+          <span [class.open]="isMenuOpen"></span>
+          <span [class.open]="isMenuOpen"></span>
+          <span [class.open]="isMenuOpen"></span>
+        </button>
       </div>
 
-      <button class="menu-toggle" (click)="toggleMenu()">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      </div>
+      <!-- Desktop Nav -->
       <div class="col-md-6 d-flex justify-content-center">
-        <nav class="nav" [class.active]="isMenuOpen">
-        <a routerLink="/home" fragment="hero" class="nav-link">Home</a>
-        
-        <a routerLink="/home"  fragment="about" class="nav-link">About Us</a>
-        <a routerLink="/home" fragment="courses" class="nav-link">Courses</a>
-        <a routerLink="/home" fragment="contact" class="nav-link">Contact Us</a>
-      </nav>
+        <nav class="nav desktop-nav">
+          <a routerLink="/home" fragment="hero" class="nav-link" (click)="closeMenu()">Home</a>
+          <a routerLink="/home" fragment="about" class="nav-link" (click)="closeMenu()">About Us</a>
+          <a routerLink="/home" fragment="courses" class="nav-link" (click)="closeMenu()">Courses</a>
+          <a routerLink="/home" fragment="contact" class="nav-link" (click)="closeMenu()">Contact Us</a>
+        </nav>
       </div>
 
-     <div class="col-md-3">
-  @if(isLoggedIn) {
-    <!-- Show when logged in -->
-    <div class="auth-buttons" [class.active]="isMenuOpen">
-      <!-- Profile Circle -->
-      <!-- <div class="profile-circle">
-        <img src="assets/images/default-avatar.png" alt="Profile" />
-      </div> -->
-      <!-- Logout Button -->
-      <button class="btn btn-outline" (click)="onLogout()">Logout</button>
-    </div>
-  } @else {
-    <!-- Show when logged out -->
-    @if(isAuthButton) {
-      <div class="auth-buttons" [class.active]="isMenuOpen">
-        <button class="btn btn-outline" routerLink="/login">Login</button>
-        <button class="btn btn-primary" routerLink="/login">Sign In</button>
+      <!-- Desktop Auth -->
+      <div class="col-md-3 d-flex justify-content-center align-items-center">
+        <div class="auth-buttons desktop-auth">
+          @if(isLoggedIn) {
+            <button class="btn btn-outline" (click)="onLogout()">Logout</button>
+          } @else {
+            @if(isAuthButton) {
+              <button class="btn btn-outline" routerLink="/login">Login</button>
+              <button class="btn btn-primary" routerLink="/register">Sign Up</button>
+            }
+          }
+        </div>
       </div>
-    }
-  }
-</div>
 
-      
     </div>
   </div>
+
+  <!-- ✅ Single mobile dropdown panel — nav + auth together -->
+  <div class="mobile-menu" [class.open]="isMenuOpen">
+    <nav class="mobile-nav">
+      <a routerLink="/home" fragment="hero" class="nav-link" (click)="closeMenu()">Home</a>
+      <a routerLink="/home" fragment="about" class="nav-link" (click)="closeMenu()">About Us</a>
+      <a routerLink="/home" fragment="courses" class="nav-link" (click)="closeMenu()">Courses</a>
+      <a routerLink="/home" fragment="contact" class="nav-link" (click)="closeMenu()">Contact Us</a>
+    </nav>
+
+    <div class="mobile-auth">
+      @if(isLoggedIn) {
+        <button class="btn btn-outline " (click)="onLogout()">Logout</button>
+      } @else {
+        @if(isAuthButton) {
+          <div class="mobile-auth-btns">
+            <button class="btn btn-outline" routerLink="/login" (click)="closeMenu()">Login</button>
+            <button class="btn btn-primary" routerLink="/register" (click)="closeMenu()">Sign Up</button>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- ✅ Backdrop — click outside closes menu -->
+  <div class="menu-backdrop" [class.show]="isMenuOpen" (click)="closeMenu()"></div>
+
 </header>

@@ -26,13 +26,13 @@
     </div>
 
     <div class="form-group">
-      <label for="signup-email" class="form-label">Email Address</label>
+      <label for="signup-email" class="form-label">Email </label>
       <input
         type="email"
         id="signup-email"
         formControlName="email"
         class="form-input"
-        placeholder="**********"
+        placeholder="test@gmail.com"
         [class.error]="email?.invalid && email?.touched"
       />
       <span class="error-message" *ngIf="email?.invalid && email?.touched">
@@ -44,7 +44,7 @@
       <label for="signup-mobile" class="form-label">Mobile Number </label>
       <div class="password-input-wrapper">
         <input
-          type="name"
+          type="text"
           id="signup-mobile"
           formControlName="mobile"
           class="form-input"
@@ -52,10 +52,7 @@
          
         />
       </div>
-      <span class="error-message" *ngIf="password?.invalid && password?.touched">
-        <span *ngIf="password?.errors?.['required']">Password is required</span>
-        <span *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters</span>
-      </span>
+      
     </div>
     <div class="form-group">
       <label for="signup-password" class="form-label">Create Password </label>
@@ -68,6 +65,9 @@
           placeholder="**********"
           [class.error]="password?.invalid && password?.touched"
         />
+ <span class="toggle-password" (click)="togglePassword()">
+    <i class="bi" [ngClass]="showPassword ? ' bi-eye-slash' : 'bi-eye'"></i>
+  </span>
       </div>
       <span class="error-message" *ngIf="password?.invalid && password?.touched">
         <span *ngIf="password?.errors?.['required']">Password is required</span>
@@ -87,6 +87,9 @@
           placeholder="**********"
           [class.error]="(confirmPassword?.invalid && confirmPassword?.touched) || (signUpForm.errors?.['passwordMismatch'] && confirmPassword?.touched)"
         />
+       <span class="toggle-password" (click)="toggleConfirmPassword()">
+    <i class="bi" [ngClass]="showConfirmPassword ? ' bi-eye-slash' : 'bi-eye'"></i>
+  </span>
       </div>
       <span class="error-message" *ngIf="confirmPassword?.invalid && confirmPassword?.touched">
         <span *ngIf="confirmPassword?.errors?.['required']">Please confirm your password</span>
@@ -111,12 +114,12 @@
         You must agree to the terms and conditions
       </span>
     </div>
-@if(authState.error()){
+<!-- @if(authState.error()){
    <div class="error-message text-center">
   {{ authState.error() }}
 </div>
 }
-  
+   -->
 
 <div class="d-flex justify-content-center">
    <button type="submit" class="submit-btn text-center"  [disabled]="authState.loading()">

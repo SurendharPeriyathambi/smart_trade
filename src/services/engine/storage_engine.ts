@@ -27,9 +27,12 @@ export class StorageEngine {
         localStorage.clear();
         this.cookieService.deleteAll('/');
     }
-    //  storeUser(name: string, email: string) {
-    //     localStorage.setItem(this.user_name, name);
-    //     localStorage.setItem(this.user_email, email);
-    // }
+   setEmail(email: string) {
+    localStorage.setItem(this.user_email, email);
+}
+
+getEmail(): string {
+    return localStorage.getItem(this.user_email) ?? '';
+}
 
 }

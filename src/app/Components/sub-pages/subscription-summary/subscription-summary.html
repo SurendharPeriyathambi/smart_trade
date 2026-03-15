@@ -15,10 +15,10 @@
         <div class="card-body">
           <!-- Profile Image -->
           <div class="profile-image-wrapper">
-            <img [src]="userProfile.profileImage" alt="Profile" class="profile-image">
-            <div class="verified-badge">
+            <img src="../assets/images/male-face.jpg" alt="Profile" class="profile-image">
+            <!-- <div class="verified-badge">
             <i class="bi bi-pencil-fill"></i>
-            </div>
+            </div> -->
           </div>
 
           <!-- Profile Information -->
@@ -32,7 +32,7 @@
                 </svg>
                 Your Name
               </label>
-              <p class="info-value">{{ userProfile.name }}</p>
+              <p class="info-value">{{ profile()?.name }}</p>
             </div>
 
             <div class="info-item">
@@ -43,7 +43,7 @@
                 </svg>
                 Email
               </label>
-              <p class="info-value">{{ userProfile.email }}</p>
+              <p class="info-value">{{ profile()?.email }}</p>
             </div>
 
             <!-- Row 2 -->
@@ -53,9 +53,9 @@
                   <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
                   <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
                 </svg>
-                START DATE
+                Mobile
               </label>
-              <p class="info-value">{{ userProfile.startDate }}</p>
+              <p class="info-value">{{ profile()?.mobile }}</p>
             </div>
             <div class="info-item ">
             
@@ -70,7 +70,7 @@
       </div>
 
       <!-- Subscription Card -->
-      <div class="card subscription-card" *ngIf="subscription">
+      <div class="card subscription-card" *ngIf="subscription()">
         <div class="card-header bg-white">
           <h2 class="card-title">My Subscription</h2>
         </div>
@@ -78,8 +78,8 @@
         <div class="card-body">
           <!-- Plan Header -->
           <div class="plan-header pt-4">
-            <h3 class="plan-name">{{ subscription.plan }}  <span class="remaing-days"> Remaining: 04 days</span></h3>
-            <span class="status-badge">{{ subscription.status }}</span>
+            <h3 class="plan-name">{{ subscription()?.plan_name }}  <span class="remaing-days"> Remaining: 04 days</span></h3>
+            <span class="status-badge">  {{ subscription()?.status | titlecase }}</span>
           </div>
 
           <!-- Subscription Information -->
@@ -93,7 +93,7 @@
                 </svg>
                 DURATION
               </label>
-              <p class="info-value">{{ subscription.duration }}</p>
+              <p class="info-value">{{ subscription()?.duration }} {{subscription()?.validity}}</p>
             </div>
 
             <div class="info-item">
@@ -104,7 +104,7 @@
                 </svg>
                 PRICE
               </label>
-              <p class="info-value">{{ subscription.price }}</p>
+              <p class="info-value">₹ {{ subscription()?.amount }}</p>
             </div>
 
             <!-- Row 2 -->
@@ -116,7 +116,7 @@
                 </svg>
                 START DATE
               </label>
-              <p class="info-value">{{ subscription.startDate }}</p>
+              <p class="info-value"> {{ subscription()?.start_date || 'Pending approval' }}</p>
             </div>
 
             <div class="info-item">
@@ -127,7 +127,7 @@
                 </svg>
                 RENEW DATE
               </label>
-              <p class="info-value">{{ subscription.renewDate }}</p>
+              <p class="info-value">{{ subscription()?.end_date || 'Pending approval' }}</p>
             </div>
           </div>
         </div>
