@@ -16,7 +16,7 @@ export class SubscriptionPlans {
 
   private subState = inject(SubscriptionState);
 
-  // ✅ Updated signal name from our refactor
+  //    Updated signal name from our refactor
   plans = this.subState.plans;
 
   selectPlan(plan: SubscriptionList) {

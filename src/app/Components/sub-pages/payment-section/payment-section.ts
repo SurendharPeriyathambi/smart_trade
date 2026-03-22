@@ -12,7 +12,7 @@ export class PaymentSection {
   @Input() plan!: any;
   @Output() paymentDone = new EventEmitter<void>();
 
-  // ✅ ViewChild replaces document.getElementById
+  //    ViewChild replaces document.getElementById
   @ViewChild('fileInputRef') fileInputRef!: ElementRef<HTMLInputElement>;
 
   private subState = inject(SubscriptionState);
@@ -38,7 +38,7 @@ export class PaymentSection {
   triggerFileInput(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    this.fileInputRef.nativeElement.click(); // ✅ direct reference, never null
+    this.fileInputRef.nativeElement.click(); //    direct reference, never null
   }
 
   onFileSelected(event: Event): void {
@@ -88,7 +88,7 @@ export class PaymentSection {
     event.stopPropagation();
     this.selectedFile = null;
     this.fileError = '';
-    this.fileInputRef.nativeElement.value = ''; // ✅ reset so same file can be picked again
+    this.fileInputRef.nativeElement.value = ''; //    reset so same file can be picked again
   }
 
   onDone(event: Event): void {

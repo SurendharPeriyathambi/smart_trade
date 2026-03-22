@@ -11,17 +11,17 @@ export class SubscriptionState {
     private toastr = inject(ToastService);
     private loader = inject(LoaderService);
 
-    // ✅ Core signals
+    //   Core signals
     private _profile = signal<Profile | null>(null);
     private _subscription = signal<Subscription | null>(null);
     private _plans = signal<SubscriptionList[]>([]);
 
-    // ✅ Loading signals
+    //   Loading signals
     private _profileLoading = signal(false);
     private _plansLoading = signal(false);
     private _uploading = signal(false);
 
-    // ✅ Upload signals
+    //   Upload signals
     private _uploadError = signal<string | null>(null);
     private _uploadSuccess = signal(false);
     private _selectedPlanId = signal<number>(0);
@@ -62,7 +62,7 @@ export class SubscriptionState {
     readonly videoThumbnails = this._videoThumbnails.asReadonly();
     readonly unlockLoading = this._unlockLoading.asReadonly();
 
-    // ✅ Derived — single source of truth
+    //   Derived — single source of truth
     readonly subscriptionStatus = computed(() => {
         const sub = this._subscription();
         if (!sub) return null;
@@ -80,7 +80,7 @@ export class SubscriptionState {
             next: (res: CourseResponse) => {
                 if (res.status) {
                     this._course.set(res.data);
-                    // ✅ Pre-populate unlocked set from is_watch on every load
+                    //   Pre-populate unlocked set from is_watch on every load
                     this._seedUnlockedFromCourse(res.data);
                 }
                 this.loader.hide();
@@ -93,11 +93,7 @@ export class SubscriptionState {
         });
     }
 
-    /**
-     * Walks through every lesson/video in the course and adds any video
-     * with is_watch === true into _unlockedVideoIds.
-     * Called after every course load so the UI reflects DB state.
-     */
+   
     private _seedUnlockedFromCourse(course: CourseDetails) {
         const current = new Set(this._unlockedVideoIds());
         for (const lesson of course.lesson) {
@@ -114,11 +110,7 @@ export class SubscriptionState {
     // Sequential unlock guard
     // ─────────────────────────────────────────────────────────────────────────
 
-    /**
-     * Returns true if the video at `videoIndex` inside `lessonId` is allowed
-     * to be unlocked.
-     * Rule: index 0 is always allowed; index N requires index N-1 to be watched.
-     */
+   
     canUnlockVideo(lessonId: number, videoIndex: number): boolean {
         if (videoIndex === 0) return true;
         const course = this._course();
@@ -133,11 +125,7 @@ export class SubscriptionState {
     // Unlock flow — now opens video directly on success
     // ─────────────────────────────────────────────────────────────────────────
 
-    /**
-     * Unlocks a video via API.
-     * On success: marks as unlocked locally, then immediately opens the video
-     * player (no preview step).
-     */
+   
     unlockAndOpenVideo(video: CourseVideo, subscriptionId: number) {
         if (this._unlockLoading() === video.id) return;
         this._unlockLoading.set(video.id);
@@ -145,18 +133,18 @@ export class SubscriptionState {
         this.subscriptionService.unlockVideo(video.id, subscriptionId).subscribe({
             next: (res: any) => {
                 if (res.status) {
-                    // ✅ Mark as pending-open BEFORE adding to unlockedVideoIds
+                    //   Mark as pending-open BEFORE adding to unlockedVideoIds
                     // This keeps the lock spinner visible (not preview btn) while CDN url loads
                     const pending = new Set(this._pendingOpenIds());
                     pending.add(video.id);
                     this._pendingOpenIds.set(pending);
 
-                    // ✅ Add to unlocked set (needed for sequential unlock of next video)
+                    //   Add to unlocked set (needed for sequential unlock of next video)
                     const current = new Set(this._unlockedVideoIds());
                     current.add(video.id);
                     this._unlockedVideoIds.set(current);
 
-                    // ✅ Open video — pendingOpenIds cleared inside openCourseVideo on success
+                    //   Open video — pendingOpenIds cleared inside openCourseVideo on success
                     this.openCourseVideo(video.video, video, video.id);
                 }
                 this._unlockLoading.set(null);
@@ -167,10 +155,7 @@ export class SubscriptionState {
         });
     }
 
-    /**
-     * Fetches wasabi thumbnail for an already-unlocked video.
-     * Called when the user clicks the Preview button.
-     */
+    
     fetchThumbnailForPreview(videoId: number, imagePath: string) {
         // Already cached — skip
         if (this._videoThumbnails()[videoId]) return;
@@ -194,7 +179,7 @@ export class SubscriptionState {
     openCourseVideo(videoPath: string, videoData: CourseVideo, pendingVideoId?: number) {
         if (this._videoLoading()) return;
 
-        // ✅ Always read the freshest video data from course signal
+        //   Always read the freshest video data from course signal
         const freshVideo = this._getFreshVideoData(videoData.id) ?? videoData;
         this._selectedVideo.set(freshVideo);
         this._videoLoading.set(true);
@@ -205,7 +190,7 @@ export class SubscriptionState {
                     this._activeVideoUrl.set(res.data.cdn_url);
                     this._isVideoModalOpen.set(true);
 
-                    // ✅ URL arrived — remove from pending so preview btn won't show
+                    //   URL arrived — remove from pending so preview btn won't show
                     // is_watch update happens only after saveVideoStatus, not here
                     if (pendingVideoId != null) {
                         const pending = new Set(this._pendingOpenIds());
@@ -242,10 +227,7 @@ export class SubscriptionState {
         });
     }
 
-    /**
-     * Finds the latest version of a video from the course signal by id.
-     * Returns null if course not loaded yet.
-     */
+    
     private _getFreshVideoData(videoId: number): CourseVideo | null {
         const course = this._course();
         if (!course) return null;
@@ -286,7 +268,7 @@ export class SubscriptionState {
             .subscribe({
                 next: (res) => {
                     if (res.status) {
-                        // ✅ Update local course data to avoid full refresh
+                        //   Update local course data to avoid full refresh
                         if (videoStatus) {
                             // Naturally finished
                             this._updateLocalVideoField(videoId, {
@@ -302,7 +284,7 @@ export class SubscriptionState {
                                 last_time_stamp: String(duration)
                             });
                         }
-                        // ✅ Ensure it's in the unlocked set too
+                        //  Ensure it's in the unlocked set too
                         const current = new Set(this._unlockedVideoIds());
                         current.add(videoId);
                         this._unlockedVideoIds.set(current);
@@ -316,10 +298,7 @@ export class SubscriptionState {
             });
     }
 
-    /**
-     * Immutably patches fields on a specific video inside the _course signal.
-     * Angular signals detect the new object reference and re-render.
-     */
+    
     private _updateLocalVideoField(videoId: number, patch: Partial<CourseVideo>) {
         const course = this._course();
         if (!course) return;

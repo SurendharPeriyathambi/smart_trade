@@ -5,7 +5,7 @@
 
   <app-subscription-summary/> 
 
-  <!-- ✅ FIX 3: Correct condition — hide entire plans section when active OR approved -->
+  <!--    FIX 3: Correct condition — hide entire plans section when active OR approved -->
   <app-subscription-plans
     *ngIf="subscriptionStatus() !== 'active' && subscriptionStatus() !== 'approved'"
     [isPending]="subscriptionStatus() === 'pending'"
@@ -19,7 +19,7 @@
       (paymentDone)="onPaymentDone()"/>
   </div>
 
-  <!-- ✅ FIX 3: Course shown only when active or approved -->
+  <!--    FIX 3: Course shown only when active or approved -->
   <app-course-curriculam
     *ngIf="subscriptionStatus() === 'active' || subscriptionStatus() === 'approved'"/>
 

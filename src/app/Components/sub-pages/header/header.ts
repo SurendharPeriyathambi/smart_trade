@@ -31,17 +31,7 @@ export class Header implements OnInit, OnDestroy {
     this.isLoggedIn = !!this.storage.getAccessToken();
   }
 
-  // ✅ KEY TRICK:
-  // beforeunload fires for BOTH refresh and tab close.
-  // We write a flag into sessionStorage here.
-  //
-  // sessionStorage behaviour:
-  //   — On REFRESH: sessionStorage is KEPT. Flag survives.
-  //   — On TAB CLOSE: sessionStorage is WIPED by the browser. Flag gone.
-  //
-  // So in ngOnDestroy we read the flag:
-  //   Flag present  → it was a refresh  → skip logout
-  //   Flag absent   → it was a tab close → fire logout
+
   @HostListener('window:beforeunload')
   onBeforeUnload(): void {
     sessionStorage.setItem('is_refreshing', '1');

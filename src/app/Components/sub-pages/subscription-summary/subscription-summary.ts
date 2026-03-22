@@ -12,7 +12,7 @@ export class SubscriptionSummary {
 
   private subState = inject(SubscriptionState);
 
-  // ✅ Directly from state — no @Input needed
+  //    Directly from state — no @Input needed
   profile = this.subState.profile;
   subscription = this.subState.subscription;
   subscriptionStatus = this.subState.subscriptionStatus;

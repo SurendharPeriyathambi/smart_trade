@@ -62,7 +62,7 @@ export class CourseCurriculam {
     effect(() => {
       const url = this.subState.activeVideoUrl();
       if (url) {
-        // ✅ Always close preview card when video player opens
+        //    Always close preview card when video player opens
         this.previewVideo = null;
         this.videoPlayerOpen = true;
         if (this.videoElement) {
@@ -93,22 +93,18 @@ export class CourseCurriculam {
   // Lock / unlock helpers
   // ─────────────────────────────────────────────────────────────────────────
 
-  /** True when is_watch was true on load OR unlock API succeeded AND player has opened */
+  
   isUnlocked(videoId: number): boolean {
-    // Still loading CDN url after unlock — keep showing spinner, not preview btn
+    
     if (this.pendingOpenIds().has(videoId)) return false;
     return this.unlockedVideoIds().has(videoId);
   }
-
-  /** True while this video's unlock API call OR CDN url fetch is in-flight */
+ 
   isUnlocking(videoId: number): boolean {
     return this.unlockLoading() === videoId || this.pendingOpenIds().has(videoId);
   }
 
-  /**
-   * Returns true if the video at position videoIndex inside lesson can be
-   * unlocked — requires the previous video to already be watched.
-   */
+  
   canUnlock(lesson: CourseLesson, videoIndex: number): boolean {
     return this.subState.canUnlockVideo(lesson.id, videoIndex);
   }
@@ -118,7 +114,7 @@ export class CourseCurriculam {
   // ─────────────────────────────────────────────────────────────────────────
 
   onLockClick(lesson: CourseLesson, video: CourseVideo, videoIndex: number) {
-    // Guard: paranoia check in case template binding fires with stale refs
+   
     if (!lesson || !video || video.id == null) return;
     if (this.isUnlocking(video.id)) return;
 
@@ -132,7 +128,7 @@ export class CourseCurriculam {
       return;
     }
 
-    // Trigger unlock API — state will auto-open video modal on success
+   
     this.subState.unlockAndOpenVideo(video, subscriptionId);
   }
 
@@ -142,7 +138,7 @@ export class CourseCurriculam {
 
   openPreview(video: CourseVideo) {
     this.previewVideo = video;
-    // Fetch wasabi thumbnail on demand (cached in state if already fetched)
+   
     this.subState.fetchThumbnailForPreview(video.id, video.image);
   }
 
@@ -165,9 +161,7 @@ export class CourseCurriculam {
     this.subState.openCourseVideo(video.video, video);
   }
 
-  /**
-   * Manual close — video_status: false, duration: currentTime seconds.
-   */
+  
   closeVideo() {
     if (this.videoElement) {
       this.videoElement.pause();
@@ -192,10 +186,7 @@ export class CourseCurriculam {
     this.videoPlayerOpen = false;
   }
 
-  /**
-   * Natural end — fires from the "ended" event listener on the video element.
-   * video_status: true, duration: 0.
-   */
+  
   private onVideoEnded() {
     const videoData      = this.selectedVideo();
     const subscriptionId = this.subscription()?.id;
@@ -277,7 +268,7 @@ export class CourseCurriculam {
       this.hls = null;
     }
 
-    // ✅ Read resume time from selectedVideo signal
+    //    Read resume time from selectedVideo signal
     // last_time_stamp is '0' when finished, or seconds as string/number
     const selectedVid = this.subState.selectedVideo();
     const resumeAt = Number(selectedVid?.last_time_stamp ?? 0);
@@ -287,7 +278,7 @@ export class CourseCurriculam {
       this.hls.loadSource(url);
       this.hls.attachMedia(video);
       this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        // ✅ Seek to resume point before playing
+        //    Seek to resume point before playing
         if (resumeAt > 0) {
           video.currentTime = resumeAt;
         }
@@ -300,7 +291,7 @@ export class CourseCurriculam {
         }
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // ✅ Native HLS (Safari) — seek after metadata loads
+      //    Native HLS (Safari) — seek after metadata loads
       video.src = url;
       if (resumeAt > 0) {
         video.addEventListener('loadedmetadata', () => {

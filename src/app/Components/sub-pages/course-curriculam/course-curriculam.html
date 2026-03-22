@@ -22,7 +22,7 @@
     </div>
   </div>
 
-  <!-- ✅ Outer loop: lessonSection = CourseLesson -->
+  <!--    Outer loop: lessonSection = CourseLesson -->
   <div class="section" *ngFor="let lessonSection of course()?.lesson">
     <div class="section-header" (click)="toggleLesson(lessonSection.id)">
       <div class="left">
@@ -39,7 +39,7 @@
 
     <div class="lesson-list" [class.open]="expandedLessonId === lessonSection.id">
 
-      <!-- ✅ Inner loop: video = CourseVideo, vi = video index -->
+      <!--    Inner loop: video = CourseVideo, vi = video index -->
       <div
         class="lesson"
         (click)="$event.stopPropagation()"
@@ -52,7 +52,7 @@
 
         <div class="lesson-right">
 
-          <!-- ✅ LOCKED: is_watch false -->
+          <!--    LOCKED: is_watch false -->
           <ng-container *ngIf="!isUnlocked(video.id)">
 
             <!-- Greyed-out: previous video not yet watched — not clickable -->
@@ -83,7 +83,7 @@
 
           </ng-container>
 
-          <!-- ✅ UNLOCKED: is_watch true → Preview button -->
+          <!--    UNLOCKED: is_watch true → Preview button -->
           <ng-container *ngIf="isUnlocked(video.id)">
             <button
               class="preview-btn"

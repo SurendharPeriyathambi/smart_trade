@@ -72,7 +72,7 @@ export class DemoVideos {
       return;
     }
 
-    // ✅ Destroy previous HLS instance before creating new one
+    //    Destroy previous HLS instance before creating new one
     if (this.hls) {
       this.hls.destroy();
       this.hls = null;
@@ -84,7 +84,7 @@ export class DemoVideos {
       this.hls.attachMedia(video);
       this.hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
 
-      // ✅ Handle HLS errors
+      //    Handle HLS errors
       this.hls.on(Hls.Events.ERROR, (event, data) => {
         if (data.fatal) {
 
