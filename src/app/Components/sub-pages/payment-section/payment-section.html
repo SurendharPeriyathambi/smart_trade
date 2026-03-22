@@ -31,7 +31,7 @@
       <h3>Upload payment screenshot</h3>
 
       <p class="upload-desc">
-        Please upload files in pdf, docx or doc format and make sure the file size is under 25 MB.
+        Please upload files in PNG or JPG format and make sure the file size is under 5 MB.
       </p>
 
       <div class="upload-area " [class.dragging]="isDragging" (dragover)="onDragOver($event)"
@@ -39,7 +39,7 @@
 
         <div *ngIf="!selectedFile" class="drop-zone-content">
           <p class="drop-text">Drop file or Browse</p>
-          <p class="drop-format">Format: pdf, docx, doc & Max file size: 25 MB</p>
+          <p class="drop-format">Format: PNG,JPG & Max file size: 5 MB</p>
         </div>
 
         <div *ngIf="selectedFile" class="file-selected">

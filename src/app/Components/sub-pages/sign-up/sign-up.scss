@@ -12,6 +12,7 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: #000 !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
 .auth-card {
   background: linear-gradient(135deg, #e8f0fe 0%, #E9F1FE  100%);
   border-radius: 24px;
@@ -123,7 +124,7 @@ input:-webkit-autofill:active {
 }
 
 .form-input::placeholder {
-  color: #404041;
+  color: #818181;
 }
 
 .password-input-wrapper {

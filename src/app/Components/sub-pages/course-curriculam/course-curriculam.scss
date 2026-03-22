@@ -445,3 +445,114 @@
     .video-description { font-size: 13px; }
   }
 }
+
+// ─── ADD these styles to your course-curriculam.scss ─────────────────────────
+
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes seek-pop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  60%  { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+// ✅ video-container is the anchor for all overlays
+.video-container {
+  position: relative;
+
+  video {
+    width: 100%;
+    display: block;
+  }
+
+  // ✅ Marquee title bar — floats over the top of the video
+  .video-modal-title-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    // gradient fades to transparent downward so video shows through
+    background: linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0) 100%);
+    padding: 12px 0 32px;
+    overflow: hidden;
+    z-index: 6;            // above seek zones (5), below browser native controls
+    pointer-events: none;  // clicks fall through to seek zones / video
+
+    .marquee-track {
+      display: flex;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .marquee-content {
+      display: inline-block;
+      white-space: nowrap;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      padding-left: 100%;
+      animation: marquee-scroll 14s linear infinite;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+    }
+  }
+
+  // ✅ Seek zones — invisible tap regions
+  .seek-zone {
+    position: absolute;
+    top: 0;
+    width: 35%;
+    height: 100%;
+    z-index: 5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    transition: background 0.15s ease;
+
+    &.seek-zone-left  { left: 0; }
+    &.seek-zone-right { right: 0; }
+
+    &.seek-active {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+}
+
+// ✅ Seek feedback (icon + label) shown when seek fires
+.seek-feedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: seek-pop 0.15s ease-out;
+  pointer-events: none;
+
+  .seek-icon-ring {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      color: #ffffff;
+      font-size: 22px;
+    }
+  }
+
+  .seek-label {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+}

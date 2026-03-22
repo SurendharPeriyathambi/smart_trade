@@ -16,52 +16,102 @@
         <div class="divider"></div>
         <div class="info-item">
           <span class="icon"><i class="bi bi-globe"></i></span>
-          <span>English</span>
+          <span>Tamil</span>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="section" *ngFor="let section of course()?.lesson">
-    <div class="section-header" (click)="toggleLesson(section.id)">
+  <!-- ✅ Outer loop: lessonSection = CourseLesson -->
+  <div class="section" *ngFor="let lessonSection of course()?.lesson">
+    <div class="section-header" (click)="toggleLesson(lessonSection.id)">
       <div class="left">
-        <span class="arrow" [class.open]="expandedLessonId === section.id">
+        <span class="arrow" [class.open]="expandedLessonId === lessonSection.id">
           <i class="bi bi-chevron-down"></i>
         </span>
-        <span class="section-title">{{ section.title }}</span>
+        <span class="section-title">{{ lessonSection.title }}</span>
       </div>
       <div class="right">
-        <span>Lessons: {{ section.videos.length }}</span>
-        <span>Duration: {{ getTotalDuration(section.videos) }}</span>
+        <span>Lessons: {{ lessonSection.videos.length }}</span>
+        <span>Duration: {{ getTotalDuration(lessonSection.videos) }}</span>
       </div>
     </div>
 
-    <div class="lesson-list" [class.open]="expandedLessonId === section.id">
-      <div class="lesson" (click)="$event.stopPropagation()" *ngFor="let lesson of section.videos">
+    <div class="lesson-list" [class.open]="expandedLessonId === lessonSection.id">
+
+      <!-- ✅ Inner loop: video = CourseVideo, vi = video index -->
+      <div
+        class="lesson"
+        (click)="$event.stopPropagation()"
+        *ngFor="let video of lessonSection.videos; let vi = index">
+
         <div class="lesson-left">
           <span class="doc-icon"><img src="assets/images/file.png" width="20" alt=""></span>
-          <span class="lesson-title">{{ lesson.title }}</span>
+          <span class="lesson-title">{{ video.title || 'Lesson ' + (vi + 1) }}</span>
         </div>
-        <div class="lesson-right">  
-          <span class="lock-icon" (click)="openPreview(lesson)">
-            <img src="assets/images/lock.png" width="22" alt="">
-          </span>
-          <span class="time">{{ formatDuration(lesson.durations) }}</span>
+
+        <div class="lesson-right">
+
+          <!-- ✅ LOCKED: is_watch false -->
+          <ng-container *ngIf="!isUnlocked(video.id)">
+
+            <!-- Greyed-out: previous video not yet watched — not clickable -->
+            <span
+              *ngIf="!canUnlock(lessonSection, vi)"
+              class="lock-icon disabled"
+              [title]="'Complete the previous lesson first'">
+              <img src="assets/images/lock.png" width="22" alt="locked" style="opacity:0.4;">
+            </span>
+
+            <!-- Active lock: click → unlock API → auto-open video player -->
+            <span
+              *ngIf="canUnlock(lessonSection, vi)"
+              class="lock-icon"
+              (click)="onLockClick(lessonSection, video, vi)"
+              [title]="isUnlocking(video.id) ? 'Unlocking...' : 'Click to unlock'">
+              <span
+                *ngIf="isUnlocking(video.id)"
+                class="spinner-border spinner-border-sm"
+                role="status">
+              </span>
+              <img
+                *ngIf="!isUnlocking(video.id)"
+                src="assets/images/lock.png"
+                width="22"
+                alt="locked">
+            </span>
+
+          </ng-container>
+
+          <!-- ✅ UNLOCKED: is_watch true → Preview button -->
+          <ng-container *ngIf="isUnlocked(video.id)">
+            <button
+              class="preview-btn"
+              (click)="openPreview(video); $event.stopPropagation()">
+              Preview
+            </button>
+          </ng-container>
+
+          <span class="time">{{ formatDuration(video.durations) }}</span>
         </div>
       </div>
+
     </div>
   </div>
 </div>
 
-<!-- Preview Modal — your existing design, just wire playVideo -->
+<!-- ─── Preview Modal ──────────────────────────────────────────────────── -->
 <ng-container *ngIf="previewVideo">
   <div class="preview-backdrop" (click)="closePreview()">
     <div class="preview-modal right-popup" (click)="$event.stopPropagation()">
       <div class="preview-card">
 
-        <!-- ✅ click thumbnail → playVideo -->
+        <!-- Thumbnail click → play -->
         <div class="video-thumb" (click)="playVideo(previewVideo!)">
-          <img [src]="previewVideo.image" alt="thumbnail" style="width:100%;border-radius:8px;">
+          <img
+            [src]="getThumbnail(previewVideo)"
+            alt="thumbnail"
+            style="width:100%;border-radius:8px;">
           <span class="play-btn" style="cursor:pointer;">▶</span>
         </div>
 
@@ -74,12 +124,14 @@
           </div>
           <div class="rows">
             <span><i class="bi bi-clock"></i> Duration</span>
-            <span>{{ previewVideo.durations }} min</span>
+            <span>{{ formatDuration(previewVideo.durations) }}</span>
           </div>
         </div>
 
-        <!-- ✅ buy btn triggers playVideo -->
-        <button class="buy-btn" (click)="playVideo(previewVideo!)" [disabled]="videoLoading()">
+        <button
+          class="buy-btn"
+          (click)="playVideo(previewVideo!)"
+          [disabled]="videoLoading()">
           {{ videoLoading() ? 'Loading...' : 'Play Now' }}
           <i class="bi bi-play-circle ms-2"></i>
         </button>
@@ -89,23 +141,67 @@
   </div>
 </ng-container>
 
-<!-- ✅ Your existing video player modal — wired to videoPlayerOpen -->
+<!-- ─── Video Player Modal ─────────────────────────────────────────────── -->
 <ng-container *ngIf="videoPlayerOpen">
   <div class="video-player-backdrop" (click)="closeVideo()">
     <div class="video-player-modal" (click)="$event.stopPropagation()">
+
+      <!-- Close button -->
       <button class="close-btn" (click)="closeVideo()">
         <i class="bi bi-x-lg"></i>
       </button>
 
       <div class="video-container">
-        <!-- ✅ #videoPlayer ref here for ViewChild setter -->
+
+        <!-- Marquee title bar -->
+        <div class="video-modal-title-bar">
+          <div class="marquee-track">
+            <span class="marquee-content">
+              {{ selectedVideo()?.title || 'Lesson Video' }}
+              &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
+              {{ selectedVideo()?.title || 'Lesson Video' }}
+              &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
+              {{ selectedVideo()?.title || 'Lesson Video' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- LEFT zone: double-click / double-tap = rewind 10s -->
+        <div
+          class="seek-zone seek-zone-left"
+          (dblclick)="seekBackward()"
+          (touchstart)="onTouchStart($event, 'left')"
+          [class.seek-active]="showSeekBackward">
+          <div class="seek-feedback" *ngIf="showSeekBackward">
+            <div class="seek-icon-ring">
+              <i class="bi bi-skip-start-fill"></i>
+            </div>
+            <span class="seek-label">-10s</span>
+          </div>
+        </div>
+
+        <!-- RIGHT zone: double-click / double-tap = forward 10s -->
+        <div
+          class="seek-zone seek-zone-right"
+          (dblclick)="seekForward()"
+          (touchstart)="onTouchStart($event, 'right')"
+          [class.seek-active]="showSeekForward">
+          <div class="seek-feedback" *ngIf="showSeekForward">
+            <div class="seek-icon-ring">
+              <i class="bi bi-skip-end-fill"></i>
+            </div>
+            <span class="seek-label">+10s</span>
+          </div>
+        </div>
+
+        <!-- ended event handled via addEventListener in @ViewChild setter -->
         <video #videoPlayer controls autoplay></video>
       </div>
 
       <div class="video-info">
-        <h3 class="video-title">{{ selectedVideo()?.title || 'Lesson Video' }}</h3>
         <p class="video-description">{{ course()?.title }}</p>
       </div>
+
     </div>
   </div>
 </ng-container>

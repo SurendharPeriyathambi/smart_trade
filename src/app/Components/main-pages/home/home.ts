@@ -23,15 +23,15 @@ private homeService = inject(HomeService)
   ngOnInit(): void {
     // getWebData();
     this.homeService.loadHomeData()
-    this.route.fragment.subscribe(fragment => {
-      if (fragment) {
-        const element = document.getElementById(fragment);
-        if (element) {
-          setTimeout(() => {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }, 100);
-        }
-      }
-    });
+    // this.route.fragment.subscribe(fragment => {
+    //   if (fragment) {
+    //     const element = document.getElementById(fragment);
+    //     if (element) {
+    //       setTimeout(() => {
+    //         element.scrollIntoView({ behavior: 'smooth' });
+    //       }, 100);
+    //     }
+    //   }
+    // });
 }
 }

@@ -44,19 +44,18 @@ logout(): Observable<any> {
 }
 
 logoutSync(email: string): void {
-  const url = `${this.baseUrl}api/auth/logout`;
-  const token = this.storage.getAccessToken(); // ✅ get token
+    const url = `${this.baseUrl}api/auth/logout`;
+    const token = this.storage.getAccessToken();
     const ip = this.cachedIp || localStorage.getItem('cached_ip') || '';
-  // ✅ fetch with keepalive — supports headers unlike sendBeacon
-  // keepalive: true ensures request completes even after tab closes
-  fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}` // ✅ auth header included
-    },
-    body: JSON.stringify({ email, login_ip: ip }),
-    keepalive: true  // ✅ THIS is the key — survives tab close
-  });
-}
+ 
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ email, login_ip: ip }),
+      keepalive: true
+    });
+  }
 }

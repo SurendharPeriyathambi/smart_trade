@@ -16,19 +16,29 @@
 
       <!-- Desktop Nav -->
       <div class="col-md-6 d-flex justify-content-center">
-        <nav class="nav desktop-nav">
-          <a routerLink="/home" fragment="hero" class="nav-link" (click)="closeMenu()">Home</a>
-          <a routerLink="/home" fragment="about" class="nav-link" (click)="closeMenu()">About Us</a>
-          <a routerLink="/home" fragment="courses" class="nav-link" (click)="closeMenu()">Courses</a>
-          <a routerLink="/home" fragment="contact" class="nav-link" (click)="closeMenu()">Contact Us</a>
-        </nav>
+       <nav class="nav desktop-nav">
+    <a class="nav-link" (click)="scrollTo('hero')">Home</a>
+    <a class="nav-link" (click)="scrollTo('about')">About Us</a>
+    <a class="nav-link" (click)="scrollTo('courses')">Courses</a>
+    <a class="nav-link" (click)="scrollTo('contact')">Contact Us</a>
+  </nav>
       </div>
 
       <!-- Desktop Auth -->
       <div class="col-md-3 d-flex justify-content-center align-items-center">
         <div class="auth-buttons desktop-auth">
           @if(isLoggedIn) {
-            <button class="btn btn-outline" (click)="onLogout()">Logout</button>
+            @if (showLogout) {
+               <button class="btn btn-outline" (click)="onLogout()">Logout</button>
+            } @else {
+               <button class="account-avatar" routerLink="/subscriptions" title="My Account">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+        </button>
+            }
+           
           } @else {
             @if(isAuthButton) {
               <button class="btn btn-outline" routerLink="/login">Login</button>
@@ -44,15 +54,19 @@
   <!-- ✅ Single mobile dropdown panel — nav + auth together -->
   <div class="mobile-menu" [class.open]="isMenuOpen">
     <nav class="mobile-nav">
-      <a routerLink="/home" fragment="hero" class="nav-link" (click)="closeMenu()">Home</a>
-      <a routerLink="/home" fragment="about" class="nav-link" (click)="closeMenu()">About Us</a>
-      <a routerLink="/home" fragment="courses" class="nav-link" (click)="closeMenu()">Courses</a>
-      <a routerLink="/home" fragment="contact" class="nav-link" (click)="closeMenu()">Contact Us</a>
+      <a   (click)="scrollTo('hero')" class="nav-link" >Home</a>
+      <a  (click)="scrollTo('about')" class="nav-link" >About Us</a>
+      <a  (click)="scrollTo('courses')" class="nav-link" >Courses</a>
+      <a  (click)="scrollTo('contact')" class="nav-link" >Contact Us</a>
     </nav>
 
     <div class="mobile-auth">
       @if(isLoggedIn) {
-        <button class="btn btn-outline " (click)="onLogout()">Logout</button>
+        @if(showLogout) {
+      <button class="btn btn-outline" (click)="onLogout()">Logout</button>
+    } @else {
+      <button class="btn btn-outline" routerLink="/subscriptions" (click)="closeMenu()">My Account</button>
+    }
       } @else {
         @if(isAuthButton) {
           <div class="mobile-auth-btns">

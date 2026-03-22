@@ -78,7 +78,12 @@
         <div class="card-body">
           <!-- Plan Header -->
           <div class="plan-header pt-4">
-            <h3 class="plan-name">{{ subscription()?.plan_name }}  <span class="remaing-days"> Remaining: 04 days</span></h3>
+            <h3 class="plan-name">{{ subscription()?.plan_name }} 
+              @if(subscriptionStatus() === 'active' || subscriptionStatus() === 'approved' ){
+ <span class="remaing-days"> Remaining:{{remainingDays()}} {{remainingDays() === 1 ? 'day': 'days' }} </span>
+              }
+             
+            </h3>
             <span class="status-badge">  {{ subscription()?.status | titlecase }}</span>
           </div>
 
@@ -116,7 +121,7 @@
                 </svg>
                 START DATE
               </label>
-              <p class="info-value"> {{ subscription()?.start_date || 'Pending approval' }}</p>
+              <p class="info-value"> {{ subscription()?.start_date || '-' }}</p>
             </div>
 
             <div class="info-item">
@@ -127,7 +132,7 @@
                 </svg>
                 RENEW DATE
               </label>
-              <p class="info-value">{{ subscription()?.end_date || 'Pending approval' }}</p>
+              <p class="info-value">{{ subscription()?.end_date || '-' }}</p>
             </div>
           </div>
         </div>
