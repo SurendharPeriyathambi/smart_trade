@@ -23,7 +23,7 @@ export class Hero  {
   constructor() {
     effect(() => {
       const path = this.homeService.banner()[0]?.path;
-
+  console.log("Effect running");
       if (path && !this.imageReady()) {
         this.loaderService.show();
         this.preloadImage(path);

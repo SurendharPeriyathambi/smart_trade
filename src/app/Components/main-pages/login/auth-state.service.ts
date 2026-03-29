@@ -26,6 +26,9 @@ export class AuthStateService {
     readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
 
+    private _trxId = signal<string>('');
+  readonly trxId = this._trxId.asReadonly();
+
   login (email:string,password:string){
     if(this._loading())return;
     this._loading.set(true);
@@ -79,5 +82,82 @@ export class AuthStateService {
         }
     })
   }
+
+
+    sendForgotOtp(email: string, onSuccess: () => void) {
+    if (this._loading()) return;
+    this._loading.set(true);
+    this._error.set(null);
+    this.loader.show();
+
+    this.authService.forgotPassword({ email }).subscribe({
+      next: (res) => {
+        this._loading.set(false);
+        this.loader.hide();
+        this._trxId.set(res.data.trx_id);          // save trx_id for step 2
+        this.toast.success(res.message || 'OTP sent to your email!');
+        onSuccess();                           // let component move to step 2
+      },
+      error: (err) => {
+        this._loading.set(false);
+        this.loader.hide();
+        this._error.set(err.error?.message ?? 'Failed to send OTP. Try again.');
+        this.toast.error(this._error()!);
+      }
+    });
+  }
+
+  // ── Step 2 : Verify OTP ────────────────────────────────────────────────
+  verifyForgotOtp(email: string, otp: number, onSuccess: () => void) {
+    if (this._loading()) return;
+    this._loading.set(true);
+    this._error.set(null);
+    this.loader.show();
+
+    this.authService.verifyOTP({
+      email,
+      otp,
+      trx_id: this._trxId()              // use the saved trx_id
+    }).subscribe({
+      next: (res) => {
+        this._loading.set(false);
+        this.loader.hide();
+        this.toast.success(res.message || 'OTP verified!');
+        onSuccess();                      // let component move to step 3
+      },
+      error: (err) => {
+        this._loading.set(false);
+        this.loader.hide();
+        this._error.set(err.error?.message ?? 'Invalid OTP. Please try again.');
+        this.toast.error(this._error()!);
+      }
+    });
+  }
+
+  // ── Step 3 : Change Password ───────────────────────────────────────────
+  changeForgotPassword(email: string, password: string) {
+    if (this._loading()) return;
+    this._loading.set(true);
+    this._error.set(null);
+    this.loader.show();
+
+    this.authService.changePassword({ email, password }).subscribe({
+      next: (res) => {
+        this._loading.set(false);
+        this.loader.hide();
+        this._trxId.set('');             // clear trx_id after success
+        this.toast.success(res.message || 'Password updated successfully!');
+        setTimeout(() => this.router.navigate(['/login'], { replaceUrl: true }), 1500);
+      },
+      error: (err) => {
+        this._loading.set(false);
+        this.loader.hide();
+        this._error.set(err.error?.message ?? 'Failed to update password.');
+        this.toast.error(this._error()!);
+      }
+    });
+  }
+
+
 
 }

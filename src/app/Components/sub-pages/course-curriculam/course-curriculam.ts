@@ -25,7 +25,7 @@ export class CourseCurriculam {
   videoThumbnails  = this.subState.videoThumbnails;
   unlockLoading    = this.subState.unlockLoading;
   pendingOpenIds   = this.subState.pendingOpenIds;
-
+  profile =this.subState.profile;
   // ── Seek feedback ───────────────────────────────────────────────────────
   showSeekForward  = false;
   showSeekBackward = false;

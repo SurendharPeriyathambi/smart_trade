@@ -15,3 +15,36 @@ export interface UserDetails{
     password:string;
     login_ip:string;
 }
+
+export interface ForgotPassWordRequest{
+    email: string
+}
+export interface verifyOTPRequest {
+email: string;
+  otp: number;
+  trx_id: string;
+}
+
+export interface ChangePasswordRequest {
+  email: string;
+  password: string;
+}
+
+ export interface ForgotPasswordData {
+  trx_id: string;
+}
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: string;
+ data:ForgotPasswordData       // backend returns this — needed for verify_otp
+}
+
+export interface VerifyOtpResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
+}

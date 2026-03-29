@@ -384,15 +384,18 @@ export class SubscriptionState {
         this.subscriptionService.uploadImage(image).subscribe({
             next: (res) => {
                 if (res.status) {
+                     this.toastr.success('Screenshot uploaded successfully!');
                     const imageId = res.data.url.image.id;
                     const planId = this._selectedPlanId();
                     this._createSubscription(planId, imageId);
                 } else {
+                     this.toastr.error('Image upload failed');
                     this._uploadError.set('Image upload failed');
                     this._uploading.set(false);
                 }
             },
             error: (err) => {
+                 this.toastr.error(err.message ?? 'Upload failed');
                 this._uploadError.set(err.message ?? 'Upload failed');
                 this._uploading.set(false);
             }
@@ -406,6 +409,7 @@ export class SubscriptionState {
         }).subscribe({
             next: (res) => {
                 if (res.status) {
+                    this.toastr.success('Subscription created! Awaiting approval.');
                     this._subscription.set(res.data as any);
                     this._uploadSuccess.set(true);
                 }

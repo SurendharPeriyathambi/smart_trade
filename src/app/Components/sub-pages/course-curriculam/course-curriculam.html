@@ -157,11 +157,11 @@
         <div class="video-modal-title-bar">
           <div class="marquee-track">
             <span class="marquee-content">
-              {{ selectedVideo()?.title || 'Lesson Video' }}
+              {{ profile()?.name || 'User Name' }}
               &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
-              {{ selectedVideo()?.title || 'Lesson Video' }}
+              {{ profile()?.email  || 'User Email' }}
               &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
-              {{ selectedVideo()?.title || 'Lesson Video' }}
+              {{ profile()?.mobile || 'User Mobile' }}
             </span>
           </div>
         </div>

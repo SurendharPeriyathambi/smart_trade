@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpEngine } from "../../../../services/engine/http_engine";
 import { Observable, switchMap, tap } from "rxjs";
-import { Datas, LoginResponce } from "../../../../interfaces/login.interface";
+import { ChangePasswordRequest, ChangePasswordResponse, Datas, ForgotPassWordRequest, ForgotPasswordResponse, LoginResponce, verifyOTPRequest, VerifyOtpResponse } from "../../../../interfaces/login.interface";
 import { environment } from "../../../environment";
 import { signData, SignInResponce } from "../../../../interfaces/signIn.interface";
 import { StorageEngine } from "../../../../services/engine/storage_engine";
@@ -57,5 +57,20 @@ logoutSync(email: string): void {
       body: JSON.stringify({ email, login_ip: ip }),
       keepalive: true
     });
+  }
+
+
+  forgotPassword(payload:ForgotPassWordRequest):Observable<ForgotPasswordResponse>{
+    return this.http.post<ForgotPasswordResponse>('api/auth/forgot_password',payload).pipe(tap(res => console.log('forgot_password response:', res)))
+    
+  }
+
+  verifyOTP(payload:verifyOTPRequest):Observable<VerifyOtpResponse>{
+    return  this.http.post<VerifyOtpResponse>('api/auth/verify_otp',payload)
+  }
+  changePassword(payload: ChangePasswordRequest): Observable<ChangePasswordResponse> {
+    return this.http.post<ChangePasswordResponse>(
+      `api/auth/change_password`, payload
+    );
   }
 }
