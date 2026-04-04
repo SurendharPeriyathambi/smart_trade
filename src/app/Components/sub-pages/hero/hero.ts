@@ -1,56 +1,97 @@
-
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, inject, PLATFORM_ID, HostListener, makeStateKey, TransferState, signal, effect } from '@angular/core';
-import { BannerService } from './banner.service';
-import { Banner } from '../../../../interfaces/banner_interface';
+import { Component, inject, PLATFORM_ID, signal, effect, HostListener, OnDestroy } from '@angular/core';
 import { HomeService } from '../../main-pages/home/home_service';
 import { LoaderService } from '../../../../services/engine/loader.service';
-const BANNER_KEY = makeStateKey<Banner[]>('banners');
+import { ImageCacheService } from '../../../../services/engine/image_cache.service';
+
 @Component({
   selector: 'app-hero',
   imports: [CommonModule],
   templateUrl: './hero.html',
   styleUrl: './hero.scss',
 })
-export class Hero  {
-  
+export class Hero implements OnDestroy {
+  protected homeService = inject(HomeService);
+  private loaderService = inject(LoaderService);
+  private platformId = inject(PLATFORM_ID);
+  private imageCacheService = inject(ImageCacheService);
 
- protected homeService = inject(HomeService);
- private loaderService = inject (LoaderService)
- protected imageReady = signal(false);      // only true when fully decoded
-  protected imageSrc = signal<string | null>(null); // set only after decode
+  protected imageReady = signal(false);
+  protected imageSrc = signal<string | null>(null);
+  protected isMobile = signal(false);
+
+  private lastLoadedPath = '';
+  private resizeTimer: any;
+  private currentImg: HTMLImageElement | null = null;
 
   constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobile.set(window.innerWidth < 768);
+    }
+
     effect(() => {
-      const path = this.homeService.banner()[0]?.path;
-  console.log("Effect running");
-      if (path && !this.imageReady()) {
-        this.loaderService.show();
-        this.preloadImage(path);
+      const banners = this.homeService.banner();
+      if (!banners?.length) return;
+
+      const selected = this.isMobile() ? (banners[1] ?? banners[0]) : banners[0];
+      const path = selected?.path;
+
+      if (!path || path === this.lastLoadedPath) return;
+
+      this.lastLoadedPath = path;
+      this.imageReady.set(false);   // show skeleton
+      this.imageSrc.set(null);      // clear old image
+
+      if (isPlatformBrowser(this.platformId)) {
+        this.loadImage(path);
       }
     });
   }
 
-  private preloadImage(url: string) {
-    const img = new Image();        // off-screen Image object
-    img.src = url;
+  private async loadImage(url: string): Promise<void> {
+    // ✅ Gets from memory or Cache API if visited before — instant
+    const src = await this.imageCacheService.getImage(url);
 
-    img.decode()                    // waits until FULLY decoded, ready to paint
+    // Cancel any previous in-flight decode
+    if (this.currentImg) {
+      this.currentImg.src = '';
+      this.currentImg = null;
+    }
+
+    const img = new Image();
+    this.currentImg = img;
+    img.src = src;
+
+    // If already cached, decode() resolves almost instantly
+    img.decode()
       .then(() => {
-        this.imageSrc.set(url);     // now safe to show
-        this.imageReady.set(true);
+        if (!img.src) return; // was cancelled
+        this.imageSrc.set(src);       // ✅ set src only after decode ready
+        this.imageReady.set(true);    // fade in
         this.loaderService.hide();
       })
       .catch(() => {
-        this.imageSrc.set(url);     // show anyway on error
+        this.imageSrc.set(src);
         this.imageReady.set(true);
         this.loaderService.hide();
       });
   }
 
- 
+  @HostListener('window:resize')
+  onResize(): void {
+    clearTimeout(this.resizeTimer);
+    this.resizeTimer = setTimeout(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        this.isMobile.set(window.innerWidth < 768);
+      }
+    }, 150);
+  }
 
-
-
- 
+  ngOnDestroy(): void {
+    clearTimeout(this.resizeTimer);
+    if (this.currentImg) {
+      this.currentImg.src = '';
+      this.currentImg = null;
+    }
+  }
 }

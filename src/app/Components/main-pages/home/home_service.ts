@@ -10,7 +10,7 @@ export class HomeService {
      private bannerService = inject (BannerService);
 
     //  Raw State Signals
-    private banners = signal <Banner[]>([]);
+    protected banners = signal <Banner[]>([]);
     private demoVideos =signal <DemoVideos[]>([]);
     private loading = signal (false);
     private error = signal <string | null> (null);
@@ -28,6 +28,7 @@ export class HomeService {
 
     // parent api calling..
     loadHomeData ():void{
+         if (this.banners().length) return;
         if (this.loading()) return;
         this.loading.set(true);
         this.error.set(null);

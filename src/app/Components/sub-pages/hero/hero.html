@@ -1,14 +1,22 @@
-<!-- hero-banner.component.html -->
+<section class="hero">
+  <div class="hero-wrapper">
 
-<section class="hero" >
- 
- 
- 
-  @if (imageReady() && imageSrc()) {
-      <div class="hero-content" >
-     <img class="hero-content" [src]="homeService.banner()[0].path"  alt="">
-    </div>
-  }
-  
- 
+    <!-- Skeleton: shows while image decodes -->
+    @if (!imageReady()) {
+      <div class="hero-skeleton"></div>
+    }
+
+    <!-- Image: src set immediately, fades in when decoded -->
+    @if (imageSrc()) {
+      <img
+        class="hero-img"
+        [class.visible]="imageReady()"
+        [src]="imageSrc()"
+        fetchpriority="high"
+        decoding="async"
+        alt="Hero Banner"
+      />
+    }
+
+  </div>
 </section>

@@ -1,26 +1,75 @@
-/* hero-banner.component.css */
-*{
-  *{
-    font-family: "Roboto", sans-serif;
-}
-}
-.hero {
-  background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
-  // padding: 4rem 0;
-  overflow: hidden;
-  position: relative;
+/* hero-banner.component.scss */
+* {
+  font-family: "Roboto", sans-serif;
 }
 
-.hero-content {
-  // background: url('/assets/images/LandingPage.png') center / cover no-repeat;
+.hero {
+  background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
+  overflow: hidden;
+  position: relative;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
+}
+
+// ✅ NEW — wrapper that stacks blur + real image
+.hero-wrapper {
+  position: relative;
   width: 100%;
-  // height: 450px;
-  aspect-ratio: 10/6;
-   background-position: center;
+  aspect-ratio: 10 / 6;          // matches your existing .hero-content ratio
+
+  @media (max-width: 767px) {
+    aspect-ratio: 9 / 16;        // mobile portrait ratio
+  }
+}
+
+// ✅ NEW — skeleton shimmer while image decodes
+.hero-skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #e8eaf0 25%, #f5f7ff 50%, #e8eaf0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ✅ UPDATED — both images stacked via absolute
+.hero-img {
+  position: absolute;             // ✅ stacks blur + real on same space
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+// ✅ UPDATED — blur on top until real image ready
+.blur-placeholder {
+  opacity: 1;                     // always visible until removed from DOM
+  filter: blur(20px);
+  transform: scale(1.05);        // hides blur edges
+  z-index: 1;
+}
+
+// ─── Your existing styles below — untouched ───────────────────────────
+
+.hero-content {
+  width: 100%;
+  background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
 }
-
 
 .hero-title {
   font-size: 3rem;
@@ -41,6 +90,14 @@
   display: flex;
   gap: 1rem;
   margin-bottom: 3rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+
+    .btn {
+      width: 100%;
+    }
+  }
 }
 
 .btn {
@@ -56,50 +113,45 @@
 .btn-primary {
   background: #4361ee;
   color: white;
-}
 
-.btn-primary:hover {
-  background: #3651d4;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+  &:hover {
+    background: #3651d4;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+  }
 }
 
 .btn-outline-dark {
   background: transparent;
   border: 2px solid #1a1a2e;
   color: #1a1a2e;
-}
 
-.btn-outline-dark:hover {
-  background: #1a1a2e;
-  color: white;
+  &:hover {
+    background: #1a1a2e;
+    color: white;
+  }
 }
 
 .stats {
   display: flex;
   gap: 3rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
 }
 
-.stat-item {
-  flex: 1;
-}
+.stat-item { flex: 1; }
 
 .stat-count {
   font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
-}
 
-.stat-count.yellow {
-  color: #ffd93d;
-}
-
-.stat-count.blue {
-  color: #4361ee;
-}
-
-.stat-count.orange {
-  color: #ff6b6b;
+  &.yellow { color: #ffd93d; }
+  &.blue   { color: #4361ee; }
+  &.orange { color: #ff6b6b; }
 }
 
 .stat-label {
@@ -121,6 +173,11 @@
   background: #4361ee;
   border-radius: 50%;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    width: 300px;
+    height: 300px;
+  }
 }
 
 .student-img {
@@ -129,6 +186,10 @@
   max-width: 450px;
   width: 100%;
   height: auto;
+
+  @media (max-width: 768px) {
+    max-width: 280px;
+  }
 }
 
 .badge {
@@ -142,84 +203,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
 
-.badge-courses {
-  top: 10%;
-  left: -5%;
-  background: white;
-}
-
-.badge-rating {
-  top: 5%;
-  right: 10%;
-  background: #ffd93d;
-}
-
-.badge-users {
-  bottom: 10%;
-  right: -5%;
-  background: white;
-}
-
-@media (max-width: 199px) {
-  .hero-content {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .hero-title {
-    font-size: 2.5rem;
-  }
-
-  .hero-image {
-    order: -1;
-  }
-
-  .decorative-circle {
-    width: 400px;
-    height: 400px;
-  }
-
-  .student-img {
-    max-width: 350px;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero {
-    padding:  0;
-  }
-
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-buttons {
-    flex-direction: column;
-  }
-
-  .hero-buttons .btn {
-    width: 100%;
-  }
-
-  .stats {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .decorative-circle {
-    width: 300px;
-    height: 300px;
-  }
-
-  .student-img {
-    max-width: 280px;
-  }
-
-  .badge {
+  @media (max-width: 768px) {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
   }
 }
 
+.badge-courses { top: 10%; left: -5%; background: white; }
+.badge-rating  { top: 5%; right: 10%; background: #ffd93d; }
+.badge-users   { bottom: 10%; right: -5%; background: white; }

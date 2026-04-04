@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, Input, OnInit, OnDestroy, HostListener, PLATFORM_ID, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthServices } from '../../main-pages/login/auth.service';
 import { StorageEngine } from '../../../../services/engine/storage_engine';
@@ -19,6 +19,7 @@ export class Header implements OnInit, OnDestroy {
   @Input() isAuthButton = true;
   @Input() showLogout = false;
 
+   private platformId = inject(PLATFORM_ID);
   constructor(
     private authService: AuthServices,
     private storage: StorageEngine,
@@ -34,10 +35,13 @@ export class Header implements OnInit, OnDestroy {
 
   @HostListener('window:beforeunload')
   onBeforeUnload(): void {
-    sessionStorage.setItem('is_refreshing', '1');
+   if (isPlatformBrowser(this.platformId)) {
+      sessionStorage.setItem('is_refreshing', '1');
+    }
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy(): void {  
+     if (!isPlatformBrowser(this.platformId)) return;
     const isRefreshing = sessionStorage.getItem('is_refreshing') === '1';
 
     // Always clean up the flag for the next unload cycle
@@ -62,6 +66,8 @@ export class Header implements OnInit, OnDestroy {
   }
 
   scrollTo(sectionId: string) {
+      if (!isPlatformBrowser(this.platformId)) return;
+
     this.closeMenu();
     const currentUrl = this.router.url.split('#')[0];
     if (currentUrl === '/home') {
