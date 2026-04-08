@@ -10,6 +10,21 @@
   pointer-events: none;
   z-index: 1;
 }
+.curriculum-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.curriculum-left {
+  flex: 2;
+}
+
+.curriculum-rigt {
+ padding: 24px;
+}
+
+/* 📱 MOBILE */
 
 .curriculum-container {
   max-width: 850px;
@@ -444,6 +459,19 @@
     .video-title { font-size: 18px; }
     .video-description { font-size: 13px; }
   }
+
+  .curriculum-layout {
+    flex-direction: column;
+  }
+.curriculum-left{
+  width: 100%;
+}
+  .curriculum-right {
+    order: 2;
+    margin-top: 20px;
+  }
+
+
 }
 
 // ─── ADD these styles to your course-curriculam.scss ─────────────────────────

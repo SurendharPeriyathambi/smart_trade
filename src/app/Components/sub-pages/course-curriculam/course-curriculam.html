@@ -1,4 +1,7 @@
 <div class="div-box"></div>
+
+   <!-- LEFT -->
+  
 <div class="curriculum-container">
   <h2 class="fw-bold">{{course()?.title}}</h2>
   <div class="details-container">
@@ -101,6 +104,11 @@
   </div>
 </div>
 
+
+ <!-- RIGHT -->
+  <div class="curriculum-rigt">
+    <app-weekly-report></app-weekly-report>
+</div>
 <!-- ─── Preview Modal ──────────────────────────────────────────────────── -->
 <ng-container *ngIf="previewVideo">
   <div class="preview-backdrop" (click)="closePreview()">

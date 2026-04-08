@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { AfterViewInit, Component, inject } from '@angular/core';
 import { Header } from "../../sub-pages/header/header";
 import { Hero } from "../../sub-pages/hero/hero";
 import { ChooseUs } from "../../sub-pages/choose-us/choose-us";
@@ -15,12 +15,12 @@ import { HomeService } from './home_service';
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
-export class Home {
+export class Home implements AfterViewInit {
 // constructor(private route: ActivatedRoute) {}
 
 private route = inject(ActivatedRoute);
 private homeService = inject(HomeService)
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     // getWebData();
     this.homeService.loadHomeData()
     // this.route.fragment.subscribe(fragment => {

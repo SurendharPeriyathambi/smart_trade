@@ -3,10 +3,11 @@ import { Component, ViewChild, ElementRef, inject, effect } from '@angular/core'
 import { SubscriptionState } from '../../main-pages/subscriptions/subscription_state.service';
 import Hls from 'hls.js';
 import { CourseLesson, CourseVideo } from '../../../../interfaces/subscriptions_interface';
+import { WeeklyReport } from '../weekly-report/weekly-report';
 
 @Component({
   selector: 'app-course-curriculam',
-  imports: [CommonModule],
+  imports: [CommonModule,WeeklyReport],
   templateUrl: './course-curriculam.html',
   styleUrl: './course-curriculam.scss',
 })
