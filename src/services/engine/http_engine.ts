@@ -1,4 +1,4 @@
-import { HttpBackend, HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { environment } from '../../app/environment';
@@ -19,6 +19,13 @@ getIp(): Observable<string> {
             map(res => res.ip)
         );
     }
+    postWithToken(endpoint: string, payload: any, token: string): Observable<any> {
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  });
+  return this.http.post(`${this.baseurl}${endpoint}`, payload, { headers });
+}
 
     get<T>(url: string, isProtected: boolean = true): Observable<T> {
         return this.http.get<T>(

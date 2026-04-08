@@ -103,3 +103,15 @@ export interface CourseResponse {
     message: string;
     data: CourseDetails;
 }
+export interface WeeklyMeetingResponse {
+  weekly_meeting: WeeklyVideos[];
+}
+
+export interface WeeklyVideos{
+    title:string;
+    path:string;
+    thumbnail:string;
+}
+export interface WeeklkyVideoUrlResponce{
+    cdn_url: string;
+}

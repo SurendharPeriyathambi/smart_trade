@@ -12,7 +12,7 @@ import { ToastService } from '../../../../services/engine/toast.service';
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
-export class Header implements OnInit, OnDestroy {
+export class Header implements OnInit {
   isMenuOpen = false;
   isLoggedIn = false;
 
@@ -33,29 +33,6 @@ export class Header implements OnInit, OnDestroy {
   }
 
 
-  @HostListener('window:beforeunload')
-  onBeforeUnload(): void {
-   if (isPlatformBrowser(this.platformId)) {
-      sessionStorage.setItem('is_refreshing', '1');
-    }
-  }
-
-  ngOnDestroy(): void {  
-     if (!isPlatformBrowser(this.platformId)) return;
-    const isRefreshing = sessionStorage.getItem('is_refreshing') === '1';
-
-    // Always clean up the flag for the next unload cycle
-    sessionStorage.removeItem('is_refreshing');
-
-    if (this.isLoggedIn && !isRefreshing) {
-      // Real tab close — fire keepalive logout
-      const email = this.storage.getEmail();
-      if (email) {
-        this.authService.logoutSync(email);
-      }
-    }
-    // Refresh → do nothing, token stays, user stays logged in
-  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
@@ -91,6 +68,8 @@ export class Header implements OnInit, OnDestroy {
     this.authService.logout().subscribe({
       next: () => {
         this.storage.clear();
+       localStorage.removeItem('pending_logout'); // ✅ clean up
+      localStorage.removeItem('unload_time');
         this.isLoggedIn = false;
         this.loader.hide();
         this.toast.success('Logged out successfully!');

@@ -1,4 +1,7 @@
 <div class="div-box"></div>
+
+   <!-- LEFT -->
+  
 <div class="curriculum-container">
   <h2 class="fw-bold">{{course()?.title}}</h2>
   <div class="details-container">
@@ -101,6 +104,11 @@
   </div>
 </div>
 
+
+ <!-- RIGHT -->
+  <div class="curriculum-rigt">
+   <app-weekly-report></app-weekly-report>
+</div>
 <!-- ─── Preview Modal ──────────────────────────────────────────────────── -->
 <ng-container *ngIf="previewVideo">
   <div class="preview-backdrop" (click)="closePreview()">
@@ -155,17 +163,20 @@
       <div class="video-container">
 
         <!-- Marquee title bar -->
-        <div class="video-modal-title-bar">
+        <!-- <div class="video-modal-title-bar">
           <div class="marquee-track">
-            <span class="marquee-content">
+            
+          </div>
+        </div> -->
+       <span class="floating-watermark" [ngClass]="animationClass" [ngStyle]="watermarkStyle">
               {{ profile()?.name || 'User Name' }}
               &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
               {{ profile()?.email  || 'User Email' }}
               &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
               {{ profile()?.mobile || 'User Mobile' }}
+              &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
+              {{ loginIp() || 'IP Loading...' }}
             </span>
-          </div>
-        </div>
 
         <!-- LEFT zone: double-click / double-tap = rewind 10s -->
         <div

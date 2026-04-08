@@ -3,16 +3,20 @@ import { Component, ViewChild, ElementRef, inject, effect } from '@angular/core'
 import { SubscriptionState } from '../../main-pages/subscriptions/subscription_state.service';
 import Hls from 'hls.js';
 import { CourseLesson, CourseVideo } from '../../../../interfaces/subscriptions_interface';
+import { WeeklyReport } from '../weekly-report/weekly-report';
+import { AuthStateService } from '../../main-pages/login/auth-state.service';
 
 @Component({
   selector: 'app-course-curriculam',
-  imports: [CommonModule],
+  imports: [CommonModule,WeeklyReport],
   templateUrl: './course-curriculam.html',
   styleUrl: './course-curriculam.scss',
 })
 export class CourseCurriculam {
 
   private subState = inject(SubscriptionState);
+  private authState = inject (AuthStateService);
+
 
   // ── Signals from state ──────────────────────────────────────────────────
   course        = this.subState.course;
@@ -21,6 +25,7 @@ export class CourseCurriculam {
   videoLoading  = this.subState.videoLoading;
   selectedVideo = this.subState.selectedVideo;
   subscription  = this.subState.subscription;
+  loginIp = this.authState.ip;
   unlockedVideoIds = this.subState.unlockedVideoIds;
   videoThumbnails  = this.subState.videoThumbnails;
   unlockLoading    = this.subState.unlockLoading;
@@ -333,4 +338,33 @@ export class CourseCurriculam {
     return rem > 0 ? `${mins}m ${rem}s` : `${mins}m`;
   }
 
+animationClass = '';
+
+watermarkStyle: any = {};
+
+ngOnInit() {
+  const animations = [
+    'move-random-1',
+    'move-random-2',
+    'move-random-3'
+  ];
+
+  const setRandom = () => {
+    // 🎯 random animation
+    this.animationClass =
+      animations[Math.floor(Math.random() * animations.length)];
+
+    // 🎯 random position inside video
+    this.watermarkStyle = {
+      top: Math.floor(Math.random() * 70) + '%',
+      left: Math.floor(Math.random() * 70) + '%'
+    };
+  };
+
+  setRandom();
+
+  setInterval(() => {
+    setRandom();
+  }, 8000);
+}
 }

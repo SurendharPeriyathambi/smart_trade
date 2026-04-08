@@ -10,12 +10,27 @@
   pointer-events: none;
   z-index: 1;
 }
+.curriculum-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.curriculum-left {
+  flex: 2;
+}
+
+.curriculum-rigt {
+ padding: 24px;
+}
+
+/* 📱 MOBILE */
 
 .curriculum-container {
   max-width: 850px;
   margin-left: 5%;
   margin-top: 2%;
-  margin-bottom: 2%;
+  // margin-bottom: 2%;
   padding: 24px;
   padding-top: 40px;
   border-radius: 12px;
@@ -444,6 +459,19 @@
     .video-title { font-size: 18px; }
     .video-description { font-size: 13px; }
   }
+
+  .curriculum-layout {
+    flex-direction: column;
+  }
+.curriculum-left{
+  width: 100%;
+}
+  .curriculum-right {
+    order: 2;
+    margin-top: 20px;
+  }
+
+
 }
 
 // ─── ADD these styles to your course-curriculam.scss ─────────────────────────
@@ -469,37 +497,110 @@
   }
 
   // ✅ Marquee title bar — floats over the top of the video
-  .video-modal-title-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    // gradient fades to transparent downward so video shows through
-    background: linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0) 100%);
-    padding: 12px 0 32px;
-    overflow: hidden;
-    z-index: 6;            // above seek zones (5), below browser native controls
-    pointer-events: none;  // clicks fall through to seek zones / video
+//   .video-modal-title-bar {
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     width: 100%;
+//     // gradient fades to transparent downward so video shows through
+//     background: linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0) 100%);
+//     padding: 12px 0 32px;
+//     overflow: hidden;
+//     z-index: 6;            // above seek zones (5), below browser native controls
+//     pointer-events: none;  // clicks fall through to seek zones / video
 
-    .marquee-track {
-      display: flex;
-      width: 100%;
-      overflow: hidden;
-    }
+//     .marquee-track {
+//       display: flex;
+//       width: 100%;
+//       overflow: hidden;
+//     }
 
-    .marquee-content {
-      display: inline-block;
-      white-space: nowrap;
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.4px;
-      padding-left: 100%;
-      animation: marquee-scroll 14s linear infinite;
-      text-shadow: 0 1px 6px rgba(0,0,0,0.7);
-    }
-  }
+//     .marquee-content {
+//       display: inline-block;
+//       white-space: nowrap;
+//       color: #929292;
+//       font-size: 14px;
+//       font-weight: 500;
+//       letter-spacing: 0.4px;
+//       padding-left: 100%;
+//       animation: marquee-scroll 14s linear infinite;
+//       text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+//     }
+//   }
+// @keyframes move-left {
+//   0%   { transform: translateX(100%); }
+//   100% { transform: translateX(-100%); }
+// }
 
+// @keyframes move-top {
+//   0%   { transform: translateY(100%); }
+//   100% { transform: translateY(-100%); }
+// }
+
+// @keyframes move-diagonal {
+//   0%   { transform: translate(100%, 100%); }
+//   100% { transform: translate(-100%, -100%); }
+// }
+
+// @keyframes move-random {
+//   0%   { transform: translate(0, 0); }
+//   25%  { transform: translate(40vw, 20vh); }
+//   50%  { transform: translate(-30vw, 40vh); }
+//   75%  { transform: translate(20vw, -30vh); }
+//   100% { transform: translate(0, 0); }
+// }
+
+// .move-left     { animation: move-left 12s linear infinite; }
+// .move-top      { animation: move-top 12s linear infinite; }
+// .move-diagonal { animation: move-diagonal 15s linear infinite; }
+// .move-random   { animation: move-random 20s ease-in-out infinite; }
+
+
+.floating-watermark {
+  position: absolute;
+  z-index: 10;
+
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+
+  pointer-events: none;
+  user-select: none;
+
+  transform: translate(-50%, -50%); // ✅ center align at random point
+  transition: top 1s ease, left 1s ease; // smooth jump
+
+  text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+}
+@keyframes float-random-1 {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(30vw, 10vh); }
+  50%  { transform: translate(-20vw, 30vh); }
+  75%  { transform: translate(15vw, -20vh); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes float-random-2 {
+  0%   { transform: translate(10vw, 20vh); }
+  25%  { transform: translate(-30vw, -10vh); }
+  50%  { transform: translate(20vw, 40vh); }
+  75%  { transform: translate(-10vw, 10vh); }
+  100% { transform: translate(10vw, 20vh); }
+}
+
+@keyframes float-random-3 {
+  0%   { transform: translate(0, 30vh); }
+  25%  { transform: translate(25vw, -15vh); }
+  50%  { transform: translate(-25vw, 20vh); }
+  75%  { transform: translate(10vw, 5vh); }
+  100% { transform: translate(0, 30vh); }
+}
+
+
+.move-random-1 { animation: float-random-1 28s ease-in-out infinite; }
+.move-random-2 { animation: float-random-2 32s ease-in-out infinite; }
+.move-random-3 { animation: float-random-3 40s ease-in-out infinite; }
   // ✅ Seek zones — invisible tap regions
   .seek-zone {
     position: absolute;

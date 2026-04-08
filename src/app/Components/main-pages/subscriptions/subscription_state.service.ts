@@ -1,8 +1,9 @@
 import { inject, Injectable, signal, computed } from "@angular/core";
 import { SubscriptionService } from "./subscription.service";
-import { CourseDetails, CourseResponse, CourseVideo, Profile, Subscription, SubscriptionList, UserSubscription } from "../../../../interfaces/subscriptions_interface";
+import { CourseDetails, CourseResponse, CourseVideo, Profile, Subscription, SubscriptionList, UserSubscription, WeeklyVideos } from "../../../../interfaces/subscriptions_interface";
 import { ToastService } from "../../../../services/engine/toast.service";
 import { LoaderService } from "../../../../services/engine/loader.service";
+import { sign } from "crypto";
 
 @Injectable({ providedIn: 'root' })
 export class SubscriptionState {
@@ -38,7 +39,14 @@ export class SubscriptionState {
     private _unlockedVideoIds = signal<Set<number>>(new Set());
     private _videoThumbnails = signal<Record<number, string>>({});
     private _unlockLoading = signal<number | null>(null);
-
+    private _WeekVideos = signal<WeeklyVideos[]>([]);
+      private weekactiveVideoUrl = signal<string | null>(null);
+    private isModalOpen = signal(false);
+     private weekvideoLoading = signal(false);
+readonly weekVideos = this._WeekVideos.asReadonly()
+  readonly activeVideoUrls = this.weekactiveVideoUrl.asReadonly();
+  readonly isModalOpens = this.isModalOpen.asReadonly();
+  readonly videoLoadings = this.weekvideoLoading.asReadonly();
     // Tracks video ids that are unlocked but player is still loading
     // During this window we show spinner, not preview btn
     private _pendingOpenIds = signal<Set<number>>(new Set());
@@ -91,8 +99,44 @@ export class SubscriptionState {
                 this.loader.hide();
             }
         });
-    }
 
+        this.subscriptionService.getWeekly().subscribe({
+            next:(res)=>{
+                if (res.status) {
+                    this._WeekVideos.set(res.data.weekly_meeting ?? []);
+
+                }
+                 this.loader.hide();
+            },
+            error:(err)=>{
+                 console.log("weekly videos details state error:", err);
+                this.weekvideoLoading.set(false);
+                this.loader.hide();
+            }
+
+        })
+    }
+openWeeklyVideo(video_id: string) {
+  if (this.videoLoading()) return;
+
+  this.weekvideoLoading.set(true);
+
+  this.subscriptionService.getWeeklyUrl(video_id).subscribe({
+    next: (res) => {
+      if (res.status) {
+        this.weekactiveVideoUrl.set(res.data.cdn_url);
+        this.isModalOpen.set(true);
+      }
+      this.weekvideoLoading.set(false);
+    },
+    error: () => this.weekvideoLoading.set(false)
+  });
+}
+
+closeWeeklyVideo() {
+  this.weekactiveVideoUrl.set(null);
+  this.isModalOpen.set(false);
+}
    
     private _seedUnlockedFromCourse(course: CourseDetails) {
         const current = new Set(this._unlockedVideoIds());

@@ -30,7 +30,10 @@ export class Login implements OnInit {
  }
   ngOnInit(): void {
    this.authService.getIp().subscribe({
-    next: (res)=> this.ip = res,
+    next: (res)=>{this.ip = res
+      this.authState.setIp(res);
+    } ,
+    
     error: err => console.log('Failed to get Ip',err)
    })
   }

@@ -6,11 +6,12 @@ import { environment } from "../../../environment";
 import { signData, SignInResponce } from "../../../../interfaces/signIn.interface";
 import { StorageEngine } from "../../../../services/engine/storage_engine";
 import { Router } from "@angular/router";
-
+const CLOSE_THRESHOLD_MS = 5000;
 
 @Injectable ({
     providedIn:'root'
 })
+
 export class AuthServices{
 baseUrl = environment.apiUrl;
 private cachedIp: string = ''; 
@@ -42,22 +43,44 @@ logout(): Observable<any> {
         })
     );
 }
+// ✅ Store everything needed for logout BEFORE tab closes
+storeLogoutData(): void {
+  const token = this.storage.getAccessToken();
+  const email = this.storage.getEmail();
+  const ip = this.cachedIp || localStorage.getItem('cached_ip') || '';
 
-logoutSync(email: string): void {
-    const url = `${this.baseUrl}api/auth/logout`;
-    const token = this.storage.getAccessToken();
-    const ip = this.cachedIp || localStorage.getItem('cached_ip') || '';
- 
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ email, login_ip: ip }),
-      keepalive: true
-    });
+  if (!token || !email) return;
+
+  localStorage.setItem('pending_logout', JSON.stringify({
+    token,
+    email,
+    ip,
+    timestamp: Date.now()
+  }));
+}
+
+// ✅ Called on next visit — full normal HTTP with no time pressure
+logoutFromPreviousSession(): Observable<any> {
+  const raw = localStorage.getItem('pending_logout');
+  localStorage.removeItem('pending_logout'); // always clean up
+
+  if (!raw) return new Observable(o => o.complete());
+
+  const { token, email, ip, timestamp } = JSON.parse(raw);
+  const diff = Date.now() - timestamp;
+
+  if (diff <= CLOSE_THRESHOLD_MS) {
+    // Was a refresh, not a close — skip logout
+    return new Observable(o => o.complete());
   }
+
+  // ✅ Full HTTP call — same as normal logout, guaranteed to work
+  return this.http.postWithToken(
+    `api/auth/logout`,
+    { email, login_ip: ip },
+    token  // pass token explicitly since storage is already cleared
+  );
+}
 
 
   forgotPassword(payload:ForgotPassWordRequest):Observable<ForgotPasswordResponse>{

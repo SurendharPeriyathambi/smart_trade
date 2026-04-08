@@ -27,28 +27,27 @@ export class HomeService {
     readonly isModalOpen = this._isModalOpen.asReadonly();
 
     // parent api calling..
-    loadHomeData(): void {
-        if (this.banners().length) return;
-        if (this.loading()) return;
-        this.loading.set(true);
-        this.error.set(null);
+  loadHomeData(forceRefresh = false): void {
+    if (!forceRefresh && this.banners().length) return;
+    if (this.loading()) return;
 
+    this.loading.set(true);
+    this.error.set(null);
 
-        this.bannerService.getHomeData().subscribe({
-            next: (res) => {
-                if (res.status) {
-                    this.banners.set(res.data.banner ?? []);
-                    this.demoVideos.set(res.data.demo_videos ?? []);
-                }
-                this.loading.set(false);
-            },
-            error: (err) => {
-                this.error.set(err.message ?? "failed to load Data");
-                this.loading.set(false);
+    this.bannerService.getHomeData().subscribe({
+        next: (res) => {
+            if (res.status) {
+                this.banners.set(res.data.banner ?? []);
+                this.demoVideos.set(res.data.demo_videos ?? []);
             }
-        });
-
-    }
+            this.loading.set(false);
+        },
+        error: (err) => {
+            this.error.set(err.message ?? "failed to load Data");
+            this.loading.set(false);
+        }
+    });
+}
 
     openVideo(videoId: string) {
         if (this._videoLoading()) return;

@@ -11,7 +11,9 @@ import { switchMap } from "rxjs";
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
-   
+    constructor() {
+    this.initIp(); // still works fine
+  }
     private authService = inject (AuthServices);
    
     private storage = inject (StorageEngine);
@@ -22,12 +24,43 @@ export class AuthStateService {
 
     private _loading = signal(false);
     private _error = signal<string | null>(null);
-
-    readonly loading = this._loading.asReadonly();
+ readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
 
     private _trxId = signal<string>('');
   readonly trxId = this._trxId.asReadonly();
+    ip = signal<string>('')
+   
+   private initIp() {
+    // ✅ 1. Check localStorage first
+    const savedIp = localStorage.getItem('user_ip');
+
+    if (savedIp) {
+      this.ip.set(savedIp);
+    } else {
+      // ✅ 2. Fetch from API if not available
+      this.fetchIp();
+    }
+  }
+
+  fetchIp() {
+    this.authService.getIp().subscribe({
+      next: (res) => {
+        this.ip.set(res);
+
+        // ✅ Save for refresh persistence
+        localStorage.setItem('user_ip', res);
+      },
+      error: () => {
+        console.log('IP fetch failed');
+      }
+    });
+  }
+
+  setIp(ip: string) {
+    this.ip.set(ip);
+    localStorage.setItem('user_ip', ip);
+  }
 
   login (email:string,password:string){
     if(this._loading())return;
@@ -48,6 +81,7 @@ export class AuthStateService {
          this.storage.setAccessToken(res.data.access_token ?? '');
          this.storage.setRefreshToken(res.data.refresh_token ?? '');
          this.storage.setEmail(email)
+         localStorage.setItem('cached_ip', res.data.user_details.login_ip);
          this.toast.success(res.message || "Loggin Successfull !..")
           setTimeout(() => this.router.navigate(['/subscriptions'], { replaceUrl: true }), 2000);
         },

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpEngine } from "../../../../services/engine/http_engine";
 import { Observable } from "rxjs";
-import { CourseResponse, ImageUploadResponse, Profile, SubResponse, SubscriptionList, UserSubscription, UserSubscriptionRequest } from "../../../../interfaces/subscriptions_interface";
+import { CourseResponse, ImageUploadResponse, Profile, SubResponse, SubscriptionList, UserSubscription, UserSubscriptionRequest, WeeklkyVideoUrlResponce, WeeklyMeetingResponse, WeeklyVideos } from "../../../../interfaces/subscriptions_interface";
 import { environment } from "../../../environment";
 import { ApiResponce, VideoUrlResponce } from "../../../../interfaces/banner_interface";
 
@@ -16,6 +16,7 @@ export class SubscriptionService {
     private subsUrl = 'api/subscription_list';
     private paymentUrl = 'api/common/image_upload'
     private userUrl = 'api/user_subscription'
+    private weekUrl = 'api/weekly_meeting'
     constructor(private http: HttpEngine) {
 
     }
@@ -70,5 +71,11 @@ export class SubscriptionService {
         });
     }
 
+    getWeekly():Observable <SubResponse<WeeklyMeetingResponse>>{
+        return this.http.get<SubResponse<WeeklyMeetingResponse>>(this.weekUrl)
+    }
+    getWeeklyUrl(videoId:string):Observable <SubResponse<WeeklkyVideoUrlResponce>>{
+        return this,this.http.get(`api/get_video_url?path=${videoId}`)
+    }
 
 }

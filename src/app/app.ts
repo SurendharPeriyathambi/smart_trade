@@ -59,31 +59,48 @@ export class App {
     });
   }
 
-  private _handleSessionOnLoad(): void {
-    const unloadTime = localStorage.getItem('unload_time');
-    localStorage.removeItem('unload_time'); // always clean up immediately
+private _handleSessionOnLoad(): void {
+    const raw = localStorage.getItem('pending_logout');
+    if (!raw) return;
 
-    if (!unloadTime) return; // first ever visit — nothing to check
+    const { timestamp } = JSON.parse(raw);
+    const diff = Date.now() - timestamp;
 
-    const diff = Date.now() - Number(unloadTime);
-
-    if (diff > CLOSE_THRESHOLD_MS) {
-      // Gap is large → was a real tab close, not a refresh → logout now
-      const email = this.storage.getEmail();
-      if (email) {
-        this.authService.logoutSync(email);
-      }
-      this.storage.clear();
+    if (diff <= CLOSE_THRESHOLD_MS) {
+      // Was a refresh — clean up and do nothing
+      localStorage.removeItem('pending_logout');
+      return;
     }
-    // Gap is small → was a refresh → do nothing, keep session
+
+    // ✅ Real tab close detected — call full logout API now
+    this.loaderService.show();
+
+    this.authService.logoutFromPreviousSession().subscribe({
+      next: () => {
+        this.storage.clear();
+        this.loaderService.hide();
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        // Even if API fails, clear local session
+        localStorage.removeItem('pending_logout');
+        this.storage.clear();
+        this.loaderService.hide();
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
   // ✅ ONLY stamps the time. NEVER calls logout here.
   // Logout decision is made on the NEXT load based on the time gap.
   @HostListener('window:beforeunload')
+  // onTabClose(): void {
+  //   const token = this.storage.getAccessToken();
+  //   if (!token) return;
+  //   localStorage.setItem('unload_time', Date.now().toString());
+  // }
+  @HostListener('window:beforeunload')
   onTabClose(): void {
-    const token = this.storage.getAccessToken();
-    if (!token) return;
-    localStorage.setItem('unload_time', Date.now().toString());
+    this.authService.storeLogoutData(); // stores token+email+ip+timestamp
   }
 }
