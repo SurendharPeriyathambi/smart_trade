@@ -19,34 +19,7 @@ import { SubscriptionState } from '../../main-pages/subscriptions/subscription_s
   styleUrl: './weekly-report.scss',
 })
 export class WeeklyReport {
-  // videos: WeeklyVideo[] = [
-  //   {
-  //     id: 1,
-  //     title: 'Week 1 - Intro',
-  //     thumbnail: 'assets/images/demo1.png',
-  //     videoUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-  //   },
-  //   {
-  //     id: 2,
-  //     title: 'Week 1 - Basics',
-  //     thumbnail: 'assets/images/demo2.png',
-  //     videoUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-  //   },
-  //   {
-  //     id: 3,
-  //     title: 'Week 2 - Advanced',
-  //     thumbnail: 'assets/images/demo3.png',
-  //     videoUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-  //   },
-  //   {
-  //     id: 4,
-  //     title: 'Week 2 - Practice',
-  //     thumbnail: 'assets/images/demo4.png',
-  //     videoUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-  //   }
-  // ];
-
-  protected subService = inject(SubscriptionState);
+protected subService = inject(SubscriptionState);
   protected weeks = this.subService.weekVideos;
   selectedVideoUrl: string | null = null;
   private videoElement!: HTMLVideoElement;
