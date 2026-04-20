@@ -22,4 +22,26 @@ export class Footer {
   ];
 
   currentYear = new Date().getFullYear();
+
+    isPrivacyOpen = false;
+    isTermsOpen = false;
+
+  openPrivacy() {
+    this.isPrivacyOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closePrivacy() {
+    this.isPrivacyOpen = false;
+    document.body.style.overflow = 'auto';
+  }
+
+  openTerms(){
+    this.isTermsOpen =true;
+    document.body.style.overflow = 'hidden';
+  }
+  closeTerms(){
+    this.isTermsOpen=false;
+      document.body.style.overflow = 'auto';
+  }
 }

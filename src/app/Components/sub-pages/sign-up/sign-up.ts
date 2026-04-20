@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthServices } from '../../main-pages/login/auth.service';
@@ -56,4 +56,17 @@ toggleConfirmPassword(){
   get password() { return this.signUpForm.get('password'); }
   get confirmPassword() { return this.signUpForm.get('confirmPassword'); }
   get agreeToTerms() { return this.signUpForm.get('agreeToTerms'); }
+
+
+
+  @Output() privacyClick = new EventEmitter<void>();
+@Output() termsClick = new EventEmitter<void>();
+
+openPrivacy() {
+  this.privacyClick.emit();
+}
+
+openTerms() {
+  this.termsClick.emit();
+}
 }

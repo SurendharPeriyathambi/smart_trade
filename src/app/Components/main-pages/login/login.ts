@@ -5,11 +5,12 @@ import { Header } from "../../sub-pages/header/header";
 import { Footer } from "../../sub-pages/footer/footer";
 import { AuthServices } from './auth.service';
 import { AuthStateService } from './auth-state.service';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-login',
-  imports: [SignIn, SignUp, Header, Footer],
+  imports: [SignIn, SignUp, Header, Footer,CommonModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -37,4 +38,24 @@ export class Login implements OnInit {
    
    })
   }
+
+
+  isPrivacyOpen = false;
+isTermsOpen = false;
+
+openPrivacy() {
+  this.isPrivacyOpen = true;
+  document.body.style.overflow = 'hidden';
+}
+
+openTerms() {
+  this.isTermsOpen = true;
+  document.body.style.overflow = 'hidden';
+}
+
+closeModal() {
+  this.isPrivacyOpen = false;
+  this.isTermsOpen = false;
+  document.body.style.overflow = 'auto';
+}
 }

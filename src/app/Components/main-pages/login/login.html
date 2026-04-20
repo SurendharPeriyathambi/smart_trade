@@ -8,8 +8,314 @@
    <app-sign-in />
     
     <!-- Sign Up Component -->
-<app-sign-up />
+<app-sign-up  (privacyClick)="openPrivacy()"
+      (termsClick)="openTerms()" />
 
   </div>
 </main>
 <app-footer />
+
+<!-- Modal -->
+<div class="modal-backdrop" *ngIf="isPrivacyOpen"  (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <div>
+        <h2>Privacy Policy</h2>
+        <small>Last updated: March 2026</small>
+      </div>
+      <button class="close-btn" (click)="closeModal()">✕</button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <button class="tag-btn">🔒 Your Privacy Matters</button>
+<div class="content-wrapper">
+   <h3 class="content-title">1. Who We Are</h3>
+      <p class="content-para">
+       <span class=" fw-bold">WebplatF </span>("we", "us", or "our") is an IT services based company located in Salem, Tamil Nadu, India. We do services related to web development, UI/UX design, BPO services, billing software, e-commerce solutions, and business website services.
+      </p>
+
+      <p class="content-para ">
+        Mail at: <a href="#">webplatf@gmail.com</a> | Reach us: +91 7695828115
+      </p>
+</div>
+     
+      <div class="content-wrapper">
+        <h3 class="content-title">2. Information We Need</h3>
+      <ul class="content-list">
+        <li class="content-item"> <span>Personal Info:</span> Name, Email, Phone, Company</li>
+        <li class="content-item"> <span>Project Details: </span>You need to share your project ideas, goals, timeline, and    budget allocation.</li>
+        <li  class="content-item"> <span>Usage Data:</span> General information about how you frequently access our website (pages visited, time spent) collected via analytics tools.</li>
+        
+      </ul>
+    </div>
+      <div class="content-wrapper">
+        <h3 class="content-title">3. How We Use Your Information</h3>
+        <p class="content-para">We use the information we collect to:</p>
+
+      <ul  class="content-list">
+        <li class="content-item"> Respond to your enquiries and provide the services you requested.</li>
+        <li class="content-item">Send you project proposals, updates, and relevant communications.</li>
+        <li class="content-item"> Improve our website and services based on user feedback.</li>
+        <li class="content-item">Comply with legal obligations applicable in India.</li>
+        <li class="content-item"> Send occasional marketing emails about our services (you may opt out at any time).</li>
+        
+      </ul>
+    </div>
+
+
+    <div class="content-wrapper">
+        <h3 class="content-title">4. How We Share Your Information</h3>
+        <p class="content-para">We do not sell, trade, or rent your personal information to third parties. We may share data with:</p>
+      <ul class="content-list">
+        <li  class="content-item"> <span>Service Providers:</span> Trusted tools we use (e.g., EmailJS for contact form delivery, Google Analytics) solely to operate our business.</li>
+        <li  class="content-item"> <span>Legal Requirements:</span>When required by Indian law or valid legal process.</li>
+        <li  class="content-item"> <span>Business Transfers:</span> In the event of a merger or acquisition, with appropriate confidentiality safeguards.</li>
+        
+      </ul>
+    </div>
+
+    <div class="content-wrapper">
+   <h3 class="content-title">5. Data Retention</h3>
+      <p class="content-para">
+       We retain your personal information for as long as necessary to fulfil the purposes outlined in this policy, or as required by law. Contact form enquiries are retained for up to 3 years. You may request deletion at any time by emailing us.
+      </p>
+</div>
+
+ <div class="content-wrapper">
+        <h3 class="content-title">6. Your Rights</h3>
+        <p class="content-para">You have the right to:</p>
+
+      <ul class="content-list">
+        <li class="content-item">Access the personal data we hold about you.</li>
+        <li class="content-item">Request correction of inaccurate data.</li>
+        <li class="content-item">Request deletion of your personal data.</li>
+        <li class="content-item">Withdraw consent for marketing communications at any time.</li>
+        <li class="content-item">Lodge a complaint with the relevant data protection authority.</li>
+        
+      </ul>
+
+      <p class="content-para">To exercise any of these rights, email us at webplatf@gmail.com.</p>
+    </div>
+    <div class="content-wrapper">
+   <h3 class="content-title">7.Cookies</h3>
+      <p class="content-para">
+      Our website may use cookies to enhance your experience. These include essential cookies (required for the site to function) and analytics cookies (to understand how visitors use our site). You may disable cookies in your browser settings, though some features may not work correctly.
+      </p>
+</div>
+    <div class="content-wrapper">
+   <h3 class="content-title">8. Third-Party Links</h3>
+      <p class="content-para">
+      Our website may contain links to third-party websites. We are not responsible for the privacy practices or content of those sites. We encourage you to read their privacy policies before providing any personal information.
+      </p>
+</div>
+    <div class="content-wrapper">
+   <h3 class="content-title">9. Security</h3>
+      <p class="content-para">
+      We implement appropriate technical and organisational measures to protect your personal information against unauthorised access, alteration, disclosure, or destruction. However, no internet transmission is completely secure, and we cannot guarantee absolute security.
+      </p>
+</div>
+    <div class="content-wrapper">
+   <h3 class="content-title">10. Children's Privacy</h3>
+      <p class="content-para">
+     Our services are not directed to individuals under the age of 18. We do not knowingly collect personal information from children. If you believe we have inadvertently collected such information, please contact us immediately.
+      </p>
+</div>
+    <div class="content-wrapper">
+   <h3 class="content-title">11. Changes to This Policy</h3>
+      <p class="content-para">
+   We may update this Privacy Policy from time to time. The "Last updated" date at the top will reflect any changes. Continued use of our website after changes constitutes acceptance of the updated policy.
+      </p>
+</div>
+    <div class="content-wrapper">
+   <h3 class="content-title">12. Contact Us</h3>
+      <p class="content-para">
+  For any privacy-related questions or requests, please contact:
+      </p>
+      <div class="d-flex flex-column  ">
+        <span class="content-para fw-bold">Smart Trade</span>
+        <span class="content-para">Salem, Tamil Nadu, India</span>
+        <span class="content-para">Email: <a href="#"> webplatf@gmail.com</a></span>
+        <span class="content-para">Phone: +91 7695828115</span>
+      </div>
+</div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <span>© 2026 smarttrade. All rights reserved.</span>
+      <button class="accept-btn" (click)="closeModal()">I Understand</button>
+    </div>
+
+  </div>
+</div>
+<div class="modal-backdrop" *ngIf="isTermsOpen"  (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <div>
+        <h2>Terms of Service</h2>
+        <small>Last updated: March 2026</small>
+      </div>
+      <button class="close-btn" (click)="closeModal()">✕</button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <button class="tag-btn"><i class="bi bi-file-earmark-text"></i> Please Read Carefully</button>
+<div class="content-wrapper">
+   <h3 class="content-title">1. Acceptance of Terms</h3>
+      <p class="content-para">
+      By accessing or using the WebplatF website (webplatf.com) or engaging our services, you agree to be bound by these Terms of Service. If you do not agree, please do not use our website or services.
+      </p>
+
+      
+</div>
+     
+      <div class="content-wrapper">
+        <h3 class="content-title">2. Services Provided</h3>
+         <p class="content-para">
+      smarttrade provides professional IT services including:
+      </p>
+      <ul class="content-list">
+        <li class="content-item"> <span>Personal Info:</span> Name, Email, Phone, Company</li>
+        <li class="content-item"> <span>Project Details: </span>You need to share your project ideas, goals, timeline, and    budget allocation.</li>
+        <li  class="content-item"> <span>Usage Data:</span> General information about how you frequently access our website (pages visited, time spent) collected via analytics tools.</li>
+        
+      </ul>
+
+        <p class="content-para">
+      The specific scope, deliverables, timeline, and payment terms for any project are defined in a separate Project Agreement or Statement of Work (SOW) signed between both parties.
+      </p>
+    </div>
+      <div class="content-wrapper">
+        <h3 class="content-title">3. Client Responsibilities</h3>
+        <p class="content-para">As a client, you agree to:</p>
+
+      <ul  class="content-list">
+        <li class="content-item">Provide accurate and complete information required for project delivery.</li>
+        <li class="content-item">Provide timely feedback and approvals as agreed in the project timeline.</li>
+        <li class="content-item">Ensure you have the legal right to use any content, images, or materials you provide to us.</li>
+        <li class="content-item">Make payments according to the agreed payment schedule.</li>
+        <li class="content-item">Designate a primary point of contact for project communication.</li>
+        
+      </ul>
+    </div>
+
+
+    <div class="content-wrapper">
+        <h3 class="content-title">4. Payment Terms</h3>
+        <p class="content-para">Payment terms are specified in each individual project agreement. General terms include:</p>
+      <ul class="content-list">
+        <li  class="content-item"> A deposit (typically 40–50%) is required before work begins.</li>
+        <li  class="content-item"> Milestone-based payments are made as agreed in the project scope.</li>
+        <li  class="content-item">Final payment is due before final delivery and handover.</li>
+        <li  class="content-item">Late payments may attract a penalty as specified in the project agreement.</li>
+        <li  class="content-item">All prices are in Indian Rupees (INR) unless otherwise specified.</li>
+        
+      </ul>
+    </div>
+
+ 
+
+ <div class="content-wrapper">
+        <h3 class="content-title">5. Intellectual Property</h3>
+        
+      <ul class="content-list">
+        <li class="content-item"> <span>Client Content:</span>Any content, logos, images, or materials provided by the client remain the intellectual property of the client.</li>
+        <li class="content-item"><span>Deliverables:</span>Upon full payment, all custom code, designs, and deliverables created specifically for the client are transferred to the client.</li>
+        <li class="content-item"><span>WebplatF IP:</span> We retain ownership of our proprietary tools, frameworks, templates, and methodologies. These may be used in multiple projects but are licensed, not sold, to the client.</li>
+        <li class="content-item"><span>Portfolio Rights:</span>Unless agreed otherwise in writing, WebplatF reserves the right to showcase completed work in our portfolio and marketing materials. </li>
+        <li class="content-item">Lodge a complaint with the relevant data protection authority.</li>
+        
+      </ul>
+
+    </div>
+    <div class="content-wrapper">
+   <h3 class="content-title">6. Confidentiality</h3>
+      <p class="content-para">
+      Both parties agree to keep confidential any proprietary or sensitive information shared during the course of the project. This obligation survives termination of the agreement. We will not disclose your business information to third parties without your consent, except as required by law.
+      </p>
+</div>
+    <div class="content-wrapper">
+   <h3 class="content-title">7. Project Timeline & Delays</h3>
+      <p class="content-para">
+      We commit to delivering projects within the agreed timeline. However, timelines may be affected by
+      </p>
+      <ul class="content-list"> <li  class="content-item">Delayed feedback or approvals from the client.</li>
+        <li  class="content-item"> Changes to project scope requested mid-project.</li>
+        <li  class="content-item">Force majeure events beyond our control.</li>
+        <li  class="content-item">Late payments may attract a penalty as specified in the project agreement.</li></ul>
+
+        <p class="content-para">Any significant scope changes will be documented and may result in revised timelines and costs.</p>
+      
+</div>
+    <div class="content-wrapper">
+   <h3 class="content-title">8. Revisions & Change Requests</h3>
+      <p class="content-para">
+     Each project includes a defined number of revision rounds as specified in the project agreement. Additional revisions beyond the agreed scope will be billed at our standard hourly rate. Major scope changes require a new or amended SOW.
+      </p>
+</div>
+    <div class="content-wrapper">
+   <h3 class="content-title">9. Limitation of Liability</h3>
+      <p class="content-para">
+    WebplatF's total liability for any claim arising from our services shall not exceed the total amount paid by the client for the specific project in question.
+      </p>
+      <p class="content-para">
+   We are not liable for: indirect, incidental, or consequential damages; loss of revenue or profits; or issues arising from third-party services, hosting providers, or platforms integrated into your project.
+      </p>
+</div>
+    <div class="content-wrapper">
+   <h3 class="content-title">10. Warranties & Disclaimers</h3>
+      <p class="content-para">
+   We warrant that our work will be performed professionally and in accordance with industry standards. We do not guarantee specific business outcomes, search rankings, conversion rates, or revenue results from our services.
+      </p>
+      <p class="content-para">
+  Third-party software, plugins, and platforms are subject to their own terms and we are not responsible for changes or discontinuation by those providers.
+      </p>
+</div>
+
+    <div class="content-wrapper">
+   <h3 class="content-title">11. Termination</h3>
+      <p class="content-para">
+Either party may terminate a project with 14 days' written notice. Upon termination:
+      </p>
+     <ul class="content-list"> <li  class="content-item">Delayed feedback or approvals from the client.</li>
+        <li  class="content-item">The client pays for all work completed up to the termination date.</li>
+        <li  class="content-item">WebplatF delivers all completed work and assets to the client.</li>
+        <li  class="content-item">Deposits are non-refundable unless WebplatF is in breach of the agreement.</li></ul>
+</div>
+
+    <div class="content-wrapper">
+   <h3 class="content-title">13. Changes to Terms</h3>
+      <p class="content-para">
+We reserve the right to update these Terms of Service at any time. The updated version will be posted on this website with a revised date. Continued use of our services after changes constitutes acceptance.
+      </p>
+
+</div> 
+    <div class="content-wrapper">
+   <h3 class="content-title">14. Contact Us</h3>
+      <p class="content-para">
+For any questions about these Terms of Service, please contact:
+      </p>
+<div class="d-flex flex-column  ">
+        <span class="content-para fw-bold">Smart Trade</span>
+        <span class="content-para">Salem, Tamil Nadu, India</span>
+        <span class="content-para">Email: <a href="#"> webplatf@gmail.com</a></span>
+        <span class="content-para">Phone: +91 7695828115</span>
+      </div>
+</div> 
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <span>© 2026 smarttrade. All rights reserved.</span>
+      <button class="accept-btn" (click)="closeModal()">I Understand</button>
+    </div>
+
+  </div>
+</div>
