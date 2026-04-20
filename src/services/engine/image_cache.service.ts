@@ -13,7 +13,7 @@ export class ImageCacheService {
 
     // 1. Memory cache — instant, same session navigation
     if (this.memoryCache.has(url)) {
-      console.log('[ImageCache] Memory hit:', url);
+      
       return this.memoryCache.get(url)!;
     }
 
@@ -24,7 +24,7 @@ export class ImageCacheService {
         const cached = await cache.match(url);
 
         if (cached) {
-          console.log('[ImageCache] Cache API hit:', url);
+         
           const blob = await cached.blob();
           const blobUrl = URL.createObjectURL(blob);
           this.memoryCache.set(url, blobUrl); // promote to memory
@@ -32,7 +32,7 @@ export class ImageCacheService {
         }
 
         // Not cached — fetch, store, return
-        console.log('[ImageCache] Cache miss — fetching:', url);
+      
         await cache.add(url);
         const fresh = await cache.match(url);
         const blob = await fresh!.blob();

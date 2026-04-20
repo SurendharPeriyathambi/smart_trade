@@ -29,7 +29,7 @@ export class DemoVideos {
   @ViewChild('videoPlayer') set VideoSetter(element: ElementRef<HTMLVideoElement> | undefined) {
     if (element) {
       this.videoElement = element.nativeElement;
-      console.log('video Element Ready');
+     
 
       const url = this.homeService.activeVideoUrls();
       if (url) this.initPlayer(url);
@@ -68,7 +68,7 @@ export class DemoVideos {
   initPlayer(url: string) {
     const video = this.videoElement;
     if (!video) {
-      console.error('Video element not found');
+     
       return;
     }
 
@@ -88,7 +88,7 @@ export class DemoVideos {
       this.hls.on(Hls.Events.ERROR, (event, data) => {
         if (data.fatal) {
 
-          console.error('Fatal HLS error:', data);
+        
           this.closeVideo();
         }
       });
@@ -98,7 +98,7 @@ export class DemoVideos {
       video.src = url;
       video.play();
     } else {
-      console.error('HLS not supported in this browser');
+      
     }
   }
 

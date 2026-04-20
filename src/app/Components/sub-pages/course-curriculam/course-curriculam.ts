@@ -129,7 +129,7 @@ export class CourseCurriculam {
 
     const subscriptionId = this.subscription()?.id;
     if (!subscriptionId) {
-      console.warn('onLockClick: no subscription id — subscription signal:', this.subscription());
+     
       return;
     }
 
@@ -291,7 +291,7 @@ export class CourseCurriculam {
       });
       this.hls.on(Hls.Events.ERROR, (event, data) => {
         if (data.fatal) {
-          console.error('Fatal HLS error:', data);
+         
           this.closeVideo();
         }
       });

@@ -78,7 +78,7 @@ export class Header implements OnInit {
       error: (err) => {
         this.loader.hide();
         this.toast.error('Logout failed. Please try again.');
-        console.error('Logout error:', err);
+     
       }
     });
   }

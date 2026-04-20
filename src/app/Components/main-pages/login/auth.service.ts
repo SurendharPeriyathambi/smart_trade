@@ -84,7 +84,7 @@ logoutFromPreviousSession(): Observable<any> {
 
 
   forgotPassword(payload:ForgotPassWordRequest):Observable<ForgotPasswordResponse>{
-    return this.http.post<ForgotPasswordResponse>('api/auth/forgot_password',payload).pipe(tap(res => console.log('forgot_password response:', res)))
+    return this.http.post<ForgotPasswordResponse>('api/auth/forgot_password',payload).pipe(tap())
     
   }
 

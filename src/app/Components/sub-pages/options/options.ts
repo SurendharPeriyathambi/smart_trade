@@ -24,7 +24,7 @@ userProfile = {
   };
 
   onUpdate() {
-    console.log('Update profile clicked');
+    
     alert('Profile update functionality');
   }
 

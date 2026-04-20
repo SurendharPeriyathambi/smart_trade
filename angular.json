@@ -70,7 +70,23 @@
             }
           },
           "defaultConfiguration": "production"
+          
         },
+        "serve": {
+  "builder": "@angular/build:dev-server",
+  "options": {
+    "buildTarget": "Smart_Website:build"
+  },
+  "configurations": {
+    "production": {
+      "buildTarget": "Smart_Website:build:production"
+    },
+    "development": {
+      "buildTarget": "Smart_Website:build:development"
+    }
+  },
+  "defaultConfiguration": "development"
+},
         "test": {
           "builder": "@angular/build:unit-test"
         }

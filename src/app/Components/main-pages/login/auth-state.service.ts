@@ -48,11 +48,11 @@ export class AuthStateService {
       next: (res) => {
         this.ip.set(res);
 
-        // ✅ Save for refresh persistence
+        //  Save for refresh persistence
         localStorage.setItem('user_ip', res);
       },
       error: () => {
-        console.log('IP fetch failed');
+      
       }
     });
   }
@@ -71,8 +71,7 @@ export class AuthStateService {
  this.authService.getIp().pipe(
     switchMap((ip: string) => {
       const payload = { email, password, login_ip: ip };
-      console.log('Login payload:', payload); // ← check this
-      return this.authService.login(payload);
+           return this.authService.login(payload);
     })
   ).subscribe({
         next:(res)=>{
@@ -88,7 +87,7 @@ export class AuthStateService {
         error:(err)=>{
             this._loading.set(false);
             this.loader.hide();
-            console.log('Login error body:', JSON.stringify(err.error));
+            
             this._error.set(err.error?.message?? 'Invalid email Or password')
             this.toast.error(this._error()!)
         }

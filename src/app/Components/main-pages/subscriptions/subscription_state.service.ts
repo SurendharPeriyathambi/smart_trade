@@ -94,7 +94,7 @@ readonly weekVideos = this._WeekVideos.asReadonly()
                 this.loader.hide();
             },
             error: (err) => {
-                console.log("course details state error:", err);
+             
                 this._courseLoading.set(false);
                 this.loader.hide();
             }
@@ -109,7 +109,7 @@ readonly weekVideos = this._WeekVideos.asReadonly()
                  this.loader.hide();
             },
             error:(err)=>{
-                 console.log("weekly videos details state error:", err);
+                
                 this.weekvideoLoading.set(false);
                 this.loader.hide();
             }
@@ -333,11 +333,11 @@ closeWeeklyVideo() {
                         current.add(videoId);
                         this._unlockedVideoIds.set(current);
                     } else {
-                        console.warn('video_status API returned false', res);
+                     
                     }
                 },
                 error: (err) => {
-                    console.error('video_status API error:', err);
+                 
                 }
             });
     }

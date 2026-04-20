@@ -17,15 +17,13 @@ export const bannerResolver: ResolveFn<Banner[]> = () => {
 
 
 
-  console.log('[Resolver] Running on:', isPlatformBrowser(platformId) ? 'BROWSER' : 'SERVER');
-  console.log('[Resolver] Banner already loaded:', homeService.banner().length > 0);
 
   // ✅ BROWSER — check TransferState first (data from SSR)
   if (isPlatformBrowser(platformId)) {
     const ssrData = transferState.get(BANNER_STATE_KEY, []);
 
     if (ssrData.length) {
-      console.log('[Resolver] Using SSR TransferState data');
+    
       transferState.remove(BANNER_STATE_KEY); // clean up
       homeService['banners'].set(ssrData);
       injectPreloadLink(ssrData, platformId);
@@ -42,7 +40,7 @@ export const bannerResolver: ResolveFn<Banner[]> = () => {
   // ✅ SERVER or first browser load — fetch from API
   return bannerService.getHomeData().pipe(
     tap((res) => {
-         console.log('[Resolver] API response received on:', isPlatformBrowser(platformId) ? 'BROWSER' : 'SERVER');
+        
       if (res.status) {
         homeService['banners'].set(res.data.banner ?? []);
         homeService['demoVideos'].set(res.data.demo_videos ?? []);

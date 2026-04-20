@@ -5,7 +5,7 @@ import { Header } from "../../sub-pages/header/header";
 import { Footer } from "../../sub-pages/footer/footer";
 import { AuthServices } from './auth.service';
 import { AuthStateService } from './auth-state.service';
-import { error } from 'console';
+
 
 @Component({
   selector: 'app-login',
@@ -34,7 +34,7 @@ export class Login implements OnInit {
       this.authState.setIp(res);
     } ,
     
-    error: err => console.log('Failed to get Ip',err)
+   
    })
   }
 }
