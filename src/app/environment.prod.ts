@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://webplatf.site/'
+  apiUrl: 'https://api.smarttradeind.com/'
 };
