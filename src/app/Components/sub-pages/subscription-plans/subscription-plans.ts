@@ -11,7 +11,7 @@ import { SubscriptionList } from '../../../../interfaces/subscriptions_interface
   styleUrl: './subscription-plans.scss',
 })
 export class SubscriptionPlans {
-  @Input() isPending: boolean = false;
+  @Input() status : string | null = null;
   @Output() planSelected = new EventEmitter<any>();
 
   private subState = inject(SubscriptionState);

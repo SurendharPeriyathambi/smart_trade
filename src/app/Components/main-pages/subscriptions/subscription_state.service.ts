@@ -74,7 +74,7 @@ readonly weekVideos = this._WeekVideos.asReadonly()
     readonly subscriptionStatus = computed(() => {
         const sub = this._subscription();
         if (!sub) return null;
-        return sub.status.toLowerCase() as 'active' | 'pending' | 'approved';
+        return sub.status.toLowerCase() as 'active' | 'pending' | 'approved' | 'rejected';
     });
 
     // ─────────────────────────────────────────────────────────────────────────

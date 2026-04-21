@@ -16,7 +16,7 @@ export interface SubscriptionList {
 
 export interface UserSubscription {
   id: number;
-  status: 'active' | 'pending';
+  status: 'active' | 'pending' |'approved' | 'rejected';
 }
 export interface UserSubscriptionRequest {
   plan_id: number;

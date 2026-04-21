@@ -6,9 +6,11 @@
   <app-subscription-summary/> 
 
   <!--    FIX 3: Correct condition — hide entire plans section when active OR approved -->
+
+  
   <app-subscription-plans
     *ngIf="subscriptionStatus() !== 'active' && subscriptionStatus() !== 'approved'"
-    [isPending]="subscriptionStatus() === 'pending'"
+    [status]="subscriptionStatus()" 
     (planSelected)="onPlanSelected($event)"/>
 
   <!-- Payment section: shown after choosing a plan, only when status is null/pending -->

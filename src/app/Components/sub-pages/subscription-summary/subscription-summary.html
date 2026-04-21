@@ -77,7 +77,7 @@
               }
              
             </h3>
-            <span class="status-badge">  {{ subscription()?.status | titlecase }}</span>
+            <span class="status-badge"  [ngClass]=" subscription()?.status?.toLowerCase() === 'rejected' ? 'status-reject':'status-badge' ">  {{ subscription()?.status | titlecase }}</span>
           </div>
 
           <!-- Subscription Information -->
