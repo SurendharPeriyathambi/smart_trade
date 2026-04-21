@@ -390,7 +390,7 @@ closeWeeklyVideo() {
                         this.loadCourseDetails();
                     } else if (!data?.subscription) {
                         this.loadPlans();
-                    } else if (data?.subscription?.status === 'pending') {
+                    } else if (data?.subscription?.status === 'pending'||data?.subscription?.status === 'rejected') {
                         this.loadPlans();
                     }
                 }
@@ -410,6 +410,7 @@ closeWeeklyVideo() {
             next: (res) => {
                 if (res.status) {
                     this._plans.set(res.data ?? []);
+           
                 }
                 this.loader.hide();
             },
