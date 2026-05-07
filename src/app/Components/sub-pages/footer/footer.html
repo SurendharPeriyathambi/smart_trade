@@ -16,18 +16,26 @@
    
 
       <div class="footer-section">
-        <div class="social-links">
-        <a [href]="social.url" *ngFor="let social of socialLinks" class="social-icon">
-          <span> <i [class]="social.icon"></i> </span>
-        </a>
-      </div>
+       <div class="social-links">
+  <a 
+    [href]="social.url" 
+    *ngFor="let social of socialLinks" 
+    class="social-icon"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <span>
+      <i [class]="social.icon"></i>
+    </span>
+  </a>
+</div>
       </div>
     </div>
      <div class="footer-section d-lg-none d-md-none mt-2">
         <!-- <h4 class="footer-title">Home</h4> -->
         <ul class="nav footer-link">
           <li class="nav-link" >
-            <a [href]="'#'">Terms of Service</a>
+            <a [href]="'#'">Disclaimer and Risk Disclosure Agreement</a>
           </li>
           <li class="nav-link" >
             <a  (click)="openPrivacy()">Privacy Policy</a>
@@ -45,7 +53,7 @@
       
         <ul class="nav footer-links">
           <li class="nav-link" >
-            <a (click)="openTerms()">Terms of Service</a>
+            <a (click)="openTerms()">Disclaimer and Risk Disclosure Agreement</a>
           </li>
           <li class="nav-link" >
             <a (click)="openPrivacy()">Privacy Policy</a>
@@ -210,147 +218,59 @@
     <div class="modal-body">
       <button class="tag-btn"><i class="bi bi-file-earmark-text"></i> Please Read Carefully</button>
 <div class="content-wrapper">
-   <h3 class="content-title">1. Acceptance of Terms</h3>
+   <h3 class="content-title">1. Educational Purposes Only</h3>
       <p class="content-para">
-      By accessing or using the WebplatF website (webplatf.com) or engaging our services, you agree to be bound by these Terms of Service. If you do not agree, please do not use our website or services.
-      </p>
+​The information provided by Smart Trade (“the Company”), including but not limited to recorded videos, course materials, webinars, and communications, is for educational and informational purposes only. None of the content provided constitutes investment, tax, legal, or financial advice.      </p>
 
       
 </div>
      
       <div class="content-wrapper">
-        <h3 class="content-title">2. Services Provided</h3>
+        <h3 class="content-title">2.  Not a SEBI Registered Advisor</h3>
          <p class="content-para">
-      smarttrade provides professional IT services including:
+      ​Smart Trade and its instructors are not registered with the Securities and Exchange Board of India (SEBI) or any other financial regulatory authority as investment advisors or brokers. We do not provide "buy" or "sell" signals, nor do we manage client funds. The strategies shared are based on personal experience and technical analysis theories.
       </p>
-      <ul class="content-list">
-        <li class="content-item"> <span>Personal Info:</span> Name, Email, Phone, Company</li>
-        <li class="content-item"> <span>Project Details: </span>You need to share your project ideas, goals, timeline, and    budget allocation.</li>
-        <li  class="content-item"> <span>Usage Data:</span> General information about how you frequently access our website (pages visited, time spent) collected via analytics tools.</li>
-        
-      </ul>
-
-        <p class="content-para">
-      The specific scope, deliverables, timeline, and payment terms for any project are defined in a separate Project Agreement or Statement of Work (SOW) signed between both parties.
-      </p>
+     
     </div>
       <div class="content-wrapper">
-        <h3 class="content-title">3. Client Responsibilities</h3>
-        <p class="content-para">As a client, you agree to:</p>
+        <h3 class="content-title">3. High-Risk Warning</h3>
+        <p class="content-para">​Trading in the Indian Stock Market (NSE/BSE), Forex, and Commodities involves a high level of risk.
+​Risk of Loss: You may sustain a loss of some or all of your initial investment. You should never trade with money that you cannot afford to lose.
+​Market Volatility: Financial markets are unpredictable. Leveraged trading (such as Intraday or Forex) can work against you as well as for you.</p>
 
-      <ul  class="content-list">
-        <li class="content-item">Provide accurate and complete information required for project delivery.</li>
-        <li class="content-item">Provide timely feedback and approvals as agreed in the project timeline.</li>
-        <li class="content-item">Ensure you have the legal right to use any content, images, or materials you provide to us.</li>
-        <li class="content-item">Make payments according to the agreed payment schedule.</li>
-        <li class="content-item">Designate a primary point of contact for project communication.</li>
-        
-      </ul>
     </div>
 
 
     <div class="content-wrapper">
-        <h3 class="content-title">4. Payment Terms</h3>
-        <p class="content-para">Payment terms are specified in each individual project agreement. General terms include:</p>
-      <ul class="content-list">
-        <li  class="content-item"> A deposit (typically 40–50%) is required before work begins.</li>
-        <li  class="content-item"> Milestone-based payments are made as agreed in the project scope.</li>
-        <li  class="content-item">Final payment is due before final delivery and handover.</li>
-        <li  class="content-item">Late payments may attract a penalty as specified in the project agreement.</li>
-        <li  class="content-item">All prices are in Indian Rupees (INR) unless otherwise specified.</li>
-        
-      </ul>
+        <h3 class="content-title">4.No Guarantees of Profit</h3>
+        <p class="content-para">
+          While our course discusses the potential for achieving an annual return of 20% to 30%, this is an estimate based on historical observations and not a guarantee.
+​Trading success depends on individual discipline, experience, risk management, and market conditions.
+​Past performance is not indicative of future results. Your personal results will vary, and there is no guarantee that you will achieve any profit at all</p>
+     
     </div>
 
  
 
  <div class="content-wrapper">
-        <h3 class="content-title">5. Intellectual Property</h3>
-        
-      <ul class="content-list">
-        <li class="content-item"> <span>Client Content:</span>Any content, logos, images, or materials provided by the client remain the intellectual property of the client.</li>
-        <li class="content-item"><span>Deliverables:</span>Upon full payment, all custom code, designs, and deliverables created specifically for the client are transferred to the client.</li>
-        <li class="content-item"><span>WebplatF IP:</span> We retain ownership of our proprietary tools, frameworks, templates, and methodologies. These may be used in multiple projects but are licensed, not sold, to the client.</li>
-        <li class="content-item"><span>Portfolio Rights:</span>Unless agreed otherwise in writing, WebplatF reserves the right to showcase completed work in our portfolio and marketing materials. </li>
-        <li class="content-item">Lodge a complaint with the relevant data protection authority.</li>
-        
-      </ul>
+        <h3 class="content-title">5. Limitation of Liability</h3>
+         <p class="content-para">​By enrolling in this course or using our website, you agree that Smart Trade and its representatives shall not be held responsible or liable for any financial losses, damages, or costs incurred as a result of your trading activities.
+​You and you alone are responsible for every trade you place.
+​Smart Trade does not guarantee the accuracy or completeness of the information provided in the recorded videos.</p>
 
     </div>
     <div class="content-wrapper">
-   <h3 class="content-title">6. Confidentiality</h3>
+   <h3 class="content-title">6.Individual Responsibility</h3>
       <p class="content-para">
-      Both parties agree to keep confidential any proprietary or sensitive information shared during the course of the project. This obligation survives termination of the agreement. We will not disclose your business information to third parties without your consent, except as required by law.
-      </p>
+      The decision to enter any trade is yours alone. We strongly recommend that you consult with a certified financial professional and practice using a "demo account" before risking actual capital.</p>
 </div>
     <div class="content-wrapper">
-   <h3 class="content-title">7. Project Timeline & Delays</h3>
+   <h3 class="content-title">7. Intellectual Property</h3>
       <p class="content-para">
-      We commit to delivering projects within the agreed timeline. However, timelines may be affected by
-      </p>
-      <ul class="content-list"> <li  class="content-item">Delayed feedback or approvals from the client.</li>
-        <li  class="content-item"> Changes to project scope requested mid-project.</li>
-        <li  class="content-item">Force majeure events beyond our control.</li>
-        <li  class="content-item">Late payments may attract a penalty as specified in the project agreement.</li></ul>
-
-        <p class="content-para">Any significant scope changes will be documented and may result in revised timelines and costs.</p>
+By accessing this course or website, you acknowledge that you have read, understood, and agreed to be bound by the terms of this Disclaimer. You accept full responsibility for your financial decisions.      </p>
+    
       
 </div>
-    <div class="content-wrapper">
-   <h3 class="content-title">8. Revisions & Change Requests</h3>
-      <p class="content-para">
-     Each project includes a defined number of revision rounds as specified in the project agreement. Additional revisions beyond the agreed scope will be billed at our standard hourly rate. Major scope changes require a new or amended SOW.
-      </p>
-</div>
-    <div class="content-wrapper">
-   <h3 class="content-title">9. Limitation of Liability</h3>
-      <p class="content-para">
-    WebplatF's total liability for any claim arising from our services shall not exceed the total amount paid by the client for the specific project in question.
-      </p>
-      <p class="content-para">
-   We are not liable for: indirect, incidental, or consequential damages; loss of revenue or profits; or issues arising from third-party services, hosting providers, or platforms integrated into your project.
-      </p>
-</div>
-    <div class="content-wrapper">
-   <h3 class="content-title">10. Warranties & Disclaimers</h3>
-      <p class="content-para">
-   We warrant that our work will be performed professionally and in accordance with industry standards. We do not guarantee specific business outcomes, search rankings, conversion rates, or revenue results from our services.
-      </p>
-      <p class="content-para">
-  Third-party software, plugins, and platforms are subject to their own terms and we are not responsible for changes or discontinuation by those providers.
-      </p>
-</div>
-
-    <div class="content-wrapper">
-   <h3 class="content-title">11. Termination</h3>
-      <p class="content-para">
-Either party may terminate a project with 14 days' written notice. Upon termination:
-      </p>
-     <ul class="content-list"> <li  class="content-item">Delayed feedback or approvals from the client.</li>
-        <li  class="content-item">The client pays for all work completed up to the termination date.</li>
-        <li  class="content-item">WebplatF delivers all completed work and assets to the client.</li>
-        <li  class="content-item">Deposits are non-refundable unless WebplatF is in breach of the agreement.</li></ul>
-</div>
-
-    <div class="content-wrapper">
-   <h3 class="content-title">13. Changes to Terms</h3>
-      <p class="content-para">
-We reserve the right to update these Terms of Service at any time. The updated version will be posted on this website with a revised date. Continued use of our services after changes constitutes acceptance.
-      </p>
-
-</div> 
-    <div class="content-wrapper">
-   <h3 class="content-title">14. Contact Us</h3>
-      <p class="content-para">
-For any questions about these Terms of Service, please contact:
-      </p>
-<div class="d-flex flex-column  ">
-        <span class="content-para fw-bold">Smart Trade</span>
-        <span class="content-para">Salem, Tamil Nadu, India</span>
-        <span class="content-para">Email: <a href="#"> webplatf@gmail.com</a></span>
-        <span class="content-para">Phone: +91 7695828115</span>
-      </div>
-</div> 
     </div>
 
     <!-- Footer -->

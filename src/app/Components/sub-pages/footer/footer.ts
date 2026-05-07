@@ -15,9 +15,9 @@ export class Footer {
 
   socialLinks = [
     { icon: 'bi bi-facebook', url: '#' },
-    { icon: 'bi bi-twitter-x', url: '#' },
+    { icon: 'bi bi-instagram', url: 'https://www.instagram.com/smart.tradeacademy?igsh=Z2xqbWEwZHU3eWJo' },
     // { icon: 'bi bi-vimeo', url: '#' },
-    { icon: 'bi bi-youtube', url: '#' },
+    { icon: 'bi bi-youtube', url: 'https://www.youtube.com/@SmartTradeAcademy-k2v' },
  
   ];
 
