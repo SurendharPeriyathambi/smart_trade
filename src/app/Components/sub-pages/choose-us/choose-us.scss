@@ -24,8 +24,23 @@
 .section-description {
   color: #646464;
   font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 2rem;
+  line-height: 1.7;
+  position: relative;
+}
+
+.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.read-more {
+  color: #143aa3;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-block;
+ 
 }
 .image-grid {
   display: grid;
@@ -65,7 +80,7 @@
   object-fit: cover;
 }
 .right-section {
-  // display: grid;
+  display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
 }
