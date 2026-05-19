@@ -6,6 +6,7 @@ import { Footer } from "../../sub-pages/footer/footer";
 import { AuthServices } from './auth.service';
 import { AuthStateService } from './auth-state.service';
 import { CommonModule } from '@angular/common';
+import { DeviceService } from './device.service';
 
 
 @Component({
@@ -18,7 +19,10 @@ export class Login implements OnInit {
 
   private authService =inject (AuthServices);
   private authState = inject (AuthStateService);
+    private deviceService =
+    inject(DeviceService);
  ip : string = '';
+   deviceId: string = '';
 
  constructor() {
    afterNextRender(() => {

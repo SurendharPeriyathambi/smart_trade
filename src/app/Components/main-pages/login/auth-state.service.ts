@@ -62,7 +62,7 @@ export class AuthStateService {
     localStorage.setItem('user_ip', ip);
   }
 
-  login (email:string,password:string){
+  login (email:string,password:string,device_id:string){
     if(this._loading())return;
     this._loading.set(true);
     this._error.set(null);
@@ -70,7 +70,7 @@ export class AuthStateService {
 
  this.authService.getIp().pipe(
     switchMap((ip: string) => {
-      const payload = { email, password, login_ip: ip };
+      const payload = { email, password, login_ip: device_id };
            return this.authService.login(payload);
     })
   ).subscribe({

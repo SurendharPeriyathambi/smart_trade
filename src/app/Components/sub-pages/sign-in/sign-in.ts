@@ -9,6 +9,7 @@ import { ToastService } from '../../../../services/engine/toast.service';
 import { finalize } from 'rxjs';
 import { LoaderService } from '../../../../services/engine/loader.service';
 import { AuthStateService } from '../../main-pages/login/auth-state.service';
+import { DeviceService } from '../../main-pages/login/device.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -20,8 +21,10 @@ export class SignIn {
   
  
   showPassword = false;
+  deviceId:string='';
 
   protected authService  = inject (AuthStateService);
+  private deviceService=inject(DeviceService)
 
    signInForm: FormGroup = inject(FormBuilder).group({
     email:['',[Validators.required, Validators.email]],
@@ -31,13 +34,15 @@ export class SignIn {
   togglePassword(){
     this.showPassword = !this.showPassword;
   }
-onSubmit(){
+  async onSubmit(){
   if (this.signInForm.invalid) {
     this.signInForm.markAllAsTouched();
     return;
   }
+  this.deviceId =
+        await this.deviceService.getDeviceId();
   const {email,password}= this.signInForm.value;
-  this.authService.login(email,password);
+  this.authService.login(email,password,this.deviceId);
   
 }
 

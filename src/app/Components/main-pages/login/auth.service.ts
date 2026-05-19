@@ -21,7 +21,12 @@ private cachedIp: string = '';
         return this.http.getIp().pipe(tap((ip:string)=>{this.cachedIp=ip; localStorage.setItem('cached_ip', ip)}));
     }
 
-    login(payload:{email:string;password:string;login_ip:string}):Observable<LoginResponce<Datas>>{
+    // login(payload:{email:string;password:string;login_ip:string}):Observable<LoginResponce<Datas>>{
+           
+   
+    //     return this.http.post(`api/auth/login`,payload,false)
+    // }
+     login(payload:{email:string;password:string;login_ip:string;}):Observable<LoginResponce<Datas>>{
            
    
         return this.http.post(`api/auth/login`,payload,false)
@@ -32,12 +37,12 @@ private cachedIp: string = '';
     }
 
 
-logout(): Observable<any> {
+logout(deviceId:string): Observable<any> {
     return this.http.getIp().pipe(
         switchMap((ip: string) => {
             const payload = {
                 email: this.storage.getEmail(),
-                login_ip: ip
+                login_ip: deviceId
             };
             return this.http.post(`api/auth/logout`, payload, true);
         })

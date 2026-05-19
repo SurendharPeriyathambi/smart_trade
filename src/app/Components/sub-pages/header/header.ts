@@ -1,10 +1,11 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, Input, OnInit, OnDestroy, HostListener, PLATFORM_ID, inject } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, HostListener, PLATFORM_ID, inject, AfterViewInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthServices } from '../../main-pages/login/auth.service';
 import { StorageEngine } from '../../../../services/engine/storage_engine';
 import { LoaderService } from '../../../../services/engine/loader.service';
 import { ToastService } from '../../../../services/engine/toast.service';
+import { DeviceService } from '../../main-pages/login/device.service';
 
 @Component({
   selector: 'app-header',
@@ -15,6 +16,7 @@ import { ToastService } from '../../../../services/engine/toast.service';
 export class Header implements OnInit {
   isMenuOpen = false;
   isLoggedIn = false;
+  deviceId:string='';
 
   @Input() isAuthButton = true;
   @Input() showLogout = false;
@@ -25,11 +27,14 @@ export class Header implements OnInit {
     private storage: StorageEngine,
     private loader: LoaderService,
     private toast: ToastService,
-    private router: Router
+    private router: Router,
+    private deviceService:DeviceService
   ) {}
+ 
 
   ngOnInit(): void {
     this.isLoggedIn = !!this.storage.getAccessToken();
+    
   }
 
 
@@ -61,11 +66,13 @@ export class Header implements OnInit {
       });
     }
   }
+  
 
-  onLogout() {
+  async onLogout() {
+    this.deviceId = await this.deviceService.getDeviceId();
     this.loader.show();
     this.closeMenu();
-    this.authService.logout().subscribe({
+    this.authService.logout(this.deviceId).subscribe({
       next: () => {
         this.storage.clear();
        localStorage.removeItem('pending_logout'); // ✅ clean up
