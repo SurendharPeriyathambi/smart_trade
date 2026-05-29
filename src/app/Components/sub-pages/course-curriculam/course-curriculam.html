@@ -41,9 +41,7 @@
       </div>
     </div>
 
-    <div class="lesson-list" [class.open]="expandedLessonId === lessonSection.id">
-
-      <!--    Inner loop: video = CourseVideo, vi = video index -->
+    <!-- <div class="lesson-list" [class.open]="expandedLessonId === lessonSection.id">
       <div
         class="lesson"
         (click)="$event.stopPropagation()"
@@ -56,10 +54,10 @@
 
         <div class="lesson-right">
 
-          <!--    LOCKED: is_watch false -->
+          
           <ng-container *ngIf="!isUnlocked(video.id)">
 
-            <!-- Greyed-out: previous video not yet watched — not clickable -->
+           
             <span
               *ngIf="!canUnlock(lessonSection, vi)"
               class="lock-icon disabled"
@@ -67,7 +65,7 @@
               <img src="assets/images/lock.png" width="22" alt="locked" style="opacity:0.4;">
             </span>
 
-            <!-- Active lock: click → unlock API → auto-open video player -->
+           
             <span
               *ngIf="canUnlock(lessonSection, vi)"
               class="lock-icon"
@@ -87,7 +85,7 @@
 
           </ng-container>
 
-          <!--    UNLOCKED: is_watch true → Preview button -->
+          
           <ng-container *ngIf="isUnlocked(video.id)">
             <button
               class="preview-btn"
@@ -100,7 +98,50 @@
         </div>
       </div>
 
+    </div> -->
+  
+<div class="lesson-list" [class.open]="expandedLessonId === lessonSection.id">
+
+  <div
+    class="lesson"
+    *ngFor="let video of lessonSection.videos; let vi = index"
+    (click)="$event.stopPropagation()">
+
+    <div class="lesson-left">
+      <img src="assets/images/file.png" class="doc-icon" alt="">
+      <span class="lesson-title">{{ video.title || 'Lesson ' + (vi + 1) }}</span>
     </div>
+
+<div class="lesson-right">
+
+  <!-- Button div — fixed width -->
+  <div class="btn-cell">
+    <span
+      *ngIf="!hasPlayed(video.id) || completedVideoIds.has(video.id)"
+      class="play-icon-btn"
+      (click)="handlePlay(video); $event.stopPropagation()"
+      title="Play">
+      <i class="bi bi-play-fill"></i>
+    </span>
+
+    <span
+      *ngIf="hasPlayed(video.id) && !completedVideoIds.has(video.id)"
+      class="preview-btn"
+      (click)="handlePlay(video); $event.stopPropagation()">
+      <i class="bi bi-play-fill"></i> Preview
+    </span>
+  </div>
+
+  <!-- Duration div — fixed width -->
+  <div class="time-cell">
+    <span class="time">{{ formatDuration(video.durations) }}</span>
+  </div>
+
+</div>
+
+  </div>
+
+</div>
   </div>
 </div>
 

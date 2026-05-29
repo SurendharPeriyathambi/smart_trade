@@ -13,6 +13,8 @@ import { AuthStateService } from '../../main-pages/login/auth-state.service';
   styleUrl: './course-curriculam.scss',
 })
 export class CourseCurriculam {
+  playedVideoIds    = new Set<number>();   // opened at least once
+completedVideoIds = new Set<number>();   // watched to the end
 
   private subState = inject(SubscriptionState);
   private authState = inject (AuthStateService);
@@ -89,7 +91,14 @@ export class CourseCurriculam {
   // ─────────────────────────────────────────────────────────────────────────
   // Lesson accordion
   // ─────────────────────────────────────────────────────────────────────────
+hasPlayed(videoId: number): boolean {
+  return this.playedVideoIds.has(videoId);
+}
 
+handlePlay(video: CourseVideo) {
+  this.previewVideo = null;
+  this.subState.openCourseVideo(video.video, video);
+}
   toggleLesson(id: number) {
     this.expandedLessonId = this.expandedLessonId === id ? null : id;
   }
@@ -167,51 +176,44 @@ export class CourseCurriculam {
   }
 
   
-  closeVideo() {
-    if (this.videoElement) {
-      this.videoElement.pause();
-
-      const stoppedAt     = Math.floor(this.videoElement.currentTime);
-      const videoData     = this.selectedVideo();
-      const subscriptionId = this.subscription()?.id;
-
-      if (videoData?.id && subscriptionId) {
-        // Manually closed and not finished → status false, duration = stopped time
-        this.subState.saveVideoStatus(
-          videoData.id,
-          subscriptionId,
-          stoppedAt,
-          false
-        );
-      }
-    }
-
-    this.destroyPlayer();
-    this.subState.closeCourseVideo();
-    this.videoPlayerOpen = false;
-  }
-
-  
-  private onVideoEnded() {
+closeVideo() {
+  if (this.videoElement) {
+    this.videoElement.pause();
+    const stoppedAt      = Math.floor(this.videoElement.currentTime);
     const videoData      = this.selectedVideo();
     const subscriptionId = this.subscription()?.id;
 
-    if (videoData?.id && subscriptionId) {
-      // Naturally finished → status true, duration 0
-      this.subState.saveVideoStatus(
-        videoData.id,
-        subscriptionId,
-        0,
-        true
-      );
+    if (videoData?.id) {
+      this.playedVideoIds.add(videoData.id);      // ← mark HERE after close
+      this.completedVideoIds.delete(videoData.id);
     }
 
-    // Auto-close modal
-    this.destroyPlayer();
-    this.subState.closeCourseVideo();
-    this.videoPlayerOpen = false;
+    if (videoData?.id && subscriptionId) {
+      this.subState.saveVideoStatus(videoData.id, subscriptionId, stoppedAt, false);
+    }
+  }
+  this.destroyPlayer();
+  this.subState.closeCourseVideo();
+  this.videoPlayerOpen = false;
+}
+  
+private onVideoEnded() {
+  const videoData      = this.selectedVideo();
+  const subscriptionId = this.subscription()?.id;
+
+  if (videoData?.id) {
+    this.completedVideoIds.add(videoData.id);  // ← completed
+    this.playedVideoIds.delete(videoData.id);  // ← revert to play icon
   }
 
+  if (videoData?.id && subscriptionId) {
+    this.subState.saveVideoStatus(videoData.id, subscriptionId, 0, true);
+  }
+
+  this.destroyPlayer();
+  this.subState.closeCourseVideo();
+  this.videoPlayerOpen = false;
+}
   // ─────────────────────────────────────────────────────────────────────────
   // Seek controls
   // ─────────────────────────────────────────────────────────────────────────

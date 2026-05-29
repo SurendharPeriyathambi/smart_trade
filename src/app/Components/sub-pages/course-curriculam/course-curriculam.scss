@@ -1,3 +1,4 @@
+
 .div-box {
   position: relative;
   width: 130px;
@@ -10,6 +11,7 @@
   pointer-events: none;
   z-index: 1;
 }
+
 .curriculum-layout {
   display: flex;
   gap: 24px;
@@ -21,16 +23,13 @@
 }
 
 .curriculum-rigt {
- padding: 24px;
+  padding: 24px;
 }
-
-/* 📱 MOBILE */
 
 .curriculum-container {
   max-width: 850px;
   margin-left: 5%;
   margin-top: 2%;
-  // margin-bottom: 2%;
   padding: 24px;
   padding-top: 40px;
   border-radius: 12px;
@@ -145,58 +144,155 @@
   }
 }
 
+// ── Lesson row ──────────────────────────────────────────────────────────────
 .lesson {
   display: flex;
   justify-content: space-between;
-  padding: 12px 16px;
-  border-top: 1px solid #eef2ff;
   align-items: center;
+  padding: 12px 16px;
+  min-height: 56px;
+  border-top: 1px solid #eef2ff;
+
+  &:hover {
+    background: #f9faff;
+  }
 }
 
 .lesson-left {
   display: flex;
   align-items: center;
   gap: 10px;
-}
+  flex: 1;
+  min-width: 0;
 
-.lesson-title {
-  font-size: 14px;
-  color: #374151;
+  .doc-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    opacity: 0.6;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+  }
+
+  .lesson-title {
+    font-size: 14px;
+    color: #374151;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 .lesson-right {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: 0;                  // ← gap handled by cell widths
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+.btn-cell {
+  width: 100px;            // ← fixed column width for all buttons
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.time-cell {
+  width: 90px;             // ← fixed column width for duration
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
+.play-icon-btn {
+  all: unset;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border: 1.5px solid #2563eb;
+  border-radius: 6px;
+  color: #2563eb;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  i {
+    font-size: 13px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background: #2563eb;
+    color: #fff;
+  }
+}
+
+
 .preview-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px;
+  width: 90px !important;       // ← fixed width matches duration badge width
+  min-width: 90px !important;
+  height: 36px !important;
+  min-height: 36px !important;
   background: #2563eb;
   color: #fff;
-  border: none;
-  padding: 4px 10px;
   border-radius: 6px;
   font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  i {
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  &:hover {
+    background: #1d4ed8;
+  }
 }
 
 .time {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 90px !important;        // ← same fixed width as preview-btn
+  min-width: 90px !important;
+  height: 36px !important;
+  min-height: 36px !important;
   background: #ffe4d5;
   color: #fc4b1f;
-  padding: 6px 10px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 13px;
   border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-sizing: border-box !important;
+  line-height: 1;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-.lock-icon {
-  font-size: 14px;
-  border: 1px solid #1e40af;
-  padding: 5px;
-  border-radius: 6px;
-  cursor: pointer;
-}
 
-// ✅ SINGLE clean definition — no duplicates below
+// ── Preview card ─────────────────────────────────────────────────────────────
 .preview-backdrop {
   position: fixed;
   inset: 0;
@@ -224,15 +320,14 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
-// ✅ SINGLE .video-thumb — no duplicate anywhere in this file
 .video-thumb {
   position: relative;
   height: 160px;
   border-radius: 12px;
-  overflow: hidden;         // ✅ clips image inside rounded corners
+  overflow: hidden;
   margin-bottom: 14px;
   cursor: pointer;
-  background: #000;         // fallback if image fails
+  background: #000;
 
   img {
     width: 100%;
@@ -251,21 +346,20 @@
   }
 
   &:hover img {
-    transform: scale(1.05); // ✅ only image scales
+    transform: scale(1.05);
   }
 
   &:hover .play-btn {
     background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%) scale(1.1); // ✅ keep translate + scale together
+    transform: translate(-50%, -50%) scale(1.1);
   }
 }
 
-// ✅ SINGLE .play-btn — no duplicate anywhere in this file
 .play-btn {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); // ✅ base state — never changes on parent hover
+  transform: translate(-50%, -50%);
   z-index: 1;
   width: 48px;
   height: 48px;
@@ -311,7 +405,7 @@
   cursor: pointer;
 }
 
-// ===== VIDEO PLAYER MODAL =====
+// ── Video player modal ────────────────────────────────────────────────────────
 .video-player-backdrop {
   position: fixed;
   inset: 0;
@@ -358,6 +452,7 @@
 }
 
 .video-container {
+  position: relative;
   width: 100%;
   border-radius: 12px;
   overflow: hidden;
@@ -368,6 +463,41 @@
     height: auto;
     max-height: 70vh;
     display: block;
+  }
+
+  .floating-watermark {
+    position: absolute;
+    z-index: 10;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    transform: translate(-50%, -50%);
+    transition: top 1s ease, left 1s ease;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+  }
+
+  .seek-zone {
+    position: absolute;
+    top: 10%;
+    width: 35%;
+    height: 70%;
+    z-index: 5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    transition: background 0.15s ease;
+
+    &.seek-zone-left  { left: 0; }
+    &.seek-zone-right { right: 0; }
+
+    &.seek-active {
+      background: rgba(255, 255, 255, 0.01);
+    }
   }
 }
 
@@ -388,23 +518,91 @@
   }
 }
 
-// ===== ANIMATIONS =====
+// ── Seek feedback ─────────────────────────────────────────────────────────────
+.seek-feedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: seek-pop 0.15s ease-out;
+  pointer-events: none;
+
+  .seek-icon-ring {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      color: #ffffff;
+      font-size: 22px;
+    }
+  }
+
+  .seek-label {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  }
+}
+
+// ── Animations ────────────────────────────────────────────────────────────────
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 @keyframes scaleIn {
   from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  to   { transform: scale(1);   opacity: 1; }
 }
 
 @keyframes slideUpRight {
   from { transform: translateY(40px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
-// ===== RESPONSIVE =====
+@keyframes seek-pop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  60%  { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes float-random-1 {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(30vw, 10vh); }
+  50%  { transform: translate(-20vw, 30vh); }
+  75%  { transform: translate(15vw, -20vh); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes float-random-2 {
+  0%   { transform: translate(10vw, 20vh); }
+  25%  { transform: translate(-30vw, -10vh); }
+  50%  { transform: translate(20vw, 40vh); }
+  75%  { transform: translate(-10vw, 10vh); }
+  100% { transform: translate(10vw, 20vh); }
+}
+
+@keyframes float-random-3 {
+  0%   { transform: translate(0, 30vh); }
+  25%  { transform: translate(25vw, -15vh); }
+  50%  { transform: translate(-25vw, 20vh); }
+  75%  { transform: translate(10vw, 5vh); }
+  100% { transform: translate(0, 30vh); }
+}
+
+.move-random-1 { animation: float-random-1 28s ease-in-out infinite; }
+.move-random-2 { animation: float-random-2 32s ease-in-out infinite; }
+.move-random-3 { animation: float-random-3 40s ease-in-out infinite; }
+
+// ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 499px) {
   .div-box { display: none !important; }
 
@@ -463,197 +661,13 @@
   .curriculum-layout {
     flex-direction: column;
   }
-.curriculum-left{
-  width: 100%;
-}
+
+  .curriculum-left {
+    width: 100%;
+  }
+
   .curriculum-right {
     order: 2;
     margin-top: 20px;
-  }
-
-
-}
-
-// ─── ADD these styles to your course-curriculam.scss ─────────────────────────
-
-@keyframes marquee-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
-}
-
-@keyframes seek-pop {
-  0%   { transform: scale(0.7); opacity: 0; }
-  60%  { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(1);   opacity: 1; }
-}
-
-// ✅ video-container is the anchor for all overlays
-.video-container {
-  position: relative;
-
-  video {
-    width: 100%;
-    display: block;
-  }
-
-  // ✅ Marquee title bar — floats over the top of the video
-//   .video-modal-title-bar {
-//     position: absolute;
-//     top: 0;
-//     left: 0;
-//     width: 100%;
-//     // gradient fades to transparent downward so video shows through
-//     background: linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0) 100%);
-//     padding: 12px 0 32px;
-//     overflow: hidden;
-//     z-index: 6;            // above seek zones (5), below browser native controls
-//     pointer-events: none;  // clicks fall through to seek zones / video
-
-//     .marquee-track {
-//       display: flex;
-//       width: 100%;
-//       overflow: hidden;
-//     }
-
-//     .marquee-content {
-//       display: inline-block;
-//       white-space: nowrap;
-//       color: #929292;
-//       font-size: 14px;
-//       font-weight: 500;
-//       letter-spacing: 0.4px;
-//       padding-left: 100%;
-//       animation: marquee-scroll 14s linear infinite;
-//       text-shadow: 0 1px 6px rgba(0,0,0,0.7);
-//     }
-//   }
-// @keyframes move-left {
-//   0%   { transform: translateX(100%); }
-//   100% { transform: translateX(-100%); }
-// }
-
-// @keyframes move-top {
-//   0%   { transform: translateY(100%); }
-//   100% { transform: translateY(-100%); }
-// }
-
-// @keyframes move-diagonal {
-//   0%   { transform: translate(100%, 100%); }
-//   100% { transform: translate(-100%, -100%); }
-// }
-
-// @keyframes move-random {
-//   0%   { transform: translate(0, 0); }
-//   25%  { transform: translate(40vw, 20vh); }
-//   50%  { transform: translate(-30vw, 40vh); }
-//   75%  { transform: translate(20vw, -30vh); }
-//   100% { transform: translate(0, 0); }
-// }
-
-// .move-left     { animation: move-left 12s linear infinite; }
-// .move-top      { animation: move-top 12s linear infinite; }
-// .move-diagonal { animation: move-diagonal 15s linear infinite; }
-// .move-random   { animation: move-random 20s ease-in-out infinite; }
-
-
-.floating-watermark {
-  position: absolute;
-  z-index: 10;
-
-  color: rgba(255,255,255,0.5);
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-
-  pointer-events: none;
-  user-select: none;
-
-  transform: translate(-50%, -50%); // ✅ center align at random point
-  transition: top 1s ease, left 1s ease; // smooth jump
-
-  text-shadow: 0 1px 6px rgba(0,0,0,0.8);
-}
-@keyframes float-random-1 {
-  0%   { transform: translate(0, 0); }
-  25%  { transform: translate(30vw, 10vh); }
-  50%  { transform: translate(-20vw, 30vh); }
-  75%  { transform: translate(15vw, -20vh); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes float-random-2 {
-  0%   { transform: translate(10vw, 20vh); }
-  25%  { transform: translate(-30vw, -10vh); }
-  50%  { transform: translate(20vw, 40vh); }
-  75%  { transform: translate(-10vw, 10vh); }
-  100% { transform: translate(10vw, 20vh); }
-}
-
-@keyframes float-random-3 {
-  0%   { transform: translate(0, 30vh); }
-  25%  { transform: translate(25vw, -15vh); }
-  50%  { transform: translate(-25vw, 20vh); }
-  75%  { transform: translate(10vw, 5vh); }
-  100% { transform: translate(0, 30vh); }
-}
-
-
-.move-random-1 { animation: float-random-1 28s ease-in-out infinite; }
-.move-random-2 { animation: float-random-2 32s ease-in-out infinite; }
-.move-random-3 { animation: float-random-3 40s ease-in-out infinite; }
-  // ✅ Seek zones — invisible tap regions
-  .seek-zone {
-    position: absolute;
-    top: 10%;
-    width: 35%;
-    height: 70%;
-    z-index: 5;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    transition: background 0.15s ease;
-
-    &.seek-zone-left  { left: 0; }
-    &.seek-zone-right { right: 0; }
-
-    &.seek-active {
-      background: rgba(255, 255, 255, 0.01);
-    }
-  }
-}
-
-// ✅ Seek feedback (icon + label) shown when seek fires
-.seek-feedback {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  animation: seek-pop 0.15s ease-out;
-  pointer-events: none;
-
-  .seek-icon-ring {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    i {
-      color: #ffffff;
-      font-size: 22px;
-    }
-  }
-
-  .seek-label {
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
   }
 }
