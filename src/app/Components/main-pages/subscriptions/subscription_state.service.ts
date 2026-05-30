@@ -7,6 +7,8 @@ import { sign } from "crypto";
 
 @Injectable({ providedIn: 'root' })
 export class SubscriptionState {
+    private _isOpeningVideo = false;  // ← add this private field
+
 
     private subscriptionService = inject(SubscriptionService);
     private toastr = inject(ToastService);
@@ -170,34 +172,54 @@ closeWeeklyVideo() {
     // ─────────────────────────────────────────────────────────────────────────
 
    
-    unlockAndOpenVideo(video: CourseVideo, subscriptionId: number) {
-        if (this._unlockLoading() === video.id) return;
-        this._unlockLoading.set(video.id);
+    // unlockAndOpenVideo(video: CourseVideo, subscriptionId: number) {
+    //     if (this._unlockLoading() === video.id) return;
+    //     this._unlockLoading.set(video.id);
 
-        this.subscriptionService.unlockVideo(video.id, subscriptionId).subscribe({
-            next: (res: any) => {
-                if (res.status) {
-                    //   Mark as pending-open BEFORE adding to unlockedVideoIds
-                    // This keeps the lock spinner visible (not preview btn) while CDN url loads
-                    const pending = new Set(this._pendingOpenIds());
-                    pending.add(video.id);
-                    this._pendingOpenIds.set(pending);
+    //     this.subscriptionService.unlockVideo(video.id, subscriptionId).subscribe({
+    //         next: (res: any) => {
+    //             if (res.status) {
+    //                 //   Mark as pending-open BEFORE adding to unlockedVideoIds
+    //                 // This keeps the lock spinner visible (not preview btn) while CDN url loads
+    //                 const pending = new Set(this._pendingOpenIds());
+    //                 pending.add(video.id);
+    //                 this._pendingOpenIds.set(pending);
 
-                    //   Add to unlocked set (needed for sequential unlock of next video)
-                    const current = new Set(this._unlockedVideoIds());
-                    current.add(video.id);
-                    this._unlockedVideoIds.set(current);
+    //                 //   Add to unlocked set (needed for sequential unlock of next video)
+    //                 const current = new Set(this._unlockedVideoIds());
+    //                 current.add(video.id);
+    //                 this._unlockedVideoIds.set(current);
 
-                    //   Open video — pendingOpenIds cleared inside openCourseVideo on success
-                    this.openCourseVideo(video.video, video, video.id);
-                }
-                this._unlockLoading.set(null);
-            },
-            error: () => {
-                this._unlockLoading.set(null);
+    //                 //   Open video — pendingOpenIds cleared inside openCourseVideo on success
+    //                 this.openCourseVideo(video.video, video, video.id);
+    //             }
+    //             this._unlockLoading.set(null);
+    //         },
+    //         error: () => {
+    //             this._unlockLoading.set(null);
+    //         }
+    //     });
+    // }
+unlockAndOpenVideo(video: CourseVideo, subscriptionId: number) {
+    // ← ADD THIS: prevent duplicate calls
+    if (this._unlockLoading() !== null) return;
+
+    this._unlockLoading.set(video.id);
+    this._isOpeningVideo = false; // ← reset BEFORE the call, not inside
+
+    this.subscriptionService.unlockVideo(video.id, subscriptionId).subscribe({
+        next: (res: any) => {
+            this._unlockLoading.set(null);
+            if (res.status) {
+                this.openCourseVideo(video.video, video);
             }
-        });
-    }
+        },
+        error: () => {
+            this._unlockLoading.set(null);
+            this._isOpeningVideo = false;
+        }
+    });
+}
 
     
     fetchThumbnailForPreview(videoId: number, imagePath: string) {
@@ -220,57 +242,30 @@ closeWeeklyVideo() {
     // Video player
     // ─────────────────────────────────────────────────────────────────────────
 
-    openCourseVideo(videoPath: string, videoData: CourseVideo, pendingVideoId?: number) {
-        if (this._videoLoading()) return;
+openCourseVideo(videoPath: string, videoData: CourseVideo) {
+    // Remove the _isOpeningVideo guard here — unlockLoading already prevents duplicates
+    // if (this._isOpeningVideo) return;  ← REMOVE or COMMENT THIS OUT
+    
+    this._isOpeningVideo = true;
+    const freshVideo = this._getFreshVideoData(videoData.id) ?? videoData;
+    this._selectedVideo.set(freshVideo);
+    this._videoLoading.set(true);
 
-        //   Always read the freshest video data from course signal
-        const freshVideo = this._getFreshVideoData(videoData.id) ?? videoData;
-        this._selectedVideo.set(freshVideo);
-        this._videoLoading.set(true);
-
-        this.subscriptionService.getCourseVideoUrl(videoPath).subscribe({
-            next: (res: any) => {
-                if (res.status) {
-                    this._activeVideoUrl.set(res.data.cdn_url);
-                    this._isVideoModalOpen.set(true);
-
-                    //   URL arrived — remove from pending so preview btn won't show
-                    // is_watch update happens only after saveVideoStatus, not here
-                    if (pendingVideoId != null) {
-                        const pending = new Set(this._pendingOpenIds());
-                        pending.delete(pendingVideoId);
-                        this._pendingOpenIds.set(pending);
-                    }
-                } else {
-                    // URL fetch failed — remove from pending and unlocked so lock shows again
-                    if (pendingVideoId != null) {
-                        const pending = new Set(this._pendingOpenIds());
-                        pending.delete(pendingVideoId);
-                        this._pendingOpenIds.set(pending);
-
-                        const unlocked = new Set(this._unlockedVideoIds());
-                        unlocked.delete(pendingVideoId);
-                        this._unlockedVideoIds.set(unlocked);
-                    }
-                }
-                this._videoLoading.set(false);
-            },
-            error: () => {
-                // On error — rollback pending and unlocked
-                if (pendingVideoId != null) {
-                    const pending = new Set(this._pendingOpenIds());
-                    pending.delete(pendingVideoId);
-                    this._pendingOpenIds.set(pending);
-
-                    const unlocked = new Set(this._unlockedVideoIds());
-                    unlocked.delete(pendingVideoId);
-                    this._unlockedVideoIds.set(unlocked);
-                }
-                this._videoLoading.set(false);
+    this.subscriptionService.getCourseVideoUrl(videoPath).subscribe({
+        next: (res: any) => {
+            this._isOpeningVideo = false;
+            if (res.status) {
+                this._activeVideoUrl.set(res.data.cdn_url);
+                this._isVideoModalOpen.set(true);
             }
-        });
-    }
-
+            this._videoLoading.set(false);
+        },
+        error: () => {
+            this._isOpeningVideo = false;
+            this._videoLoading.set(false);
+        }
+    });
+}
     
     private _getFreshVideoData(videoId: number): CourseVideo | null {
         const course = this._course();
@@ -282,11 +277,12 @@ closeWeeklyVideo() {
         return null;
     }
 
-    closeCourseVideo() {
-        this._activeVideoUrl.set(null);
-        this._isVideoModalOpen.set(false);
-        this._selectedVideo.set(null);
-    }
+  closeCourseVideo() {
+    this._isOpeningVideo = false; // ← reset on close
+    this._activeVideoUrl.set(null);
+    this._isVideoModalOpen.set(false);
+    this._selectedVideo.set(null);
+}
 
     // ─────────────────────────────────────────────────────────────────────────
     // Video status save + local state update

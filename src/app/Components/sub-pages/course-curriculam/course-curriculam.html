@@ -115,22 +115,28 @@
 <div class="lesson-right">
 
   <!-- Button div — fixed width -->
-  <div class="btn-cell">
-    <span
-      *ngIf="!hasPlayed(video.id) || completedVideoIds.has(video.id)"
-      class="play-icon-btn"
-      (click)="handlePlay(video); $event.stopPropagation()"
-      title="Play">
-      <i class="bi bi-play-fill"></i>
-    </span>
+<div class="btn-cell">
 
-    <span
-      *ngIf="hasPlayed(video.id) && !completedVideoIds.has(video.id)"
-      class="preview-btn"
-      (click)="handlePlay(video); $event.stopPropagation()">
-      <i class="bi bi-play-fill"></i> Preview
-    </span>
-  </div>
+  <!-- is_watch: true → Preview -->
+  <span
+    *ngIf="video.is_watch"
+    class="preview-btn"
+    (click)="openPreview(video); $event.stopPropagation()"
+    title="Preview">
+    <i class="bi bi-play-fill"></i> Preview
+  </span>
+
+  <!-- is_watch: false → Play (single click → unlock API → play) -->
+  <span
+  *ngIf="!video.is_watch"
+  class="play-icon-btn"
+  (click)="onPlayClick(video); $event.stopPropagation()"
+  title="Play">
+  <span *ngIf="unlockLoading() === video.id" class="spinner-border spinner-border-sm" role="status"></span>
+  <i *ngIf="unlockLoading() !== video.id" class="bi bi-play-fill"></i>
+</span>
+
+</div>
 
   <!-- Duration div — fixed width -->
   <div class="time-cell">
