@@ -207,55 +207,30 @@
         <i class="bi bi-x-lg"></i>
       </button>
 
-      <div class="video-container">
+     <div #videoContainer class="video-container">
 
-        <!-- Marquee title bar -->
-        <!-- <div class="video-modal-title-bar">
-          <div class="marquee-track">
-            
-          </div>
-        </div> -->
-       <span class="floating-watermark" [ngClass]="animationClass" [ngStyle]="watermarkStyle">
-              {{ profile()?.name || 'User Name' }}
-              &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
-              {{ profile()?.email  || 'User Email' }}
-              &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
-              {{ profile()?.mobile || 'User Mobile' }}
-              &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
-              {{ loginIp() || 'IP Loading...' }}
-            </span>
+  <span
+    *ngIf="watermarkVisible"
+    class="floating-watermark"
+    [ngClass]="animationClass"
+    [ngStyle]="watermarkStyle">
 
-        <!-- LEFT zone: double-click / double-tap = rewind 10s -->
-        <div
-          class="seek-zone seek-zone-left"
-          (dblclick)="seekBackward()"
-          (touchstart)="onTouchStart($event, 'left')"
-          [class.seek-active]="showSeekBackward">
-          <div class="seek-feedback" *ngIf="showSeekBackward">
-            <div class="seek-icon-ring">
-              <i class="bi bi-skip-start-fill"></i>
-            </div>
-            <span class="seek-label">-10s</span>
-          </div>
-        </div>
+    {{ profile()?.name }}
+    • {{ profile()?.email }}
+    • {{ profile()?.mobile }}
+    • {{ loginIp() }}
+  </span>
 
-        <!-- RIGHT zone: double-click / double-tap = forward 10s -->
-        <div
-          class="seek-zone seek-zone-right"
-          (dblclick)="seekForward()"
-          (touchstart)="onTouchStart($event, 'right')"
-          [class.seek-active]="showSeekForward">
-          <div class="seek-feedback" *ngIf="showSeekForward">
-            <div class="seek-icon-ring">
-              <i class="bi bi-skip-end-fill"></i>
-            </div>
-            <span class="seek-label">+10s</span>
-          </div>
-        </div>
+  <button
+  class="fullscreen-btn"
+  (click)="toggleFullscreen(); $event.stopPropagation()"
+  [title]="isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'">
+  <i class="bi bi-fullscreen"></i>
+</button>
 
-        <!-- ended event handled via addEventListener in @ViewChild setter -->
-        <video #videoPlayer controls autoplay></video>
-      </div>
+  <video #videoPlayer controls autoplay></video>
+
+</div>
 
       <div class="video-info">
         <p class="video-description">{{ course()?.title }}</p>

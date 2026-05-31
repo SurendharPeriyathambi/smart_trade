@@ -13,10 +13,14 @@ import { AuthStateService } from '../../main-pages/login/auth-state.service';
   styleUrl: './course-curriculam.scss',
 })
 export class CourseCurriculam {
-
+isFullscreen = false;
   private subState = inject(SubscriptionState);
   private authState = inject(AuthStateService);
   private cdr = inject(ChangeDetectorRef); // ← ADD THIS
+  @ViewChild('videoContainer')
+videoContainer!: ElementRef<HTMLDivElement>;
+
+watermarkVisible = true;
 
   course           = this.subState.course;
   courseLoading    = this.subState.courseLoading;
@@ -100,6 +104,11 @@ export class CourseCurriculam {
         this.expandedLessonId = course.lesson[0].id;
       }
     });
+      // Listen for fullscreen change (e.g. user presses Escape)
+  document.addEventListener('fullscreenchange', () => {
+    this.isFullscreen = !!document.fullscreenElement;
+    this.cdr.detectChanges();
+  });
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -284,4 +293,33 @@ export class CourseCurriculam {
     setRandom();
     setInterval(setRandom, 8000);
   }
+toggleFullscreen() {
+  const container = this.videoContainer?.nativeElement;
+  if (!container) return;
+
+  if (!document.fullscreenElement) {
+    // Try container first, fallback to video element
+    const el = container as any;
+    const requestFS =
+      el.requestFullscreen ||
+      el.webkitRequestFullscreen ||
+      el.mozRequestFullScreen ||
+      el.msRequestFullscreen;
+
+    if (requestFS) {
+      requestFS.call(el).catch((err: any) => {
+        console.error('Fullscreen error:', err);
+      });
+    }
+  } else {
+    const doc = document as any;
+    const exitFS =
+      doc.exitFullscreen ||
+      doc.webkitExitFullscreen ||
+      doc.mozCancelFullScreen ||
+      doc.msExitFullscreen;
+
+    if (exitFS) exitFS.call(doc);
+  }
+}
 }
