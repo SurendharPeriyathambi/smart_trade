@@ -16,7 +16,7 @@ export class ChooseUs {
     },
     {
       number: '02',
-      title: 'Innovative Learning with High-End Visuals',
+      title: 'Expert Mentorship',
       description: '​Say goodbye to boring, long lectures! We value your time and engagement.'
     },
     {
