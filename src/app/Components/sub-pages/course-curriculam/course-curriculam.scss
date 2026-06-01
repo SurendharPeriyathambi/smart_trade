@@ -682,9 +682,9 @@
   100% { transform: translate(0, 30vh); }
 }
 
-.move-random-1 { animation: float-random-1 28s ease-in-out infinite; }
-.move-random-2 { animation: float-random-2 32s ease-in-out infinite; }
-.move-random-3 { animation: float-random-3 40s ease-in-out infinite; }
+.move-random-1 { animation: float-random-1 18s ease-in-out infinite; }
+.move-random-2 { animation: float-random-2 22s ease-in-out infinite; }
+.move-random-3 { animation: float-random-3 28s ease-in-out infinite; }
 
 // ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 499px) {

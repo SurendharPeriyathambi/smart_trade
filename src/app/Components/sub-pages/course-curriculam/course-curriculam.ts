@@ -291,7 +291,7 @@ watermarkVisible = true;
       };
     };
     setRandom();
-    setInterval(setRandom, 8000);
+    setInterval(setRandom, 5000);
   }
 toggleFullscreen() {
   const container = this.videoContainer?.nativeElement;
