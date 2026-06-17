@@ -1,22 +1,15 @@
 <section class="hero">
-  <div class="hero-wrapper">
+  <div class="hero-wrapper"  [style.aspect-ratio]="bgAspectRatio()">  
 
-    <!-- Skeleton: shows while image decodes -->
-    @if (!imageReady()) {
+     @if (!bgReady()) {
       <div class="hero-skeleton"></div>
     }
 
-    <!-- Image: src set immediately, fades in when decoded -->
-    @if (imageSrc()) {
-      <img
-        class="hero-img"
-        [class.visible]="imageReady()"
-        [src]="imageSrc()"
-        fetchpriority="high"
-        decoding="async"
-        alt="Hero Banner"
-      />
-    }
+      <div
+      class="hero-bg-img"
+      [class.visible]="bgReady()"
+      [style.background-image]="bgBannerSrc() ? 'url(' + bgBannerSrc() + ')' : null"
+    ></div>
 
   </div>
 </section>

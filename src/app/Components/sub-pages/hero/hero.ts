@@ -16,13 +16,15 @@ export class Hero implements OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private imageCacheService = inject(ImageCacheService);
 
-  protected imageReady = signal(false);
-  protected imageSrc = signal<string | null>(null);
+  // Background banner state
+  protected bgReady = signal(false);
+  protected bgBannerSrc = signal<string | null>(null);
+  protected bgAspectRatio = signal<string>('10 / 6');
   protected isMobile = signal(false);
 
-  private lastLoadedPath = '';
+  private lastBgPath = '';
   private resizeTimer: any;
-  private currentImg: HTMLImageElement | null = null;
+  private currentBgImg: HTMLImageElement | null = null;
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
@@ -36,45 +38,49 @@ export class Hero implements OnDestroy {
       const selected = this.isMobile() ? (banners[1] ?? banners[0]) : banners[0];
       const path = selected?.path;
 
-      if (!path || path === this.lastLoadedPath) return;
+      if (!path || path === this.lastBgPath) return;
 
-      this.lastLoadedPath = path;
-      this.imageReady.set(false);   // show skeleton
-      this.imageSrc.set(null);      // clear old image
-
+      this.lastBgPath = path;
+      this.bgReady.set(false);     
+      this.bgBannerSrc.set(null);  
       if (isPlatformBrowser(this.platformId)) {
-        this.loadImage(path);
+        this.preloadBgImage(path);
       }
     });
   }
 
-  private async loadImage(url: string): Promise<void> {
-    // ✅ Gets from memory or Cache API if visited before — instant
+  private async preloadBgImage(url: string): Promise<void> {
     const src = await this.imageCacheService.getImage(url);
 
-    // Cancel any previous in-flight decode
-    if (this.currentImg) {
-      this.currentImg.src = '';
-      this.currentImg = null;
+    if (this.currentBgImg) {
+      this.currentBgImg.onload = null;
+      this.currentBgImg.onerror = null;
+      this.currentBgImg.src = '';
+      this.currentBgImg = null;
     }
 
     const img = new Image();
-    this.currentImg = img;
-    img.src = src;
+    this.currentBgImg = img;
 
-    // If already cached, decode() resolves almost instantly
-    img.decode()
-      .then(() => {
-        if (!img.src) return; // was cancelled
-        this.imageSrc.set(src);       // ✅ set src only after decode ready
-        this.imageReady.set(true);    // fade in
-        this.loaderService.hide();
-      })
-      .catch(() => {
-        this.imageSrc.set(src);
-        this.imageReady.set(true);
-        this.loaderService.hide();
-      });
+    img.onload = () => {
+      if (this.currentBgImg !== img) return; // cancelled / replaced
+
+       if (img.naturalWidth && img.naturalHeight) {
+      this.bgAspectRatio.set(`${img.naturalWidth} / ${img.naturalHeight}`);
+    }
+      this.bgBannerSrc.set(src);   
+      this.bgReady.set(true);      // fade-in trigger
+      this.loaderService.hide();
+    };
+
+    img.onerror = () => {
+      if (this.currentBgImg !== img) return;
+      this.bgBannerSrc.set(src);
+      this.bgReady.set(true);
+      this.loaderService.hide();
+    };
+
+    img.src = src;
   }
 
   @HostListener('window:resize')
@@ -89,9 +95,11 @@ export class Hero implements OnDestroy {
 
   ngOnDestroy(): void {
     clearTimeout(this.resizeTimer);
-    if (this.currentImg) {
-      this.currentImg.src = '';
-      this.currentImg = null;
+    if (this.currentBgImg) {
+      this.currentBgImg.onload = null;
+      this.currentBgImg.onerror = null;
+      this.currentBgImg.src = '';
+      this.currentBgImg = null;
     }
   }
 }
