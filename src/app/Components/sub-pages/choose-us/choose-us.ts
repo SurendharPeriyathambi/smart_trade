@@ -17,7 +17,7 @@ export class ChooseUs {
     {
       number: '02',
       title: 'Expert Mentorship',
-      description: '​Say goodbye to boring, long lectures! We value your time and engagement.'
+      description: 'Say goodbye to boring, long lectures! We value your time and engagement.'
     },
     {
       number: '03',
@@ -27,7 +27,7 @@ export class ChooseUs {
     {
       number: '04',
       title: ' Data-Driven Performance Tracking',
-      description: '​To become a pro, you must track like a pro.​Trading Journal Software: We provide premium journaling software to all our students.'
+      description: 'To become a pro, you must track like a pro.​Trading Journal Software: We provide premium journaling software to all our students.'
     },
     // {
     //   number: '05',

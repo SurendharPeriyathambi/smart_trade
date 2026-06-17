@@ -22,13 +22,13 @@
         <div class="content-box">
         
         <h2 class="section-title">
-          One Platform. Infinite <br> Learning. Possibilities.
+          What Are Smart Money Concepts (SMC)?
         </h2>
 
-        <p class="section-desc">
+        <!-- <p class="section-desc">
           Explore our most popular courses designed to build practical,
           job-ready skills.
-        </p>
+        </p> -->
 
         <!-- COURSE LIST -->
         <div class="course-list">
@@ -43,14 +43,11 @@
 
             <div class="content">
               <h6>{{ course.title }}</h6>
-              <p>{{ course.desc }}</p>
+              <!-- <p>{{ course.desc }}</p> -->
             </div>
-
-          
-
           </div>
         </div>
-        <button class="btn btn-primary mt-3">View Details <i class="bi bi-chevron-right  ms-2"></i></button>
+        <button class="btn btn-primary mt-3" (click)="viewDetails()" >View Details <i class="bi bi-chevron-right  ms-2"></i></button>
       </div>
 </div>
     </div>

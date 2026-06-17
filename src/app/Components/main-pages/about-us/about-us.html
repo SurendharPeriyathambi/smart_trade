@@ -1,0 +1,33 @@
+<div>
+  <app-header></app-header>
+
+  <div class="main_about_wrapper">
+    @for (member of members; track member.nameKey; let i = $index) {
+      <div
+        class="bio_section"
+        [class.reversed]="isReversed(i)"
+        #bioSection
+      >
+        <!-- Photo Column -->
+        <div class="bio_photo_col">
+          <div class="bio_photo_frame">
+            <img [src]="member.image" [alt]="member.nameKey" class="bio_img" />
+          </div>
+        </div>
+
+        <!-- Content Column -->
+        <div class="bio_content_col">
+          <h4 class="bio_about_heading">{{ member.nameKey }}</h4>
+
+          @for (key of member.contentKeys; track key) {
+            <p class="bio_para">{{ key }}</p>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <section id="contact">
+    <app-footer></app-footer>
+  </section>
+</div>

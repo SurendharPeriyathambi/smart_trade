@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, effect, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { DemoVideos as DemoVideo } from '../../../../interfaces/banner_interface';
-
 import Hls from 'hls.js';
-
 import { HomeService } from '../../main-pages/home/home_service';
+import { StorageEngine } from '../../../../services/engine/storage_engine';
+import { Router } from '@angular/router';
+
 
 
 @Component({
@@ -15,6 +16,7 @@ import { HomeService } from '../../main-pages/home/home_service';
 })
 export class DemoVideos {
 
+ 
   protected homeService = inject(HomeService);
   private pendingUrl: string | null = null;
   private videoElement!: HTMLVideoElement;
@@ -37,16 +39,29 @@ export class DemoVideos {
 
   }
 
-  constructor() {
+  constructor(
+    private router: Router,
+  private storage: StorageEngine
+  ) {
     effect(() => {
       const url = this.homeService.activeVideoUrls();
       if (!url) this.destroyPlayer();
     })
   }
 
-  openVideo(video: DemoVideo) {
+  openVideo(video: DemoVideo, index: number) {
+  if (index < 3) {
     this.homeService.openVideo(video.video_id);
+    return;
   }
+  const isLoggedIn = !!this.storage.getAccessToken();
+
+  if (isLoggedIn) {
+    this.homeService.openVideo(video.video_id);
+  } else {
+    this.router.navigate(['/login']);
+  }
+}
 
   closeVideo() {
     this.destroyPlayer();

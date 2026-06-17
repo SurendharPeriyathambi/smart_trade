@@ -6,11 +6,19 @@
 
       <div class="footer-section">
         <!-- <h4 class="footer-title">Home</h4> -->
-        <ul class="nav footer-links  ">
-          <li class="nav-link px-5" *ngFor="let link of links.company">
-            <a [href]="'#'">{{ link }}</a>
-          </li>
-        </ul>
+  <div class="footer-section">
+  <ul class="nav footer-links">
+    <li class="nav-link px-5">
+      <a (click)="scrollTo('hero')" style="cursor:pointer">Home</a>
+    </li>
+    <li class="nav-link px-5">
+      <a (click)="scrollTo('about')" style="cursor:pointer">About Us</a>
+    </li>
+    <li class="nav-link px-5">
+      <a (click)="scrollTo('courses')" style="cursor:pointer">Courses</a>
+    </li>
+  </ul>
+</div>
       </div>
 
    

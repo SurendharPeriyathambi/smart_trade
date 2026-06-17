@@ -1,0 +1,197 @@
+.main_about_wrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 60px 3%;
+}
+
+// ─── Bio Section — overlap layout ────────────────────────
+
+.bio_section {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  margin: 60px 0;
+  min-height: 500px;
+}
+
+.bio_photo_col {
+  position: relative;
+  z-index: 1;
+  width: 60%;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(-40px);
+}
+
+.bio_section.reversed .bio_photo_col {
+  order: 2;
+  transform: translateX(40px);
+}
+
+.bio_photo_frame {
+  width: 100%;
+  overflow: hidden;
+}
+
+.bio_img {
+  width: 100%;
+  height: 500px;
+  display: block;
+  object-fit: cover;
+  object-position: top;
+  transform: scale(1.1);
+  opacity: 0;
+  border-radius: 16px;
+}
+
+// ─── Content Column — overlaps photo ─────────────────────
+
+.bio_content_col {
+  position: relative;
+  z-index: 2;
+  width: 50%;
+  flex-shrink: 0;
+  margin-left: -10%;
+  margin-top: 60px;
+  background-color: var(--label-background, #f5f5f5);
+  padding: 40px 44px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(50px);
+  border-radius: 16px;
+}
+
+.bio_section.reversed .bio_content_col {
+  order: 1;
+  margin-left: 0;
+  margin-right: -10%;
+}
+
+.bio_about_heading {
+  margin: 0 0 18px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.5;
+  font-family: "DM Serif Display", serif;
+}
+
+.bio_para {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--about-text, #333);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// ─── Animations ──────────────────────────────────────────
+
+@keyframes zoomOut {
+  from { transform: scale(1.1); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-40px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(40px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+.bio_section.animate-in {
+  .bio_img {
+    animation: zoomOut 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation-delay: 0.1s;
+  }
+  .bio_photo_col {
+    animation: slideInLeft 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation-delay: 0.1s;
+  }
+  .bio_content_col {
+    animation: slideUp 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation-delay: 0.3s;
+  }
+}
+
+.bio_section.reversed.animate-in {
+  .bio_photo_col {
+    animation: slideInRight 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation-delay: 0.1s;
+  }
+}
+
+// ─── Tablet 1024px ───────────────────────────────────────
+
+@media (max-width: 1024px) {
+  .bio_img { height: 420px; }
+  .bio_content_col { padding: 32px 36px; margin-top: 40px; }
+}
+
+// ─── Tablet 768px — stack vertically ─────────────────────
+
+@media (max-width: 768px) {
+  .bio_section,
+  .bio_section.reversed {
+    flex-direction: column;
+    margin: 40px 0;
+    min-height: unset;
+  }
+
+  .bio_photo_col,
+  .bio_section.reversed .bio_photo_col {
+    width: 90%;
+    order: 1;
+    transform: none;
+    margin: 0 auto;
+  }
+
+  .bio_content_col,
+  .bio_section.reversed .bio_content_col {
+    width: 88%;
+    order: 2;
+    margin: -40px auto 0;
+    padding: 28px 28px;
+    transform: none;
+  }
+
+  .bio_img { height: 360px; }
+}
+
+// ─── Mobile 480px ─────────────────────────────────────────
+
+@media (max-width: 480px) {
+  .main_about_wrapper { padding: 40px 16px; }
+
+  .bio_section { margin: 28px 0; }
+
+  .bio_photo_col,
+  .bio_section.reversed .bio_photo_col {
+    width: 100%;
+  }
+
+  .bio_content_col,
+  .bio_section.reversed .bio_content_col {
+    width: 92%;
+    margin: -30px auto 0;
+    padding: 24px 20px;
+  }
+
+  .bio_img { height: 280px; }
+  .bio_about_heading { font-size: 17px; }
+  .bio_para { font-size: 14px; line-height: 1.8; }
+}
