@@ -55,7 +55,7 @@
   <div class="mobile-menu" [class.open]="isMenuOpen">
     <nav class="mobile-nav">
       <a   (click)="scrollTo('hero')" class="nav-link" >Home</a>
-      <a  (click)="scrollTo('about')" class="nav-link" >About Us</a>
+      <a  routerLink="/about" class="nav-link" >About Us</a>
       <a  (click)="scrollTo('courses')" class="nav-link" >Courses</a>
       <a  (click)="scrollTo('contact')" class="nav-link" >Contact Us</a>
     </nav>

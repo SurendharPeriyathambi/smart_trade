@@ -1,10 +1,10 @@
-import { Router } from '@angular/router';
+import { Router , RouterLink} from '@angular/router';
 import { isPlatformBrowser,CommonModule} from '@angular/common';
 import { PLATFORM_ID, Inject ,Component} from '@angular/core';
 
 @Component({
   selector: 'app-footer',
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
 })
