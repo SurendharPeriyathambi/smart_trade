@@ -37,12 +37,12 @@ private cachedIp: string = '';
     }
 
 
-logout(deviceId:string): Observable<any> {
+logout(): Observable<any> {
     return this.http.getIp().pipe(
         switchMap((ip: string) => {
             const payload = {
                 email: this.storage.getEmail(),
-                login_ip: deviceId
+                login_ip: this.storage.getDeviceId()
             };
             return this.http.post(`api/auth/logout`, payload, true);
         })
