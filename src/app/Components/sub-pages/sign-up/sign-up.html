@@ -8,22 +8,24 @@
     <h2 class="form-title">Sign up</h2>
   </div>
 
-  <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="auth-form">
-    <div class="form-group">
-      <label for="signup-username" class="form-label">User Name </label>
-      <input
-        type="text"
-        id="signup-username"
-        formControlName="username"
-        class="form-input"
-        placeholder="UserName"
-        [class.error]="username?.invalid && username?.touched"
-      />
-      <span class="error-message" *ngIf="username?.invalid && username?.touched">
-        <span *ngIf="username?.errors?.['required']">Username is required</span>
-        <span *ngIf="username?.errors?.['minlength']">Username must be at least 3 characters</span>
-      </span>
-    </div>
+  <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="auth-form" autocomplete="off">
+<input
+  type="text"
+  id="signup-username"
+  formControlName="username"
+  class="form-input"
+  placeholder="UserName"
+  autocomplete="off"
+  [class.error]="username?.invalid && username?.touched"
+  (keypress)="onUsernameKeyPress($event)"
+  (input)="onUsernameInput($event)"
+
+/>
+<span class="error-message" *ngIf="username?.invalid && username?.touched">
+  <span *ngIf="username?.errors?.['required']">Username is required</span>
+  <span *ngIf="username?.errors?.['minlength']">Username must be at least 3 characters</span>
+  <span *ngIf="username?.errors?.['pattern']">Username can only contain letters and numbers</span>
+</span>
 
     <div class="form-group">
       <label for="signup-email" class="form-label">Email </label>
@@ -33,6 +35,7 @@
         formControlName="email"
         class="form-input"
         placeholder="Email"
+        autocomplete="off"
         [class.error]="email?.invalid && email?.touched"
       />
       <span class="error-message" *ngIf="email?.invalid && email?.touched">
@@ -41,19 +44,25 @@
       </span>
     </div>
 <div class="form-group">
-      <label for="signup-mobile" class="form-label">Mobile Number </label>
-      <div class="password-input-wrapper">
-        <input
-          type="text"
-          id="signup-mobile"
-          formControlName="mobile"
-          class="form-input"
-          placeholder="1234567890"
-         
-        />
-      </div>
-      
-    </div>
+  <label for="signup-mobile" class="form-label">Mobile Number </label>
+  <div class="password-input-wrapper">
+    <input
+      type="text"
+      id="signup-mobile"
+      formControlName="mobile"
+      class="form-input"
+      placeholder="Mobile Number"
+      maxlength="10"
+      [class.error]="mobile?.invalid && mobile?.touched"
+      (keypress)="onMobileKeyPress($event)"
+      (input)="onMobileInput($event)"
+    />
+  </div>
+  <span class="error-message" *ngIf="mobile?.invalid && mobile?.touched">
+    <span *ngIf="mobile?.errors?.['required']">Mobile number is required</span>
+    <span *ngIf="mobile?.errors?.['pattern']">Enter a valid mobile number</span>
+  </span>
+</div>
     <div class="form-group">
       <label for="signup-password" class="form-label">Create Password </label>
       <div class="password-input-wrapper">
@@ -63,6 +72,7 @@
           formControlName="password"
           class="form-input"
           placeholder="**********"
+          autocomplete="new-password"
           [class.error]="password?.invalid && password?.touched"
         />
  <span class="toggle-password" (click)="togglePassword()">
@@ -85,6 +95,7 @@
           formControlName="confirmPassword"
           class="form-input"
           placeholder="**********"
+          autocomplete="new-password"
           [class.error]="(confirmPassword?.invalid && confirmPassword?.touched) || (signUpForm.errors?.['passwordMismatch'] && confirmPassword?.touched)"
         />
        <span class="toggle-password" (click)="toggleConfirmPassword()">
@@ -123,9 +134,9 @@
      <span class="icons mb-2"> <img src="/assets/images/login_icon.png" width="15" alt=""></span>
     </button>
 </div>
-    <p class="switch-form">
+    <!-- <p class="switch-form">
       Already have an account? <a href="#" class="switch-link">Sign in</a>
-    </p>
+    </p> -->
   </form>
 
 

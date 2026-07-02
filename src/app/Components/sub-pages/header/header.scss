@@ -78,11 +78,18 @@
   background: transparent;
   border: 2px solid #143AA3;
   color: #143AA3;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 
   &:hover {
     background: #143AA3;
     color: white;
   }
+    i {
+    font-size: 18px;
+  }
+
 }
 
 .btn-primary {

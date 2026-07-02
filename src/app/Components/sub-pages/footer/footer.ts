@@ -20,7 +20,7 @@ export class Footer {
   };
 
   socialLinks = [
-    { icon: 'bi bi-facebook', url: '#' },
+    { icon: 'bi bi-facebook', url: 'https://www.facebook.com/share/1936U7ydhW/' },
     { icon: 'bi bi-instagram', url: 'https://www.instagram.com/smart.tradeacademy?igsh=Z2xqbWEwZHU3eWJo' },
     // { icon: 'bi bi-vimeo', url: '#' },
     { icon: 'bi bi-youtube', url: 'https://www.youtube.com/@SmartTradeAcademy-k2v' },
