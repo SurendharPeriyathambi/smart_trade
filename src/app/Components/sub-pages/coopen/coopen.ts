@@ -81,7 +81,8 @@ export class Coopen {
     const payload: OrderRequest = {
       amount: String(this.total),
       tag: 'course',
-      plan_id:this.plan.id
+      plan_id:this.plan.id,
+      code:this.couponCode
     };
 
     this.service.getOrder(payload).subscribe({

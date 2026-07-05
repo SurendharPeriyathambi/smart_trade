@@ -119,7 +119,8 @@ export interface WeeklkyVideoUrlResponce{
 export interface OrderRequest{
      amount : string,
     tag:string,
-    plan_id:string
+    plan_id:string,
+    code:string
 }
 export interface OrderResponse{
          apiKey:string,
