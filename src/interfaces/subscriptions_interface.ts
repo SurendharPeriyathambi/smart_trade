@@ -115,3 +115,22 @@ export interface WeeklyVideos{
 export interface WeeklkyVideoUrlResponce{
     cdn_url: string;
 }
+
+export interface OrderRequest{
+     amount : string,
+    tag:string,
+    plan_id:string
+}
+export interface OrderResponse{
+         apiKey:string,
+        orderId:string ,
+      amount: string,
+        receipt:string,
+}
+export interface DisountResponse{
+         code:string,
+        discount_type:string ,
+        disount:number;
+        value:string
+     
+}

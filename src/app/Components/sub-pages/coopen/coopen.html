@@ -1,0 +1,76 @@
+<div class="payment-container">
+
+  <!-- Payment Summary -->
+  <div class="card plan-card">
+
+    <h2>Payment Details</h2>
+
+    <div class="plan-box">
+      <div class="plan-icon">
+        <i class="bi bi-credit-card"></i>
+      </div>
+
+      <div class="plan-info">
+        <h3>{{ plan.plan_name }}</h3>
+        <p>Subscription Plan</p>
+      </div>
+
+      <div class="plan-price">
+        ₹{{  plan.amount }}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Billing -->
+  <div class="card">
+
+    <h2>Coupon & Billing</h2>
+
+    <div class="coupon-section">
+
+      <input
+        type="text"
+        placeholder="Enter Coupon Code"
+        [(ngModel)]="couponCode">
+
+      <button (click)="applyCoupon()">
+        Apply
+      </button>
+
+    </div>
+
+    <div class="price-row">
+      <span>Plan Price</span>
+      <span>₹{{  plan.amount }}</span>
+    </div>
+
+   <div class="price-row">
+  <span>Discount</span>
+  <span class="discount">
+    -₹{{ discount | number:'1.2-2' }}
+    <ng-container *ngIf="discountType === 'percentage'">
+      ({{ discountValue }}%)
+    </ng-container>
+  </span>
+</div>
+
+    <!-- <div class="price-row">
+      <span>Tax (18%)</span>
+      <span>₹{{ tax | number:'1.2-2' }}</span>
+    </div> -->
+
+    <hr>
+
+    <div class="total-row">
+      <span>Total Amount</span>
+      <strong>₹{{ total | number:'1.2-2' }}</strong>
+    </div>
+
+    <button class="pay-btn" (click)="payNow()">
+      Continue to Pay
+    </button>
+
+  </div>
+
+</div>
