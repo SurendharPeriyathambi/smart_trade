@@ -1,10 +1,10 @@
-import { Router } from '@angular/router';
+import { Router , RouterLink} from '@angular/router';
 import { isPlatformBrowser,CommonModule} from '@angular/common';
 import { PLATFORM_ID, Inject ,Component} from '@angular/core';
 
 @Component({
   selector: 'app-footer',
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
 })
@@ -20,7 +20,7 @@ export class Footer {
   };
 
   socialLinks = [
-    { icon: 'bi bi-facebook', url: '#' },
+    { icon: 'bi bi-facebook', url: 'https://www.facebook.com/share/1936U7ydhW/' },
     { icon: 'bi bi-instagram', url: 'https://www.instagram.com/smart.tradeacademy?igsh=Z2xqbWEwZHU3eWJo' },
     // { icon: 'bi bi-vimeo', url: '#' },
     { icon: 'bi bi-youtube', url: 'https://www.youtube.com/@SmartTradeAcademy-k2v' },

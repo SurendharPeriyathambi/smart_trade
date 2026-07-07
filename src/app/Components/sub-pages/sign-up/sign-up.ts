@@ -25,9 +25,9 @@ toggleConfirmPassword(){
 }
 
   signUpForm: FormGroup = inject(FormBuilder).group({
-    username: ['', [Validators.required, Validators.minLength(3)]],
+    username: ['', [Validators.required, Validators.minLength(3),Validators.pattern(/^[a-zA-Z0-9]+$/)]],
     email: ['', [Validators.required, Validators.email]],
-    mobile: ['', [Validators.required, Validators.minLength(10)]],
+    mobile: ['', [Validators.required, Validators.minLength(10),Validators.pattern(/^[6-9][0-9]{9}$/)]],
     password: ['', [Validators.required, Validators.minLength(6)]],
     confirmPassword: ['', [Validators.required]],
     agreeToTerms: [false, [Validators.requiredTrue]]
@@ -68,5 +68,41 @@ openPrivacy() {
 
 openTerms() {
   this.termsClick.emit();
+}
+
+get mobile() {
+  return this.signUpForm.get('mobile');
+}
+
+onMobileKeyPress(event: KeyboardEvent) {
+  const charCode = event.which ? event.which : event.keyCode;
+  if (charCode < 48 || charCode > 57) {
+    event.preventDefault();
+  }
+}
+
+onMobileInput(event: Event) {
+  const input = event.target as HTMLInputElement;
+  let value = input.value.replace(/[^0-9]/g, '');
+  if (value.length > 10) {
+    value = value.substring(0, 10);
+  }
+  input.value = value;
+  this.mobile?.setValue(value);
+}
+
+onUsernameKeyPress(event: KeyboardEvent) {
+  const charCode = event.which ? event.which : event.keyCode;
+  const char = String.fromCharCode(charCode);
+  if (!/^[a-zA-Z0-9]$/.test(char)) {
+    event.preventDefault();
+  }
+}
+
+onUsernameInput(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+  input.value = value;
+  this.username?.setValue(value);
 }
 }

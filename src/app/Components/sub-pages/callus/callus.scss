@@ -87,6 +87,24 @@ color: #143aa3;
    color: #ffffff;
 }
 
+.desktop-only {
+  display: inline-flex;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: inline-flex;
+  }
+}
+
 /* ---------------------- */
 /* 📱 Mobile (≤ 480px) */
 /* ---------------------- */
