@@ -96,8 +96,7 @@
     </div>
 
     <!-- Subscription Card -->
-    <!-- <div class="card subscription-card" *ngIf="subscription()"> -->
-    <div class="card subscription-card">
+    <div class="card subscription-card" *ngIf="subscription()">
       <div class="card-header-row">
         <div class="header-icon-title">
           <div class="header-icon subscription-icon">
@@ -112,10 +111,8 @@
         </div>
 
         <span class="status-badge"
-          [ngClass]="subscription()?.status?.toLowerCase() === 'rejected' ? 'status-reject':'status-badge'">
-          <!-- {{ subscription()?.status | titlecase  || }} -->
-          <i class="bi bi-clock"></i>
-          Pending
+          [ngClass]="subscription()?.status?.toLowerCase() === 'approved' ? 'status-badge':'status-reject'">
+          {{ subscription()?.status | titlecase  }}
         </span>
       </div>
 
@@ -192,7 +189,7 @@
           </div>
         </div>
       </div> -->
-      <div class="notice-box">
+      <div class="notice-box" *ngIf="subscription()?.status?.toLowerCase() === 'pending'">
           <span class="notice-icon">✦</span>
           <div>
             <p>Your subscription is currently under review.</p>
@@ -201,4 +198,5 @@
         </div>
       </div>
 
+    </div>
     </div>
