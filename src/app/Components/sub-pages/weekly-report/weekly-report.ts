@@ -15,7 +15,7 @@ import { Chart } from '../../chart/chart';
 
 @Component({
   selector: 'app-weekly-report',
-  imports: [CommonModule,Chart],
+  imports: [CommonModule],
   templateUrl: './weekly-report.html',
   styleUrl: './weekly-report.scss',
 })
