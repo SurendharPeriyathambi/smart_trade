@@ -16,7 +16,7 @@
       </div>
 
       <div class="plan-price">
-        ₹{{  plan.amount }}
+        ₹{{ plan.amount }}
       </div>
     </div>
 
@@ -32,28 +32,36 @@
       <input
         type="text"
         placeholder="Enter Coupon Code"
-        [(ngModel)]="couponCode">
+        [(ngModel)]="couponCode"
+        [disabled]="couponApplied">
 
-      <button (click)="applyCoupon()">
+      <button *ngIf="!couponApplied" (click)="applyCoupon()">
         Apply
+      </button>
+
+      <button *ngIf="couponApplied" class="remove-btn" (click)="removeCoupon()">
+        Remove
       </button>
 
     </div>
 
     <div class="price-row">
       <span>Plan Price</span>
-      <span>₹{{  plan.amount }}</span>
+      <span>₹{{ plan.amount }}</span>
     </div>
 
-   <div class="price-row">
-  <span>Discount</span>
-  <span class="discount">
-    -₹{{ discount | number:'1.2-2' }}
-    <ng-container *ngIf="discountType === 'percentage'">
-      ({{ discountValue }}%)
-    </ng-container>
-  </span>
-</div>
+    <div class="price-row" *ngIf="couponApplied">
+      <span>Discount</span>
+      <span class="discount">
+        -₹{{ discount | number:'1.2-2' }}
+        <ng-container *ngIf="discountType === 'percentage' || discountType === 'percent'">
+          ({{ discountValue }}% off)
+        </ng-container>
+        <ng-container *ngIf="discountType === 'flat' || discountType === 'fixed' || discountType === 'amount'">
+          (flat ₹{{ discountValue }} off)
+        </ng-container>
+      </span>
+    </div>
 
     <!-- <div class="price-row">
       <span>Tax (18%)</span>

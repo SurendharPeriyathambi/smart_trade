@@ -5,6 +5,7 @@ import { OrderRequest } from '../../../../interfaces/subscriptions_interface';
 import { SubscriptionService } from '../../main-pages/subscriptions/subscription.service';
 import { LoaderService } from '../../../../services/engine/loader.service';
 import { ToastService } from '../../../../services/engine/toast.service';
+import { SubscriptionState } from '../../main-pages/subscriptions/subscription_state.service';
 
 declare var Razorpay: any;
 
@@ -15,9 +16,13 @@ declare var Razorpay: any;
   styleUrl: './coopen.scss',
 })
 export class Coopen {
+
+  substate = inject(SubscriptionState)
   service = inject(SubscriptionService);
   loading = inject(LoaderService);
-  toast = inject(ToastService)
+  toast = inject(ToastService);
+  
+  profile =  this.substate.profile;
 
   @Input() plan!: any;
 
@@ -28,6 +33,8 @@ export class Coopen {
   discountValue = 0;
   tax = 0;
   total = 0;
+
+   couponApplied = false;
 
   ngOnInit() {
     this.calculateTotal();
@@ -58,7 +65,7 @@ export class Coopen {
         console.warn('Unknown discount_type:', res.data.discount_type);
         this.discount = 0;
       }
-
+      this.couponApplied = true;
       this.calculateTotal();
       this.loading.hide();
     },
@@ -70,6 +77,16 @@ export class Coopen {
     }
   });
 }
+
+ // NEW: local-only removal, no API call
+  removeCoupon() {
+    this.couponCode = '';
+    this.discount = 0;
+    this.discountType = '';
+    this.discountValue = 0;
+    this.couponApplied = false;
+    this.calculateTotal();
+  }
 
   calculateTotal() {
     const amount = Number(this.plan.amount);
@@ -99,16 +116,16 @@ export class Coopen {
             key: res.data.apiKey,
             amount: res.data.amount,
             currency: 'INR',
-            name: 'Acme Corp',
+            name: this.plan.plan_name,
             description: res.data.receipt,
             order_id: res.data.orderId,
             prefill: {
-              name: 'Surendhar',
-              email: 'surendhar@gmail.com',
-              contact: '9876543210'
+              name: this.profile()?.name,
+              email: this.profile()?.email,
+              contact: this.profile()?.mobile
             },
             notes: {
-              address: 'Chennai'
+              address: ''
             },
             modal: {
               ondismiss: () => {
@@ -120,6 +137,7 @@ export class Coopen {
               console.log('Payment Success');
               console.log(response);
               this.resetBodyScroll();
+               window.location.reload();
               // Call Verify Payment API here
             }
           };
