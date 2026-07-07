@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OrderRequest } from '../../../../interfaces/subscriptions_interface';
 import { SubscriptionService } from '../../main-pages/subscriptions/subscription.service';
 import { LoaderService } from '../../../../services/engine/loader.service';
+import { ToastService } from '../../../../services/engine/toast.service';
 
 declare var Razorpay: any;
 
@@ -16,6 +17,7 @@ declare var Razorpay: any;
 export class Coopen {
   service = inject(SubscriptionService);
   loading = inject(LoaderService);
+  toast = inject(ToastService)
 
   @Input() plan!: any;
 
@@ -62,7 +64,8 @@ export class Coopen {
     },
     error: (err) => {
       console.log(err);
-      alert('Invalid coupon code');
+     
+      this.toast.error(err.error.message || "Invalied Coupon ")
       this.loading.hide();
     }
   });
@@ -88,10 +91,10 @@ export class Coopen {
     this.service.getOrder(payload).subscribe({
       next: (res) => {
         this.loading.hide();
-
+        this.toast.success(res.message)
         if (res.status) {
           this.order = res.data;
-
+          
           const options: any = {
             key: res.data.apiKey,
             amount: res.data.amount,
@@ -134,6 +137,7 @@ export class Coopen {
       },
       error: (err) => {
         console.log(err);
+         this.toast.error(err.error.message)
         this.loading.hide();
       }
     });
