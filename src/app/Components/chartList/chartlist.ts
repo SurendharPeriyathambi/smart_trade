@@ -1,64 +1,73 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { ListUsecase } from './usecase/chart.usecase';
-import { ListService } from './services/chart.service';
-import { ListState } from './state/chart.state';
-import { ListRepository } from './repositories/chart.repositories';
-import { ListImpl } from './repositories/chart.repositories.impl';
+import { Router, RouterLink } from '@angular/router';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ListUsecase } from './usecase/chartlist.usecase';
+import { ListService } from './services/chartlist.service';
+import { ListState } from './state/chartlist.state';
+import { ListRepository } from './repositories/chartlist.repositories';
+import { ListImpl } from './repositories/chartlist.repositories.impl';
 
 @Component({
   selector: 'app-chart',
-  imports: [CommonModule,FormsModule],
-  templateUrl: './view/chart.html',
-  styleUrl: './view/chart.scss',
-  providers:[
+  imports: [CommonModule, FormsModule],
+  templateUrl: './view/chartlist.html',
+  styleUrl: './view/chartlist.scss',
+  providers: [
     ListUsecase,
     ListService,
     ListState,
     {
-      provide:ListRepository,
-      useClass:ListImpl
-    }
-  ]
+      provide: ListRepository,
+      useClass: ListImpl,
+    },
+  ],
 })
-export class Chart {
-  private cdr=inject(ChangeDetectorRef);
-  private chartlist = inject(ListUsecase)
-    cardColors = ['#2048c0', '#33d833', '#9a1d1d']; 
+export class ChartList {
+  private cdr = inject(ChangeDetectorRef);
+  private chartlist = inject(ListUsecase);
+  private route=inject(Router);
+  cardColors = ['#2048c0', '#33d833', '#9a1d1d'];
 
-getCardColor(index: number): string {
-  return this.cardColors[index % this.cardColors.length];
-}
+  getCardColor(index: number): string {
+    return this.cardColors[index % this.cardColors.length];
+  }
   chartDataList: any;
- 
+
   openMenuIndex: number | null = null;
-    limit:any;
+  limit: any;
   currentPage: number = 1;
-  pagedData!:any;
- 
+  pagedData!: any;
+
   ngOnInit(): void {
     this.chartlist.getListData().subscribe({
-      next:(res)=>{
-        this.limit=12;
-        this.chartDataList=res.data?.taskList;
-        this.cdr.detectChanges()
-        
-        
-      }
-    })
+      next: (res) => {
+        this.limit = 12;
+        this.chartDataList = res.data?.taskList;
+        this.cdr.detectChanges();
+      },
+    });
   }
- 
+
   toggleAssetDropdown(): void {
     // wire up your asset type filter logic here
     console.log('Asset type dropdown toggled');
   }
- 
+
   toggleMenu(index: number): void {
     this.openMenuIndex = this.openMenuIndex === index ? null : index;
   }
- 
+  onChart(event: MouseEvent,row:any): void {
+  event.stopPropagation();
+  event.preventDefault();
+  this.route.navigate(['/newchart'], {
+    state: {
+      editData: row
+    }
+  });
+}
+
   // onMenuAction(action: string, data?: any): void {
   //   this.openMenuIndex = null;
   //   if(action ==='edit'){
@@ -68,7 +77,6 @@ getCardColor(index: number): string {
   //   }
   //   // implement preview / download / delete logic here
   // }
-
 
   // ngOnChanges(changes: SimpleChanges): void {
   //   // Reset to page 1 when data or limit changes
@@ -86,7 +94,4 @@ getCardColor(index: number): string {
   // private updatePage(): void {
   //   const start = (this.currentPage - 1) * this.limit;
   //   this.pagedData = this.chartDataList.slice(start, start + this.limit);
-    
-    
-  }
-
+}

@@ -27,7 +27,7 @@
       {{ item?.title }}
   </span>
       <div class="meta-col ">
-<button type="button" class="btn  processing-btn ms-auto">
+<button type="button" class="btn  processing-btn ms-auto" (click)="onChart($event,item)">
     <i class="bi bi-bar-chart-fill me-2 fs-6"></i> Chart
 </button>    
 </div>
