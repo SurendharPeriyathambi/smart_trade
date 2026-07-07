@@ -4,6 +4,7 @@ import Hls from 'hls.js';
 import { SubscriptionService } from '../../main-pages/subscriptions/subscription.service';
 import { WeeklyVideos } from '../../../../interfaces/subscriptions_interface';
 import { SubscriptionState } from '../../main-pages/subscriptions/subscription_state.service';
+import { Chart } from '../../chart/chart';
 
 // interface WeeklyVideo {
 //   id: number;
@@ -14,7 +15,7 @@ import { SubscriptionState } from '../../main-pages/subscriptions/subscription_s
 
 @Component({
   selector: 'app-weekly-report',
-  imports: [CommonModule],
+  imports: [CommonModule,Chart],
   templateUrl: './weekly-report.html',
   styleUrl: './weekly-report.scss',
 })

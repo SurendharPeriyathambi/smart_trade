@@ -1,0 +1,311 @@
+// ─── CHART DATA LIST COMPONENT ───────────────────────
+// Matches the "Shared Chart Data" page section exactly
+// (no sidebar / header — content area only)
+
+// ── CONTAINER ────────────────────────────────────────
+.chart-data {
+  padding: 32px 36px;
+  background: #f5f6fa;
+  min-height: 100%;
+  font-family:var(--font-family);
+}
+
+// ── PAGE HEADER ──────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+
+
+  &__title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.4px;
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+
+  &__sub {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 400;
+    margin-bottom: 0%;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+// ── FILTER BUTTONS (top-right) ───────────────────────
+.btn-filter {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+//   height: 36px;
+  padding: 8px 14px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  // background: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    border-color: #9ca3af;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  &--select {
+    // "All Asset Types" dropdown button — slightly wider
+    padding-right: 10px;
+  }
+
+  svg {
+    color: #6b7280;
+    flex-shrink: 0;
+  }
+}
+
+// ── CARD GRID ────────────────────────────────────────
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── DATA CARD ────────────────────────────────────────
+.data-card {
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 18px 20px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+    border-color: #d1d5db;
+  }
+
+  // ── TOP ROW: badge + 3-dot menu ──
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  // ── FILENAME ──
+  &__filename {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.3px;
+    line-height: 1.3;
+    margin-bottom: 2px;
+    margin-top: 7px;
+    word-break: break-all;   // long filenames wrap
+  }
+
+  // ── DESCRIPTION ──
+  &__desc {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 400;
+    line-height: 1.5;
+margin-top: 1px;
+    // margin-bottom: 16px;
+  }
+
+  // ── DIVIDER ──
+  &__divider {
+    border: none;
+    width: 100%;
+    margin-top: 0%;
+    border-top: 1px solid #e5e7eb;
+    margin-bottom: 14px;
+  }
+
+  // ── META ROW ──
+  &__meta {
+    display: flex;
+    justify-content: end;
+  }
+
+  .meta-col{
+    justify-content: end;
+  }
+}
+
+// ── ASSET TYPE BADGE ─────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+//   border: 1.3px solid transparent;
+
+  // Equities — neutral grey
+  &--equities {
+    background: #f3f4f6;
+    color: #374151;
+    border-color: #e5e7eb;
+  }
+
+  // Forex — green tint
+  &--forex {
+    background: #f0fdf4;
+    color: white;
+    border-color: #bbf7d0;
+  }
+
+  // Crypto — orange tint
+  &--crypto {
+    background: #fff7ed;
+    color: #c2410c;
+    border-color: #fed7aa;
+  }
+}
+
+// ── 3-DOT MENU ───────────────────────────────────────
+.menu-btn {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #5c5e63;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover,
+  &--open {
+    background: #f3f4f6;
+    color: #374151;
+  }
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 130px;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow: hidden;
+
+  &__item {
+    display: block;
+    width: 100%;
+    padding: 9px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    color: #2f333a;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.12s ease;
+
+    &:hover {
+      background: #f9fafb;
+    }
+
+    &--danger {
+      color: #ef4444;
+
+      &:hover {
+        background: #fef2f2;
+      }
+    }
+  }
+}
+
+// ── META COLUMNS ─────────────────────────────────────
+.meta-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  &__label {
+    font-size: 10px;
+    font-weight: 500;
+    color: #7f838a;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  &__value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #111827;
+  }
+}
+
+.data-card__footer{
+    
+}
+
+.processing-btn{
+    width:100%;
+    height:42px;
+    border:none;
+    border-radius:10px;
+    background:#eef4ff;
+    color:#2563eb;
+    font-weight:600;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    // cursor:pointer;
+}
+
+.btn-spinner{
+    width:18px;
+    height:18px;
+    border:2px solid rgba(37,99,235,.2);
+    border-top-color:#2563eb;
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+}
+
+.processing-text{
+  font-size: 10px;
+}
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
+    }
+}
