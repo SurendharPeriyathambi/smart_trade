@@ -655,3 +655,37 @@ kbd {
 .light-theme .tf-btn.active {
   color: #ffffff;
 }
+.line-counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 6px 8px;
+  margin: 12px 24px;
+
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+  span {
+    display: flex;
+    align-items: center;
+  }
+
+  .matched {
+    padding: 4px 10px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+}

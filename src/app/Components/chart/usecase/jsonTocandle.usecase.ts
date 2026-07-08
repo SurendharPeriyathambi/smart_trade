@@ -1,4 +1,4 @@
-import { inject, Injectable, Injector } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { CandlestickSeries, createChart, LineSeries, LineStyle } from 'lightweight-charts';
 import { Point, ScreenPoint } from '../model/drawing.model';
 import { ChartState } from '../state/chart.state';
@@ -12,12 +12,15 @@ import { LocalDatabaseService } from '../../../../services/engine/localdatabase.
 
 @Injectable({ providedIn: 'root' })
 export class JsonToCandleUsecase {
-  constructor(  public chartstate:ChartState,
-  public ToolsUsecase:ToolsUsecase,
-  public measureUsecase :MeasureUsecase,
-  private injector: Injector){}
+  constructor(
+    public chartstate: ChartState,
+    public ToolsUsecase: ToolsUsecase,
+    public measureUsecase: MeasureUsecase,
+    private injector: Injector,
+  ) {}
 
-  // { date, open, high, low, close } objects that normalizeChartData() can process.
+  public adminLineSeriesMap: Map<string, any> = new Map();
+
   public objectToCandleArray(obj: any): any[] {
     if (!obj || typeof obj !== 'object') return [];
     return Object.keys(obj).map((dateKey) => ({
@@ -170,67 +173,9 @@ export class JsonToCandleUsecase {
     return true;
   }
 
- public renderLines(): void {
-  this.renderLinesWithoutScaleReset();
-}
-
-private renderLinesWithoutScaleReset(): void {
-  if (!this.ensureChart()) return;
-
-  const wasZoomed = this.chartstate.isZoomed;
-  const savedMin = this.chartstate.zoomMinPrice;
-  const savedMax = this.chartstate.zoomMaxPrice;
-
-  if (wasZoomed && savedMin != null && savedMax != null) {
-    this.chartstate.chart.priceScale('right').applyOptions({ autoScale: false });
+  public renderLines(): void {
+    this.renderLinesWithoutScaleReset();
   }
-
-  this.chartstate.lineSeriesMap.forEach((series) => {
-    try { this.chartstate.chart.removeSeries(series); } catch {}
-  });
-  this.chartstate.lineSeriesMap.clear();
-
-  // key by the line's own id — NOT array index
-  this.chartstate.newDrawLine
-    .filter((line) => !line.is_delete)
-    .forEach((line) => this.renderLine(line, String(line.id)));
-
-  this.chartstate.chart.timeScale().applyOptions({ visible: true });
-
-  if (wasZoomed && savedMin != null && savedMax != null) {
-    this.chartstate.chart.priceScale('right').applyOptions({ autoScale: false });
-    this.chartstate.chart.priceScale('right')
-      .setVisiblePriceRange({ minValue: savedMin, maxValue: savedMax });
-  }
-}
-
-public renderLine(line: Answers, id: string): void {
-  if (!this.ensureChart()) return;
-  try {
-    const existing = this.chartstate.lineSeriesMap.get(id);
-    if (existing) {
-      try { this.chartstate.chart.removeSeries(existing); } catch {}
-      this.chartstate.lineSeriesMap.delete(id);
-    }
-
-    const isSelected = this.chartstate.selectedLineId === line.id;
-    const series = this.chartstate.chart.addSeries(LineSeries, {
-      color: isSelected ? '#FFA500' : '#FF6B6B',
-      lineWidth: 2,
-      lineStyle: LineStyle.Dotted,
-      priceLineVisible: false,
-      lastValueVisible: false,
-      crosshairMarkerVisible: false,
-    });
-    series.setData([
-      { time: Number(line.start_time), value: Number(line.start_price) },
-      { time: Number(line.end_time), value: Number(line.end_price) },
-    ]);
-    this.chartstate.lineSeriesMap.set(id, series);
-  } catch (e) {
-    console.error('[Chart] renderLine error:', e, line);
-  }
-}
 
   public applyTheme(chartContainer: any): void {
     if (!this.ensureChart()) return;
@@ -311,9 +256,6 @@ public renderLine(line: Answers, id: string): void {
     return data;
   }
 
-  // ==================== COORDINATE CONVERSION (NEW — required for measure tool) ====================
-
-  /** Converts a pixel-space (x,y) point on the chart into chart-space (time, price). */
   public screenToChartPoint(sp: ScreenPoint): Point | null {
     try {
       if (sp.x < 0 || sp.y < 0) return null;
@@ -327,7 +269,6 @@ public renderLine(line: Answers, id: string): void {
     }
   }
 
-  /** Converts a chart-space (time, price) point into pixel-space (x, y) screen coordinates. */
   public chartToScreenPoint(time: number, price: number): ScreenPoint | null {
     try {
       const x = this.chartstate.chart.timeScale().timeToCoordinate(time) as number | null;
@@ -340,13 +281,11 @@ public renderLine(line: Answers, id: string): void {
     }
   }
 
-  /** Counts how many loaded candles fall within [fromTime, toTime] — used for the measure tool's "N bars" readout. */
   public countBarsInRange(fromTime: number, toTime: number): number {
     return this.chartstate.chartData.filter((d: any) => d.time >= fromTime && d.time <= toTime)
       .length;
   }
 
-  /** Disables chart pan/zoom/scroll — used while a measurement is in progress. */
   public lockChartInteraction(): void {
     this.chartstate.chart?.applyOptions({
       handleScroll: {
@@ -359,7 +298,6 @@ public renderLine(line: Answers, id: string): void {
     });
   }
 
-  /** Re-enables normal chart pan/zoom/scroll after a measurement completes. */
   public unlockChartInteraction(): void {
     this.chartstate.chart?.applyOptions({
       handleScroll: {
@@ -377,7 +315,6 @@ public renderLine(line: Answers, id: string): void {
     });
   }
 
-  // ==================== INIT CHART ====================
   public async initChart(chartContainer: any, measureCanvas?: any): Promise<void> {
     const container = chartContainer.nativeElement;
     if (container.clientWidth === 0) {
@@ -492,75 +429,71 @@ public renderLine(line: Answers, id: string): void {
     this.chartstate.chartClickSubscription?.();
     this.chartstate.chartCrosshairSubscription?.();
 
-    // ── CLICK HANDLER — now routes measure-tool clicks (FIXED) ──
-  // ── inside initChart(), replace the chartClickSubscription block ──
-this.chartstate.chartClickSubscription = this.chartstate.chart.subscribeClick((param: any) => {
-  if (!param?.point) return;
+    this.chartstate.chartClickSubscription = this.chartstate.chart.subscribeClick((param: any) => {
+      if (!param?.point) return;
 
-  if (this.chartstate.activeTool === 'measure') {
-    this.measureUsecase.handleMeasureClick(
-      param,
-      (sp) => this.screenToChartPoint(sp),
-      () => this.lockChartInteraction(),
-      () => this.unlockChartInteraction(),
-      measureCanvas,
-      (time, price) => this.chartToScreenPoint(time, price),
-      (from, to) => this.countBarsInRange(from, to),
-    );
-    return;
-  }
-
-  const drawingUsecase = this.injector.get(DrawingUsecase);
-
-  if (this.chartstate.isDrawing) {
-    drawingUsecase.handleChartClick(param);
-    return;
-  }
-
-  if (this.chartstate.clickTimeout) {
-    clearTimeout(this.chartstate.clickTimeout);
-    this.chartstate.clickTimeout = null;
-    this.chartstate.isDoubleClick = true;
-
-    // ── double-click on select tool → duplicate the line under cursor ──
-    if (this.chartstate.activeTool === 'select') {
-      const sp: ScreenPoint = { x: param.point.x, y: param.point.y };
-      const selectionUsecase = this.injector.get(SelectionUsecase);
-      const hit = selectionUsecase.getTargetLine(sp, (t, p) => this.chartToScreenPoint(t, p));
-      if (hit) {
-        this.chartstate.selectedLineId = hit.id!;
-        const duplicateUsecase = this.injector.get(DuplicateUsecase);
-        duplicateUsecase.duplicateSelectedLine();
-      }
-    }
-    return;
-  }
-
-  this.chartstate.isDoubleClick = false;
-  this.chartstate.clickTimeout = setTimeout(() => {
-    this.chartstate.clickTimeout = null;
-    if (this.chartstate.isDoubleClick) {
-      this.chartstate.isDoubleClick = false;
-      return;
-    }
-
-    if (this.chartstate.activeTool === 'select') {
-      const selectionUsecase = this.injector.get(SelectionUsecase);
-      if (this.chartstate.dragDistance <= 5) {
-        selectionUsecase.handleSelectClick(
+      if (this.chartstate.activeTool === 'measure') {
+        this.measureUsecase.handleMeasureClick(
           param,
+          (sp) => this.screenToChartPoint(sp),
+          () => this.lockChartInteraction(),
+          () => this.unlockChartInteraction(),
+          measureCanvas,
           (time, price) => this.chartToScreenPoint(time, price),
-          () => this.renderLines(),
+          (from, to) => this.countBarsInRange(from, to),
         );
+        return;
       }
-      this.chartstate.dragDistance = 0;
-    } else {
-      drawingUsecase.handleChartClick(param);
-    }
-  }, 200);
-});
 
-    // ── CROSSHAIR-MOVE — now updates the measure overlay live (FIXED) ──
+      const drawingUsecase = this.injector.get(DrawingUsecase);
+
+      if (this.chartstate.isDrawing) {
+        drawingUsecase.handleChartClick(param);
+        return;
+      }
+
+      if (this.chartstate.clickTimeout) {
+        clearTimeout(this.chartstate.clickTimeout);
+        this.chartstate.clickTimeout = null;
+        this.chartstate.isDoubleClick = true;
+
+        if (this.chartstate.activeTool === 'select') {
+          const sp: ScreenPoint = { x: param.point.x, y: param.point.y };
+          const selectionUsecase = this.injector.get(SelectionUsecase);
+          const hit = selectionUsecase.getTargetLine(sp, (t, p) => this.chartToScreenPoint(t, p));
+          if (hit) {
+            this.chartstate.selectedLineId = hit.id!;
+            const duplicateUsecase = this.injector.get(DuplicateUsecase);
+            duplicateUsecase.duplicateSelectedLine();
+          }
+        }
+        return;
+      }
+
+      this.chartstate.isDoubleClick = false;
+      this.chartstate.clickTimeout = setTimeout(() => {
+        this.chartstate.clickTimeout = null;
+        if (this.chartstate.isDoubleClick) {
+          this.chartstate.isDoubleClick = false;
+          return;
+        }
+
+        if (this.chartstate.activeTool === 'select') {
+          const selectionUsecase = this.injector.get(SelectionUsecase);
+          if (this.chartstate.dragDistance <= 5) {
+            selectionUsecase.handleSelectClick(
+              param,
+              (time, price) => this.chartToScreenPoint(time, price),
+              () => this.renderLines(),
+            );
+          }
+          this.chartstate.dragDistance = 0;
+        } else {
+          drawingUsecase.handleChartClick(param);
+        }
+      }, 200);
+    });
+
     this.chartstate.chartCrosshairSubscription = this.chartstate.chart.subscribeCrosshairMove(
       (param: any) => {
         if (!param?.point) return;
@@ -578,9 +511,9 @@ this.chartstate.chartClickSubscription = this.chartstate.chart.subscribeClick((p
           return;
         }
         if (this.chartstate.isDrawing && this.chartstate.hasFirstPoint && this.chartstate.previewSeries) {
-        const drawingUsecase = this.injector.get(DrawingUsecase);
+          const drawingUsecase = this.injector.get(DrawingUsecase);
           drawingUsecase.updatePreviewLine(param);
-      }
+        }
       },
     );
 
@@ -589,7 +522,6 @@ this.chartstate.chartClickSubscription = this.chartstate.chart.subscribeClick((p
       this.chartstate.chart.priceScale('right').applyOptions({ visible: true });
       this.chartstate.chart.timeScale().applyOptions({ visible: true });
 
-      // keep the overlay glued to the chart while panning/zooming
       if (this.chartstate.measureStart && this.chartstate.measureEnd) {
         this.measureUsecase.drawMeasureOverlay(
           measureCanvas,
@@ -601,7 +533,6 @@ this.chartstate.chartClickSubscription = this.chartstate.chart.subscribeClick((p
 
     await this.loadChartData();
 
-    // ── CANVAS SETUP — now uncommented and fixed (FIXED) ──
     setTimeout(() => {
       this.measureUsecase.setupMeasureCanvas(measureCanvas, chartContainer);
     }, 100);
@@ -629,7 +560,6 @@ this.chartstate.chartClickSubscription = this.chartstate.chart.subscribeClick((p
     }
   }
 
-  // ==================== Y-AXIS ZOOM ====================
   public handleWheelZoom(event: WheelEvent, chartContainer: any): void {
     if (!event.ctrlKey && !event.metaKey) return;
     if (!this.ensureChart()) return;
@@ -667,7 +597,6 @@ this.chartstate.chartClickSubscription = this.chartstate.chart.subscribeClick((p
       .setVisiblePriceRange({ minValue: newMin, maxValue: newMax });
   }
 
-  // ==================== MOUSE / CONTEXT MENU HANDLING ====================
   public _containerMouseDownCapture(event: MouseEvent, chartContainer: any): void {
     const container = chartContainer?.nativeElement;
     if (!container) return;
@@ -677,170 +606,304 @@ this.chartstate.chartClickSubscription = this.chartstate.chart.subscribeClick((p
     event.preventDefault();
     event.stopImmediatePropagation();
   }
-  // jsonTocandle.usecase.ts — add these methods
 
-public setupHandleCanvas(handleCanvas: any, chartContainer: any): void {
-  const canvas = handleCanvas?.nativeElement;
-  const container = chartContainer?.nativeElement;
-  if (!canvas || !container) return;
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = container.clientWidth * dpr;
-  canvas.height = container.clientHeight * dpr;
-  canvas.style.width = container.clientWidth + 'px';
-  canvas.style.height = container.clientHeight + 'px';
-  canvas.style.position = 'absolute';
-  canvas.style.top = '0';
-  canvas.style.left = '0';
-  canvas.style.pointerEvents = 'none';
-  this.chartstate.handleCanvasContext = canvas.getContext('2d');
-  this.chartstate.handleCanvasContext?.setTransform(dpr, 0, 0, dpr, 0, 0);
-  this.startHandleRendering(handleCanvas);
-}
-
-private handleAnimationFrameId: number | null = null;
-
-private startHandleRendering(handleCanvas: any): void {
-  if (this.handleAnimationFrameId) cancelAnimationFrame(this.handleAnimationFrameId);
-  const draw = () => {
-    this.drawHandles(handleCanvas);
-    this.handleAnimationFrameId = requestAnimationFrame(draw);
-  };
-  this.handleAnimationFrameId = requestAnimationFrame(draw);
-}
-
-public drawHandles(handleCanvas: any): void {
-  const ctx = this.chartstate.handleCanvasContext;
-  const canvas = handleCanvas?.nativeElement;
-  if (!ctx || !canvas) return;
-
-  const dpr = window.devicePixelRatio || 1;
-  ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
-
-  if (!this.chartstate.selectedLineId) return;
-  const line = this.chartstate.findLine(this.chartstate.selectedLineId);
-  if (!line) return;
-
-  const sp = this.chartToScreenPoint(line.start_time, line.start_price);
-  const ep = this.chartToScreenPoint(line.end_time, line.end_price);
-  if (!sp || !ep) return;
-
-  this.drawHandle(ctx, sp.x, sp.y, this.chartstate.isExtendingLeftHandle);
-  this.drawHandle(ctx, ep.x, ep.y, this.chartstate.isExtendingRightHandle);
-}
-
-private drawHandle(ctx: CanvasRenderingContext2D, x: number, y: number, isActive: boolean): void {
-  const radius = isActive ? 4 : 3;
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(x, y, radius + 1, 0, Math.PI * 2);
-  ctx.fillStyle = isActive ? 'rgba(255,165,0,0.3)' : 'rgba(255,165,0,0.15)';
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(x, y, radius, 0, Math.PI * 2);
-  ctx.fillStyle = isActive ? '#FFA500' : '#FF8C00';
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(x, y, radius, 0, Math.PI * 2);
-  ctx.strokeStyle = '#FFFFFF';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-  ctx.restore();
-}
-
-public clearHandlesCanvas(handleCanvas: any): void {
-  const ctx = this.chartstate.handleCanvasContext;
-  const canvas = handleCanvas?.nativeElement;
-  if (!ctx || !canvas) return;
-  const dpr = window.devicePixelRatio || 1;
-  ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
-}
-public async reconcileLinesWithLocalDb(localdb: LocalDatabaseService): Promise<void> {
-  const dbLines = await localdb.getByChartAndTask(this.chartstate.chartId, this.chartstate.taskId);
-
-  // Lines that exist in localdb but aren't currently in memory → pull them in
-  const inMemoryIds = new Set(this.chartstate.newDrawLine.map((l) => l.localDbId).filter(Boolean));
-  for (const row of dbLines) {
-    if (row.id && !inMemoryIds.has(row.id)) {
-      this.chartstate.newDrawLine.push({ ...row, localDbId: row.id, id: (row as any).uuid ?? uuidv4() });
-    }
+  public setupHandleCanvas(handleCanvas: any, chartContainer: any): void {
+    const canvas = handleCanvas?.nativeElement;
+    const container = chartContainer?.nativeElement;
+    if (!canvas || !container) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = container.clientWidth * dpr;
+    canvas.height = container.clientHeight * dpr;
+    canvas.style.width = container.clientWidth + 'px';
+    canvas.style.height = container.clientHeight + 'px';
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.pointerEvents = 'none';
+    this.chartstate.handleCanvasContext = canvas.getContext('2d');
+    this.chartstate.handleCanvasContext?.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.startHandleRendering(handleCanvas);
   }
 
-  // Lines that exist in memory (e.g., loaded from server/API) but have no localDbId yet → persist them
-  for (const line of this.chartstate.newDrawLine) {
-    if (!line.localDbId) {
-      const saved = await localdb.createAnswer({
-        answer_id: line.answer_id ?? null,
-        chart_id: this.chartstate.chartId,
-        task_id: this.chartstate.taskId,
-        start_price: line.start_price,
-        end_price: line.end_price,
-        start_time: line.start_time,
-        end_time: line.end_time,
-        start_x: 0, end_x: 0, start_y: 0, end_y: 0,
-        is_edit: line.is_edit ?? false,
-        is_delete: false,
-      } as Answers);
-      line.localDbId = saved.id;
-    }
-  }
+  private handleAnimationFrameId: number | null = null;
 
-  this.renderLines();
-}
-
-
-public async seedLinesFromServer(
-  serverLines: any[],
-  localdb: LocalDatabaseService,
-): Promise<void> {
-  const existingDbRows = await localdb.getByChartAndTask(this.chartstate.chartId, this.chartstate.taskId);
-  const existingByAnswerId = new Map(
-    existingDbRows.filter((r) => r.answer_id != null).map((r) => [r.answer_id, r]),
-  );
-
-  this.chartstate.newDrawLine = [];
-
-  for (const server of serverLines) {
-    const match = server.id != null ? existingByAnswerId.get(server.id) : undefined;
-
-    const record = {
-      answer_id: server.id ?? null,
-      chart_id: this.chartstate.chartId,
-      task_id: this.chartstate.taskId,
-      start_price: Number(server.start_price),
-      end_price: Number(server.end_price),
-      start_time: Number(server.start_time),
-      end_time: Number(server.end_time),
-      start_x: Number(server.start_x ?? 0),
-      end_x: Number(server.end_x ?? 0),
-      start_y: Number(server.start_y ?? 0),
-      end_y: Number(server.end_y ?? 0),
-      is_edit: false,
-      is_delete: false,
+  private startHandleRendering(handleCanvas: any): void {
+    if (this.handleAnimationFrameId) cancelAnimationFrame(this.handleAnimationFrameId);
+    const draw = () => {
+      this.drawHandles(handleCanvas);
+      this.handleAnimationFrameId = requestAnimationFrame(draw);
     };
+    this.handleAnimationFrameId = requestAnimationFrame(draw);
+  }
 
-    let localDbId: number;
+  public drawHandles(handleCanvas: any): void {
+    const ctx = this.chartstate.handleCanvasContext;
+    const canvas = handleCanvas?.nativeElement;
+    if (!ctx || !canvas) return;
 
-    if (match) {
-      // existing row for this answer_id → UPDATE in place, never create a new one
-      await localdb.updateAnswer(match.id, record as Answers);
-      localDbId = match.id;
-    } else {
-      const saved = await localdb.createAnswer(record as Answers);
-      localDbId = saved.id;
+    const dpr = window.devicePixelRatio || 1;
+    ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+
+    if (!this.chartstate.selectedLineId) return;
+    const line = this.chartstate.findLine(this.chartstate.selectedLineId);
+    if (!line) return;
+
+    const sp = this.chartToScreenPoint(line.start_time, line.start_price);
+    const ep = this.chartToScreenPoint(line.end_time, line.end_price);
+    if (!sp || !ep) return;
+
+    this.drawHandle(ctx, sp.x, sp.y, this.chartstate.isExtendingLeftHandle);
+    this.drawHandle(ctx, ep.x, ep.y, this.chartstate.isExtendingRightHandle);
+  }
+
+  private drawHandle(ctx: CanvasRenderingContext2D, x: number, y: number, isActive: boolean): void {
+    const radius = isActive ? 4 : 3;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x, y, radius + 1, 0, Math.PI * 2);
+    ctx.fillStyle = isActive ? 'rgba(255,165,0,0.3)' : 'rgba(255,165,0,0.15)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = isActive ? '#FFA500' : '#FF8C00';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  public clearHandlesCanvas(handleCanvas: any): void {
+    const ctx = this.chartstate.handleCanvasContext;
+    const canvas = handleCanvas?.nativeElement;
+    if (!ctx || !canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+  }
+
+  public async reconcileLinesWithLocalDb(localdb: LocalDatabaseService): Promise<void> {
+    const dbLines = await localdb.getByChartAndTask(this.chartstate.chartId, this.chartstate.taskId);
+
+    // Lines that exist in localdb but aren't currently in memory → pull them in,
+    // but never exceed requiredLineCount (guards against stale/orphaned rows
+    // from a previous session pushing the total over the cap).
+    const inMemoryIds = new Set(this.chartstate.newDrawLine.map((l) => l.localDbId).filter(Boolean));
+    for (const row of dbLines) {
+      if (
+        row.id &&
+        !inMemoryIds.has(row.id) &&
+        this.chartstate.newDrawLine.filter((l) => !l.is_delete).length < this.chartstate.requiredLineCount
+      ) {
+        this.chartstate.newDrawLine.push({ ...row, localDbId: row.id, id: (row as any).uuid ?? uuidv4() });
+      }
     }
 
-    this.chartstate.newDrawLine.push({
-      id: uuidv4(),
-      localDbId,
-      answer_id: record.answer_id,
-      task_id: this.chartstate.taskId,
-      chart_id: this.chartstate.chartId,
-      start_time: record.start_time,
-      start_price: record.start_price,
-      end_time: record.end_time,
-      end_price: record.end_price,
-      is_edit: false,
-    } as Answers);
+    // Lines that exist in memory (e.g., loaded from server/API) but have no localDbId yet → persist them
+    for (const line of this.chartstate.newDrawLine) {
+      if (!line.localDbId) {
+        const saved = await localdb.createUserAnswer({
+          answer_id: line.answer_id ?? null,
+          chart_id: this.chartstate.chartId,
+          task_id: this.chartstate.taskId,
+          start_price: line.start_price,
+          end_price: line.end_price,
+          start_time: line.start_time,
+          end_time: line.end_time,
+          start_x: 0, end_x: 0, start_y: 0, end_y: 0,
+          is_edit: line.is_edit ?? false,
+          is_delete: false,
+        } as Answers);
+        line.localDbId = saved.id;
+      }
+    }
+
+    this.renderLines();
+  }
+
+public renderLine(line: Answers, id: string): void {
+  if (!this.ensureChart()) return;
+  try {
+    const existing = this.chartstate.lineSeriesMap.get(id);
+    if (existing) {
+      try { this.chartstate.chart.removeSeries(existing); } catch {}
+      this.chartstate.lineSeriesMap.delete(id);
+    }
+
+    let color = '#FF6B6B'; // default user-drawn
+    const isSelected = this.chartstate.selectedLineId === line.id;
+let lineStyle = LineStyle.Solid;
+    if (this.chartstate.hasSubmitted && this.chartstate.userLineResults.has(id)) {
+      const isCorrect = this.chartstate.userLineResults.get(id);
+      color = isCorrect ? '#ffffff' : '#E74C3C'; // green / red
+      lineStyle = isCorrect ? LineStyle.Solid : LineStyle.Dotted;
+    } else if (isSelected) {
+      color = '#FFA500';
+    }
+
+    const series = this.chartstate.chart.addSeries(LineSeries, {
+      color,
+      lineWidth: 2,
+      lineStyle,
+      priceLineVisible: false,
+      lastValueVisible: false,
+      crosshairMarkerVisible: false,
+    });
+    series.setData([
+      { time: Number(line.start_time), value: Number(line.start_price) },
+      { time: Number(line.end_time), value: Number(line.end_price) },
+    ]);
+    this.chartstate.lineSeriesMap.set(id, series);
+  } catch (e) {
+    console.error('[Chart] renderLine error:', e, line);
   }
 }
+
+public validateLinesPixelBased(
+  adminLines: Answers[],
+  userLines: Answers[],
+): Map<number, boolean> {
+
+  const results = new Map<number, boolean>();
+  const PIXEL_TOLERANCE = 5; // px — tune this to taste
+
+  for (const user of userLines) {
+    let matched = false;
+
+    const userStartPx = this.chartToScreenPoint(user.start_time, user.start_price);
+    const userEndPx = this.chartToScreenPoint(user.end_time, user.end_price);
+    if (!userStartPx || !userEndPx) {
+      results.set(user.id!, false);
+      continue;
+    }
+
+    for (const admin of adminLines) {
+      const adminStartPx = this.chartToScreenPoint(admin.start_time, admin.start_price);
+      const adminEndPx = this.chartToScreenPoint(admin.end_time, admin.end_price);
+      if (!adminStartPx || !adminEndPx) continue;
+
+      const startDist = Math.hypot(userStartPx.x - adminStartPx.x, userStartPx.y - adminStartPx.y);
+      const endDist = Math.hypot(userEndPx.x - adminEndPx.x, userEndPx.y - adminEndPx.y);
+
+      if (startDist <= PIXEL_TOLERANCE && endDist <= PIXEL_TOLERANCE) {
+        matched = true;
+        break;
+      }
+    }
+
+    results.set(user.id!, matched);
+  }
+
+  return results;
+}
+private removeLineSeries(id: string): void {
+  const existing = this.chartstate.lineSeriesMap.get(id);
+  if (existing) {
+    try { this.chartstate.chart.removeSeries(existing); } catch {}
+    this.chartstate.lineSeriesMap.delete(id);
+  }
+  const existingEnd = this.chartstate.lineSeriesMap.get(id + ':end');
+  if (existingEnd) {
+    try { this.chartstate.chart.removeSeries(existingEnd); } catch {}
+    this.chartstate.lineSeriesMap.delete(id + ':end');
+  }
+}
+
+  private renderAdminOverlay(): void {
+    this.adminLineSeriesMap.forEach((series) => {
+      try { this.chartstate.chart.removeSeries(series); } catch {}
+    });
+    this.adminLineSeriesMap.clear();
+
+    if (!this.chartstate.hasSubmitted) return;
+
+    this.chartstate.adminLines.forEach((line) => {
+      const series = this.chartstate.chart.addSeries(LineSeries, {
+        color: '#36F7B3', // single distinct color for ALL admin lines
+        lineWidth: 2,
+        lineStyle: LineStyle.Dotted,
+        priceLineVisible: false,
+        lastValueVisible: false,
+        crosshairMarkerVisible: false,
+      });
+      series.setData([
+        { time: Number(line.start_time), value: Number(line.start_price) },
+        { time: Number(line.end_time), value: Number(line.end_price) },
+      ]);
+      this.adminLineSeriesMap.set(String(line.id), series);
+    });
+  }
+
+  private renderLinesWithoutScaleReset(): void {
+    if (!this.ensureChart()) return;
+
+    const wasZoomed = this.chartstate.isZoomed;
+    const savedMin = this.chartstate.zoomMinPrice;
+    const savedMax = this.chartstate.zoomMaxPrice;
+
+    if (wasZoomed && savedMin != null && savedMax != null) {
+      this.chartstate.chart.priceScale('right').applyOptions({ autoScale: false });
+    }
+
+    this.chartstate.lineSeriesMap.forEach((series) => {
+      try { this.chartstate.chart.removeSeries(series); } catch {}
+    });
+    this.chartstate.lineSeriesMap.clear();
+
+    this.chartstate.newDrawLine
+      .filter((line) => !line.is_delete)
+      .forEach((line) => this.renderLine(line, String(line.id)));
+
+    // Admin overlay — only visible post-submit, rendered on its own map so
+    // it's never confused with (or overwritten by) user line rendering.
+    this.renderAdminOverlay();
+
+    this.chartstate.chart.timeScale().applyOptions({ visible: true });
+
+    if (wasZoomed && savedMin != null && savedMax != null) {
+      this.chartstate.chart.priceScale('right').applyOptions({ autoScale: false });
+      this.chartstate.chart.priceScale('right')
+        .setVisiblePriceRange({ minValue: savedMin, maxValue: savedMax });
+    }
+  }
+
+  public async seedLinesFromServer(
+    serverLines: any[],
+    localdb: LocalDatabaseService,
+  ): Promise<void> {
+    this.chartstate.requiredLineCount = serverLines.length;
+
+    // Admin lines kept OUT of newDrawLine — never rendered/persisted as user
+    // answers, only used for validation + the post-submit overlay.
+    this.chartstate.adminLines = serverLines.map((server) => ({
+      id: uuidv4(),
+      answer_id: server.id ?? null,
+      task_id: this.chartstate.taskId,
+      chart_id: this.chartstate.chartId,
+      start_time: Number(server.start_time),
+      start_price: Number(server.start_price),
+      end_time: Number(server.end_time),
+      end_price: Number(server.end_price),
+      is_edit: false,
+    } as Answers));
+
+    // Persist to answerChart so validateLinesAgainstDb() and any reload have
+    // something to read.
+    await localdb.saveAdminLines(
+      this.chartstate.chartId,
+      this.chartstate.taskId,
+      this.chartstate.adminLines,
+    );
+
+    // Clear-on-open: wipe any stale user draft lines from a previous session
+    // for this chart/task before loading a fresh in-memory array.
+    await localdb.deleteUserLinesByChartAndTask(this.chartstate.chartId, this.chartstate.taskId);
+    this.chartstate.newDrawLine = [];
+
+    // Reset submit/result state for the new session.
+    this.chartstate.hasSubmitted = false;
+    this.chartstate.matchedCount = 0;
+    this.chartstate.userLineResults.clear();
+  }
 }

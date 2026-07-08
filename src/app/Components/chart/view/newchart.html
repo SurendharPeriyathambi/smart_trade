@@ -9,6 +9,10 @@
                 {{ tf.label }}
             </button>
         </div>
+        <div class="line-counter ms-4">
+  <span>Lines: {{ JsonState.requiredLineCount - JsonState.remainingLines }} / {{ JsonState.requiredLineCount }}</span>
+  <span *ngIf="JsonState.hasSubmitted" class="matched">✓ {{ JsonState.matchedCount }} correct</span>
+</div>
 
 
         <div class="header-controls">
@@ -95,7 +99,7 @@
         <!-- Duplicate -->
         <button class="tool-btn duplicate"
                 (click)="duplicateSelectedLine()"
-                [disabled]="!JsonState.selectedLineId"
+                [disabled]="!JsonState.selectedLineId  || JsonState.remainingLines <= 0"
                 title="Duplicate selected line (Ctrl+D)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="8" y="8" width="13" height="13" rx="2"/>
@@ -104,6 +108,20 @@
           <span>Duplicate</span>
           <span class="kbd-hint">Ctrl+D</span>
         </button>
+    <button class="tool-btn submit-answer" (click)="submitAnswers()" [disabled]="JsonState.newDrawLine.length === 0 || JsonState.hasSubmitted">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+  <span>Submit</span>
+</button>
+
+<button class="tool-btn retry" *ngIf="JsonState.hasSubmitted" (click)="retryDrawing()">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="1 4 1 10 7 10"/>
+    <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+  </svg>
+  <span>Retry</span>
+</button>
 
         <!-- Duplicate & Extend -->
         <!-- <button class="tool-btn duplicate-extend"
@@ -132,7 +150,7 @@
         </button> -->
 
         <!-- Save (admin only) -->
-        <button class="tool-btn save"
+        <!-- <button class="tool-btn save"
                 (click)="saveAllLines()" title="Save as correct answers (Ctrl+S)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
@@ -140,7 +158,7 @@
           </svg>
           <span>Save</span>
           <span class="kbd-hint">Ctrl+S</span>
-        </button>
+        </button> -->
         <!-- Submit Answer (user only) -->
 <!-- <button *ngIf="userRole !== 'admin'"
         class="tool-btn submit-answer"

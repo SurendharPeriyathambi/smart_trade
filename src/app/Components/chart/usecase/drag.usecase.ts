@@ -45,24 +45,28 @@ export class DragUsecase {
     this.chartState.isDraggingLine = true;
 
     if (event.ctrlKey || event.metaKey) {
-      const clone: Answers = {
-        ...structuredClone(target),
-        id: uuidv4(),
-        localDbId: null,
-        answer_id: null,
-        is_edit: false,
-      };
-      this.chartState.newDrawLine.push(clone);
-      this.chartState.selectedLineId = clone.id!;
-      this.chartState.draggedLineId = clone.id!;
-      this.chartState.dragLineSnapshot = structuredClone(clone);
-      this.chartState.isDragClone = true;
+      if (this.chartState.remainingLines <= 0) {
+        // Cap reached — fall through to a normal (non-clone) drag instead of cloning.
+      } else {
+        const clone: Answers = {
+          ...structuredClone(target),
+          id: uuidv4(),
+          localDbId: null,
+          answer_id: null,
+          is_edit: false,
+        };
+        this.chartState.newDrawLine.push(clone);
+        this.chartState.selectedLineId = clone.id!;
+        this.chartState.draggedLineId = clone.id!;
+        this.chartState.dragLineSnapshot = structuredClone(clone);
+        this.chartState.isDragClone = true;
 
-      const cp = this.candle.screenToChartPoint(sp);
-      if (cp) this.chartState.dragStartPoint = { time: cp.time, price: cp.price };
+        const cp = this.candle.screenToChartPoint(sp);
+        if (cp) this.chartState.dragStartPoint = { time: cp.time, price: cp.price };
 
-      this.candle.renderLines();
-      return;
+        this.candle.renderLines();
+        return;
+      }
     }
 
     this.chartState.selectedLineId = target.id!;
@@ -142,23 +146,39 @@ export class DragUsecase {
   private async finishDragClone(cloneId: string): Promise<void> {
     const line = this.chartState.findLine(cloneId);
     if (!line) return;
-    const saved = await this.localdb.createAnswer(this.toRecord(line) as Answers);
-    line.localDbId = saved.id;
+    this.chartState.pendingSaves++;
+    try {
+      const saved = await this.localdb.createUserAnswer(this.toRecord(line) as Answers);
+      line.localDbId = saved.id;
+    } finally {
+      this.chartState.pendingSaves--;
+    }
   }
 
   private async saveDraggedLine(id: string): Promise<void> {
     const line = this.chartState.findLine(id);
     if (!line) return;
     line.is_edit = true;
-    if (line.localDbId) {
-      await this.localdb.updateAnswer(line.localDbId, this.toRecord(line) as Answers);
-    } else {
-      const saved = await this.localdb.createAnswer(this.toRecord(line) as Answers);
-      line.localDbId = saved.id;
+    this.chartState.pendingSaves++;
+    try {
+      if (line.localDbId) {
+        await this.localdb.updateAnswer(line.localDbId, this.toRecord(line) as Answers);
+      } else {
+        const saved = await this.localdb.createUserAnswer(this.toRecord(line) as Answers);
+        line.localDbId = saved.id;
+      }
+    } finally {
+      this.chartState.pendingSaves--;
     }
   }
 
   private renderSingleLine(line: Answers): void {
+    // After submit, defer entirely to renderLine() so result colors
+    // (green/red) aren't stomped by the hardcoded drag colors below.
+    if (this.chartState.hasSubmitted) {
+      this.candle.renderLine(line, String(line.id));
+      return;
+    }
     const isSelected = this.chartState.selectedLineId === line.id;
     const existing = this.chartState.lineSeriesMap.get(String(line.id));
     const data = [

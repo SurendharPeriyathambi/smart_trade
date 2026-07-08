@@ -1,6 +1,14 @@
-
 import { CommonModule, Location } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, Observable, of } from 'rxjs';
 import { ChartUseCase } from '../usecase/chart.usecase';
@@ -20,6 +28,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from '../../../../services/engine/toast.service';
 import { HttpClient } from '@angular/common/http';
 import { LocalDatabaseService } from '../../../../services/engine/localdatabase.service';
+import { LoaderService } from '../../../../services/engine/loader.service';
 
 type ToolMode = 'trendline' | 'hline' | 'vline' | 'ray' | 'straightline' | 'select' | 'measure';
 
@@ -48,6 +57,7 @@ type ToolMode = 'trendline' | 'hline' | 'vline' | 'ray' | 'straightline' | 'sele
   ],
 })
 export class NewChart implements OnInit, OnDestroy {
+  private loader = inject (LoaderService);
   private wheelZoomHandler = (event: WheelEvent) => {
     this.JsonToCandleUsecase.handleWheelZoom(event, this.chartContainer);
   };
@@ -123,15 +133,15 @@ export class NewChart implements OnInit, OnDestroy {
   }
 
   jsonPathConverttoView(data: any) {
-    this.JsonState.setLoading(true);
+    this.loader.show();
     this.chartUseCase.wasabiUsecase(data).subscribe({
       next: (res) => {
         this.jsonPathConvert(res.data.wasabi_url);
-        this.JsonState.setLoading(false);
+        this.loader.hide();
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.JsonState.setLoading(false);
+        this.loader.hide();
         this.cdr.detectChanges();
       },
     });
@@ -237,9 +247,20 @@ export class NewChart implements OnInit, OnDestroy {
     document.removeEventListener('contextmenu', this.JsonState._blockContextMenu, true);
   }
 
+  // ── REPLACE setActiveTool() ──
   setActiveTool(tool: ToolMode): void {
+    // Only trendline drawing + select are enabled — everything else disabled.
+    if (tool !== 'select' && tool !== 'trendline') {
+      this.toast.info('Only trend line drawing is enabled.');
+      return;
+    }
+    if (tool === 'trendline' && this.JsonState.remainingLines <= 0) {
+      this.toast.info(`You've drawn all ${this.JsonState.requiredLineCount} required lines.`);
+      return;
+    }
+    
     this.toolsUsecase.cancelDrawing();
-    if (tool !== 'measure') this.measureUsecase.clearMeasure(this.measureCanvas);
+    // if (tool !== 'measure') this.measureUsecase.clearMeasure(this.measureCanvas);
     this.JsonState.activeTool = tool;
     if (tool !== 'select') {
       this.JsonState.selectedLineId = null;
@@ -249,75 +270,128 @@ export class NewChart implements OnInit, OnDestroy {
     this.JsonToCandleUsecase.renderLines();
   }
 
- @HostListener('document:keydown', ['$event'])
-onKeyDown(event: KeyboardEvent): void {
-  const tag = (event.target as HTMLElement)?.tagName;
-  if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+async submitAnswers(): Promise<void> {
+  if (this.JsonState.pendingSaves > 0) {
+    this.toast.info('Still saving your last edit — try again in a moment.');
+    return;
+  }
 
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
-    event.preventDefault();
-    this.toolsUsecase.undoLastChange();
-    return;
+  this.loader.show();
+  try {
+    this.JsonState.hasSubmitted = true;
+
+    const adminLines = await this.localDatabaseService.getByChartAndTask(
+      this.JsonState.chartId,
+      this.JsonState.taskId,
+    );
+    const userLines = await this.localDatabaseService.getUserByChartAndTask(
+      this.JsonState.chartId,
+      this.JsonState.taskId,
+    );
+
+    const resultsById = this.JsonToCandleUsecase.validateLinesPixelBased(adminLines, userLines);
+
+    this.JsonState.userLineResults.clear();
+    let matched = 0;
+
+    for (const line of this.JsonState.newDrawLine.filter((l) => !l.is_delete)) {
+      const isCorrect =
+        line.localDbId != null ? (resultsById.get(line.localDbId) ?? false) : false;
+
+      this.JsonState.userLineResults.set(String(line.id), isCorrect);
+
+      if (isCorrect) {
+        matched++;
+        this.toast.success('Line correct! ✓');
+      } else {
+        this.toast.info('Line incorrect — start or end point does not match.');
+      }
+    }
+
+    this.JsonState.matchedCount = matched;
+    this.JsonToCandleUsecase.renderLines();
+    this.toast.success(`${matched} / ${this.JsonState.requiredLineCount} correct`);
+  } finally {
+    this.loader.hide();
   }
-  if (
-    (event.key === 'Delete' || event.key === 'Backspace') &&
-    this.JsonState.activeTool === 'select' &&
-    this.JsonState.selectedLineId
-  ) {
-    event.preventDefault();
-    this.deleteSelectedLine();
-    return;
+}
+
+  // ── NEW: retryDrawing() ──
+  async retryDrawing(): Promise<void> {
+    // Remove user-drawn lines from IndexedDB + memory
+    await this.localDatabaseService.deleteUserLinesByChartAndTask(
+      this.JsonState.chartId,
+      this.JsonState.taskId,
+    );
+    this.JsonState.newDrawLine = [];
+
+    // Reset submit/result state (admin lines stay loaded in state,
+    // but overlay only renders when hasSubmitted is true, so they'll hide)
+    this.JsonState.hasSubmitted = false;
+    this.JsonState.matchedCount = 0;
+    this.JsonState.userLineResults.clear();
+    this.JsonState.selectedLineId = null;
+
+    this.clearHandles();
+    this.JsonState.activeTool = 'trendline';
+    this.JsonToCandleUsecase.renderLines();
+    this.toast.info('Try again — draw your lines.');
   }
-  if (event.key === 'Escape') {
-    event.preventDefault();
-    if (this.JsonState.isMeasuring) this.measureUsecase.clearMeasure(this.measureCanvas);
-    if (this.JsonState.isDrawing) this.toolsUsecase.cancelDrawing();
-    this.setActiveTool('select');
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    const tag = (event.target as HTMLElement)?.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+      event.preventDefault();
+      this.toolsUsecase.undoLastChange();
+      return;
+    }
+    if (
+      (event.key === 'Delete' || event.key === 'Backspace') &&
+      this.JsonState.activeTool === 'select' &&
+      this.JsonState.selectedLineId
+    ) {
+      event.preventDefault();
+      this.deleteSelectedLine();
+      return;
+    }
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      if (this.JsonState.isMeasuring) this.measureUsecase.clearMeasure(this.measureCanvas);
+      if (this.JsonState.isDrawing) this.toolsUsecase.cancelDrawing();
+      this.setActiveTool('select');
+      this.JsonState.selectedLineId = null;
+      this.clearHandles();
+      this.JsonToCandleUsecase.renderLines();
+      return;
+    }
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'd') {
+      event.preventDefault();
+      this.duplicateSelectedLine();
+      return;
+    }
+  }
+
+  async deleteSelectedLine(): Promise<void> {
+    if (!this.JsonState.selectedLineId) {
+      this.toast.info('Select a line first.');
+      return;
+    }
+    const id = this.JsonState.selectedLineId;
+
+    this.toolsUsecase.pushUndo(); // snapshot BEFORE removal, so undo still works
+
+    await this.dragUsecase.deleteLine(id);
+
+    // Fully remove from in-memory array now that local DB row is gone
+    this.JsonState.newDrawLine = this.JsonState.newDrawLine.filter((l) => l.id !== id);
+
     this.JsonState.selectedLineId = null;
     this.clearHandles();
     this.JsonToCandleUsecase.renderLines();
-    return;
+    this.toast.success('Line deleted.');
   }
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'd') {
-    event.preventDefault();
-    this.duplicateSelectedLine();
-    return;
-  }
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
-    event.preventDefault();
-    this.saveAllLines();
-    return;
-  }
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'r') {
-    event.preventDefault();
-    this.resetAllLines();
-    return;
-  }
-  if (event.key === '1') this.setActiveTool('select');
-  if (event.key === '2') this.setActiveTool('trendline');
-  if (event.key === '3') this.setActiveTool('straightline');
-  if (event.key === '4') this.setActiveTool('measure');
-}
-
-async deleteSelectedLine(): Promise<void> {
-  if (!this.JsonState.selectedLineId) {
-    this.toast.info('Select a line first.');
-    return;
-  }
-  const id = this.JsonState.selectedLineId;
-
-  this.toolsUsecase.pushUndo(); // snapshot BEFORE removal, so undo still works
-
-  await this.dragUsecase.deleteLine(id);
-
-  // Fully remove from in-memory array now that local DB row is gone
-  this.JsonState.newDrawLine = this.JsonState.newDrawLine.filter((l) => l.id !== id);
-
-  this.JsonState.selectedLineId = null;
-  this.clearHandles();
-  this.JsonToCandleUsecase.renderLines();
-  this.toast.success('Line deleted.');
-}
   @HostListener('document:contextmenu', ['$event'])
   onRightClick(event: MouseEvent): void {
     event.preventDefault();
@@ -368,120 +442,33 @@ async deleteSelectedLine(): Promise<void> {
   }
   resetAllLines(): void {}
 
-async saveAllLines(): Promise<void> {
-  const lines = this.JsonState.newDrawLine.filter((l) => !l.is_delete);
-
-  if (!lines.length) {
-    this.toast.info('Nothing to save.');
-    await this.localDatabaseService.deleteLinesByChartAndTask(
-      this.JsonState.chartId,
-      this.JsonState.taskId,
-    );
+  async backToDashboard() {
+    await this.retryDrawing(); // Execute retryDrawing first
     this.location.back();
-    return;
   }
 
-  const toCreate = lines.filter((l) => !l.answer_id);
-  const toUpdate = lines.filter((l) => l.answer_id && l.is_edit);
+  async loadLinesFromServer(): Promise<void> {
+    this.loader.show();
 
-  if (!toCreate.length && !toUpdate.length) {
-    this.toast.info('Nothing to save.');
-    await this.localDatabaseService.deleteLinesByChartAndTask(
-      this.JsonState.chartId,
-      this.JsonState.taskId,
-    );
-    this.location.back();
-    return;
+    this.chartUseCase
+      .getChart({
+        chart_id: this.JsonState.chartId,
+        task_id: this.JsonState.taskId,
+      })
+      .subscribe({
+        next: async (res) => {
+          const serverLines: any[] = res?.data?.answer_list ?? [];
+          await this.JsonToCandleUsecase.seedLinesFromServer(
+            serverLines,
+            this.localDatabaseService,
+          );
+          this.JsonToCandleUsecase.renderLines();
+          this.loader.hide();
+        },
+        error: (err) => {
+          console.error('[Chart] getChart failed:', err);
+          this.loader.hide();
+        },
+      });
   }
-
-  this.JsonState.setLoading(true);
-
-  const requests: Observable<any>[] = [];
-
-  // if (toCreate.length) {
-  //   requests.push(
-  //     this.chartUseCase.createChart({
-  //       chart_id: this.JsonState.chartId,
-  //       task_id: this.JsonState.taskId,
-  //       answer_list: toCreate.map((l) => ({
-  //         start_time: l.start_time,
-  //         end_time: l.end_time,
-  //         start_price: l.start_price,
-  //         end_price: l.end_price,
-  //         start_x: Number(l.start_x ?? 0),
-  //         end_x: Number(l.end_x ?? 0),
-  //         start_y: Number(l.start_y ?? 0),
-  //         end_y: Number(l.end_y ?? 0),
-  //       })),
-  //     } as any),
-  //   );
-  // }
-
-  // if (toUpdate.length) {
-  //   requests.push(
-  //     this.chartUseCase.editChart({
-  //       chart_id: this.JsonState.chartId,
-  //       task_id: this.JsonState.taskId,
-  //       answer_list: toUpdate.map((l) => ({
-  //         id: l.answer_id,
-  //         start_time: l.start_time,
-  //         end_time: l.end_time,
-  //         start_price: l.start_price,
-  //         end_price: l.end_price,
-  //         start_x: Number(l.start_x ?? 0),
-  //         end_x: Number(l.end_x ?? 0),
-  //         start_y: Number(l.start_y ?? 0),
-  //         end_y: Number(l.end_y ?? 0),
-  //       })),
-  //     } as any),
-  //   );
-  // }
-
-  forkJoin(requests.length ? requests : [of(null)]).subscribe({
-    next: async () => {
-      this.toast.success('All lines saved to server.');
-      await this.localDatabaseService.deleteLinesByChartAndTask(
-        this.JsonState.chartId,
-        this.JsonState.taskId,
-      );
-      this.JsonState.setLoading(false);
-      this.location.back();
-    },
-    error: (err) => {
-      console.error('[Chart] Save failed:', err);
-      this.toast.info('Failed to save lines.');
-      this.JsonState.setLoading(false);
-    },
-  });
-}
-
-backToDashboard(): void {
-  this.saveAllLines();
-}
-
-async loadLinesFromServer(): Promise<void> {
-  this.JsonState.setLoading(true);
-
-  this.chartUseCase.getChart({
-    chart_id: this.JsonState.chartId,
-    task_id: this.JsonState.taskId,
-  }).subscribe({
-    next: async (res) => {
-      const serverLines: any[] = res?.data?.answer_list ?? [];
-      await this.JsonToCandleUsecase.seedLinesFromServer(serverLines, this.localDatabaseService);
-      this.JsonToCandleUsecase.renderLines();
-      this.JsonState.setLoading(false);
-    },
-    error: (err) => {
-      console.error('[Chart] getChart failed:', err);
-      this.JsonState.setLoading(false);
-    },
-  });
-}
-
-
-
-
-
-
 }

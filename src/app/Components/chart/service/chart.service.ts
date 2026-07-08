@@ -1,9 +1,10 @@
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { getChartAnswer } from "../model/test.model";
+
 import { Apiresponse } from "../../chartList/model/chartlist.model";
 import { HttpClient } from "@angular/common/http";
 import { HttpEngine } from "../../../../services/engine/http_engine";
+import { getChartAnswer } from "../model/drawing.model";
 
 @Injectable({providedIn:'root'})
 export class ChartService{

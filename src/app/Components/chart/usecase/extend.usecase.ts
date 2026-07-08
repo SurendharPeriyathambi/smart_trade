@@ -146,15 +146,24 @@ export class ExtendUsecase {
     const line = this.chartState.findLine(id);
     if (!line) return;
     line.is_edit = true;
-    if (line.localDbId) {
-      await this.localdb.updateAnswer(line.localDbId, this.toRecord(line) as Answers);
-    } else {
-      const saved = await this.localdb.createAnswer(this.toRecord(line) as Answers);
-      line.localDbId = saved.id;
+    this.chartState.pendingSaves++;
+    try {
+      if (line.localDbId) {
+        await this.localdb.updateAnswer(line.localDbId, this.toRecord(line) as Answers);
+      } else {
+        const saved = await this.localdb.createUserAnswer(this.toRecord(line) as Answers);
+        line.localDbId = saved.id;
+      }
+    } finally {
+      this.chartState.pendingSaves--;
     }
   }
 
   private renderSingleLine(line: Answers): void {
+    if (this.chartState.hasSubmitted) {
+      this.candle.renderLine(line, String(line.id));
+      return;
+    }
     const isSelected = this.chartState.selectedLineId === line.id;
     const existing = this.chartState.lineSeriesMap.get(String(line.id));
     const data = [
