@@ -29,7 +29,7 @@
         <div class="auth-buttons desktop-auth">
           @if(isLoggedIn) {
             @if (showLogout) {
-               <button class="btn btn-outline" (click)="onLogout()">Logout</button>
+               <button class="btn btn-outline" (click)="onLogout()"><i class="bi bi-power"></i>Logout</button>
             } @else {
                <button class="account-avatar" routerLink="/subscriptions" title="My Account">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -55,7 +55,7 @@
   <div class="mobile-menu" [class.open]="isMenuOpen">
     <nav class="mobile-nav">
       <a   (click)="scrollTo('hero')" class="nav-link" >Home</a>
-      <a  (click)="scrollTo('about')" class="nav-link" >About Us</a>
+      <a  routerLink="/about" class="nav-link" >About Us</a>
       <a  (click)="scrollTo('courses')" class="nav-link" >Courses</a>
       <a  (click)="scrollTo('contact')" class="nav-link" >Contact Us</a>
     </nav>

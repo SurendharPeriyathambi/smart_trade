@@ -11,7 +11,7 @@ import { Coopen } from "../../sub-pages/coopen/coopen";
 @Component({
   selector: 'app-subscriptions',
   imports: [Header, SubscriptionSummary, SubscriptionPlans,
-    PaymentSection, Footer, CommonModule, CourseCurriculam, Coopen],
+    Footer, CommonModule, CourseCurriculam, Coopen],
   templateUrl: './subscriptions.html',
   styleUrl: './subscriptions.scss',
 })

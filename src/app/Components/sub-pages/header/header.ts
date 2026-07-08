@@ -1,5 +1,14 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, Input, OnInit, OnDestroy, HostListener, PLATFORM_ID, inject, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  HostListener,
+  PLATFORM_ID,
+  inject,
+  AfterViewInit,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthServices } from '../../main-pages/login/auth.service';
 import { StorageEngine } from '../../../../services/engine/storage_engine';
@@ -16,28 +25,24 @@ import { DeviceService } from '../../main-pages/login/device.service';
 export class Header implements OnInit {
   isMenuOpen = false;
   isLoggedIn = false;
-  deviceId:string='';
+  deviceId: string = '';
 
   @Input() isAuthButton = true;
   @Input() showLogout = false;
 
-   private platformId = inject(PLATFORM_ID);
+  private platformId = inject(PLATFORM_ID);
   constructor(
     private authService: AuthServices,
     private storage: StorageEngine,
     private loader: LoaderService,
     private toast: ToastService,
     private router: Router,
-    private deviceService:DeviceService
+    private deviceService: DeviceService,
   ) {}
- 
 
   ngOnInit(): void {
     this.isLoggedIn = !!this.storage.getAccessToken();
-    
   }
-
-
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
@@ -48,7 +53,7 @@ export class Header implements OnInit {
   }
 
   scrollTo(sectionId: string) {
-      if (!isPlatformBrowser(this.platformId)) return;
+    if (!isPlatformBrowser(this.platformId)) return;
 
     this.closeMenu();
     const currentUrl = this.router.url.split('#')[0];
@@ -66,17 +71,15 @@ export class Header implements OnInit {
       });
     }
   }
-  
 
   async onLogout() {
-    this.deviceId = await this.deviceService.getDeviceId();
     this.loader.show();
     this.closeMenu();
-    this.authService.logout(this.deviceId).subscribe({
+    this.authService.logout().subscribe({
       next: () => {
         this.storage.clear();
-       localStorage.removeItem('pending_logout'); // ✅ clean up
-      localStorage.removeItem('unload_time');
+        localStorage.removeItem('pending_logout'); // ✅ clean up
+        localStorage.removeItem('unload_time');
         this.isLoggedIn = false;
         this.loader.hide();
         this.toast.success('Logged out successfully!');
@@ -85,8 +88,7 @@ export class Header implements OnInit {
       error: (err) => {
         this.loader.hide();
         this.toast.error('Logout failed. Please try again.');
-     
-      }
+      },
     });
   }
 }

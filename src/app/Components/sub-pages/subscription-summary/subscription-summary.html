@@ -1,134 +1,202 @@
+<div class="profile-subscription-container">
+  <!-- Decorative Background Elements -->
+  <div class="decoration-circle circle-1"></div>
+  <div class="decoration-circle circle-2"></div>
+  <div class="decoration-circle circle-3"></div>
 
-  <div class="profile-subscription-container">
-    <!-- Decorative Background Elements -->
-    <div class="decoration-circle circle-1"></div>
-    <div class="decoration-circle circle-2"></div>
-    <div class="decoration-circle circle-3"></div>
-
-    <div class="cards-wrapper">
-      <!-- User Profile Card -->
-      <div class="card profile-card">
-        <div class="card-header bg-white">
-          <h2 class="card-title">User Profile</h2>
+  <div class="cards-wrapper">
+    <!-- User Profile Card -->
+    <div class="card profile-card">
+      <div class="card-header-row">
+        <div class="header-icon-title">
+          <div class="header-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="8" r="3.5" stroke="white" stroke-width="1.6" />
+              <path d="M4.5 19c1.2-3.2 4-5 7.5-5s6.3 1.8 7.5 5" stroke="white" stroke-width="1.6"
+                stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="header-text">
+            <h2 class="card-title">User Profile</h2>
+            <p class="card-subtitle">Manage your personal information</p>
+          </div>
         </div>
 
-        <div class="card-body">
-          <!-- Profile Image -->
-          <div class="profile-image-wrapper">
-            <img src="../assets/images/male-face.jpg" alt="Profile" class="profile-image">
-            
-          </div>
-
-          <!-- Profile Information -->
-          <div class="info-grid rounded-2">
-            <!-- Row 1 -->
-            <div class="info-item">
-              <label class="info-label">
-                <svg class="icon" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                Your Name
-              </label>
-              <p class="info-value">{{ profile()?.name }}</p>
-            </div>
-
-           <div class="info-item  ">
-              <label class="info-label">
-                <svg class="icon" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                Mobile
-              </label>
-              <p class="info-value">{{ profile()?.mobile }}</p>
-            </div>
-            <!-- Row 2 -->
-            
-             <div class="info-item full-width">
-              <label class="info-label">
-                <svg class="icon" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                Email
-              </label>
-              <p class="info-value">{{ profile()?.email }}</p>
-            </div>
-
-            
-          </div>
-
-        </div>
+        <!-- <button class="edit-btn" type="button" aria-label="Edit profile">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil"
+            viewBox="0 0 16 16">
+            <path
+              d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325" />
+          </svg>
+        </button> -->
       </div>
 
-      <!-- Subscription Card -->
-      <div class="card subscription-card" *ngIf="subscription()">
-        <div class="card-header bg-white">
-          <h2 class="card-title">My Subscription</h2>
-        </div>
-
-        <div class="card-body">
-          <!-- Plan Header -->
-          <div class="plan-header pt-4">
-            <h3 class="plan-name">{{ subscription()?.plan_name }} 
-              @if(subscriptionStatus() === 'active' || subscriptionStatus() === 'approved' ){
- <span class="remaing-days"> Remaining:{{remainingDays()}} {{remainingDays() === 1 ? 'day': 'days' }} </span>
-              }
-             
-            </h3>
-            <span class="status-badge"  [ngClass]=" subscription()?.status?.toLowerCase() === 'rejected' ? 'status-reject':'status-badge' ">  {{ subscription()?.status | titlecase }}</span>
+      <div class="card-body">
+        <!-- Profile Row: image + name + status -->
+        <div class="profile-row">
+          <div class="profile-image-wrapper">
+            <img src="../assets/images/male-face.jpg" alt="Profile" class="profile-image">
+            <span class="online-dot"></span>
           </div>
 
-          <!-- Subscription Information -->
-          <div class="info-grid rounded-2">
-            <!-- Row 1 -->
-            <div class="info-item">
-              <label class="info-label">
-                <svg class="icon" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                DURATION
-              </label>
-              <p class="info-value">{{ subscription()?.duration }} {{subscription()?.validity}}</p>
-            </div>
+          <div class="profile-summary">
+            <h3 class="profile-name">{{ profile()?.name }}</h3>
+            <span class="active-badge">
+              <span class="dot"></span>
+              Active User
+            </span>
+          </div>
+        </div>
 
-            <div class="info-item">
-              <label class="info-label">
-                <svg class="icon" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                PRICE
-              </label>
-              <p class="info-value">₹ {{ subscription()?.amount }}</p>
+        <!-- Profile Information -->
+        <div class="info-list">
+          <div class="info-row">
+            <div class="row-icon">
+              <svg viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="5.5" r="2.5" stroke="currentColor" stroke-width="1.3" />
+                <path d="M3 13c.8-2.2 2.7-3.4 5-3.4s4.2 1.2 5 3.4" stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" />
+              </svg>
             </div>
-
-            <!-- Row 2 -->
-            <div class="info-item">
-              <label class="info-label">
-                <svg class="icon" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                START DATE
-              </label>
-              <p class="info-value"> {{ subscription()?.start_date || '-' }}</p>
+            <div class="row-text">
+              <label class="info-label">Your Name</label>
+              <p class="info-value">{{ profile()?.name }}</p>
             </div>
+          </div>
 
-            <div class="info-item">
-              <label class="info-label">
-                <svg class="icon" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M6 2V4M10 2V4M2 6H14" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                RENEW DATE
-              </label>
-              <p class="info-value">{{ subscription()?.end_date || '-' }}</p>
+          <div class="info-row">
+            <div class="row-icon mobile-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-telephone-fill" viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                  d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z" />
+              </svg>
+            </div>
+            <div class="row-text">
+              <label class="info-label">Mobile</label>
+              <p class="info-value">{{ profile()?.mobile }}</p>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="row-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-envelope-fill" viewBox="0 0 16 16">
+                <path
+                  d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z" />
+              </svg>
+            </div>
+            <div class="row-text">
+              <label class="info-label">Email</label>
+              <p class="info-value">{{ profile()?.email }}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- Subscription Card -->
+    <div class="card subscription-card" *ngIf="subscription()">
+      <div class="card-header-row">
+        <div class="header-icon-title">
+          <div class="header-icon subscription-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 8l3 2 5-6 5 6 3-2-2 9H6L4 8z" stroke="white" stroke-width="1.6" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div class="header-text">
+            <h2 class="card-title">My Subscription</h2>
+            <p class="card-subtitle">Overview of your current subscription</p>
+          </div>
+        </div>
+
+        <span class="status-badge"
+          [ngClass]="subscription()?.status?.toLowerCase() === 'approved' ? 'status-badge':'status-reject'">
+          {{ subscription()?.status | titlecase  }}
+        </span>
+      </div>
+
+      <div class="card-body">
+        <!-- Plan Name -->
+        <h3 class="plan-name-title">{{ subscription()?.plan_name || 'Demo' }}</h3>
+        <span class="remaing-days" *ngIf="subscriptionStatus() === 'active' || subscriptionStatus() === 'approved'">
+          Remaining: {{remainingDays()}} {{remainingDays() === 1 ? 'day': 'days'}}
+        </span>
+
+        <!-- Subscription Information -->
+        <div class="info-grid-2">
+          <div class="info-row">
+            <div class="row-icon">
+              <svg viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3" />
+                <path d="M2 6h12M5 1.5v2M11 1.5v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="row-text">
+              <label class="info-label">Duration</label>
+              <p class="info-value">{{ subscription()?.duration || '-' }} {{subscription()?.validity}}</p>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="row-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tag"
+                viewBox="0 0 16 16" style="transform: scaleX(-1);">
+                <path d="M6 4.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m-1 0a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0" />
+                <path
+                  d="M2 1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 1 6.586V2a1 1 0 0 1 1-1m0 5.586 7 7L13.586 9l-7-7H2z" />
+              </svg>
+            </div>
+            <div class="row-text">
+              <label class="info-label">Price</label>
+              <p class="info-value">₹ {{ subscription()?.amount }}</p>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="row-icon">
+              <svg viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3" />
+                <path d="M2 6h12M5 1.5v2M11 1.5v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="row-text">
+              <label class="info-label">Start Date</label>
+              <p class="info-value">{{ subscription()?.start_date || '-' }}</p>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="row-icon">
+              <svg viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3" />
+                <path d="M2 6h12M5 1.5v2M11 1.5v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="row-text">
+              <label class="info-label">Renew Date</label>
+              <p class="info-value">{{ subscription()?.end_date || '-' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Under Review Notice -->
+        <!-- <div class="notice-box" *ngIf="subscription()?.status?.toLowerCase() === 'pending'">
+          <span class="notice-icon">✦</span>
+          <div>
+            <p>Your subscription is currently under review.</p>
+            <p>We'll notify you once it's activated.</p>
+          </div>
+        </div>
+      </div> -->
+      <div class="notice-box" *ngIf="subscription()?.status?.toLowerCase() === 'pending'">
+          <span class="notice-icon">✦</span>
+          <div>
+            <p>Your subscription is currently under review.</p>
+            <p>We'll notify you once it's activated.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div>
