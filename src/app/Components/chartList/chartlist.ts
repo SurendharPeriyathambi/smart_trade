@@ -8,6 +8,8 @@ import { ListService } from './services/chartlist.service';
 import { ListState } from './state/chartlist.state';
 import { ListRepository } from './repositories/chartlist.repositories';
 import { ListImpl } from './repositories/chartlist.repositories.impl';
+import { LoaderService } from '../../../services/engine/loader.service';
+import { ToastService } from '../../../services/engine/toast.service';
 
 @Component({
   selector: 'app-chart',
@@ -28,6 +30,8 @@ export class ChartList {
   private cdr = inject(ChangeDetectorRef);
   private chartlist = inject(ListUsecase);
   private route=inject(Router);
+  private toast=inject(ToastService);
+   private loaderService=inject(LoaderService);
   cardColors = ['#2048c0', '#33d833', '#9a1d1d'];
 
   getCardColor(index: number): string {
@@ -41,12 +45,20 @@ export class ChartList {
   pagedData!: any;
 
   ngOnInit(): void {
+    this.loaderService.show();
     this.chartlist.getListData().subscribe({
       next: (res) => {
+        this.toast.success(res.message);
         this.limit = 12;
         this.chartDataList = res.data?.taskList;
+        this.loaderService.hide();
+        
         this.cdr.detectChanges();
       },
+      error:(err)=>{
+        this.toast.error(err.error.message);
+        this.loaderService.hide();
+      }
     });
   }
 
