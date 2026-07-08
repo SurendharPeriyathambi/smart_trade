@@ -90,7 +90,13 @@ export class Coopen {
 
   calculateTotal() {
     const amount = Number(this.plan.amount);
-    this.total = amount - this.discount;
+    const subtotal = Math.max(amount - this.discount, 0);
+
+  // 18% GST
+  this.tax = +(subtotal * 0.18).toFixed(2);
+
+  // Final Total
+  this.total = +(subtotal + this.tax).toFixed(2)
   }
 
   order: any = [];
