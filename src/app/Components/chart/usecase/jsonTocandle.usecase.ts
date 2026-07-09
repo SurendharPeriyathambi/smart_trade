@@ -180,6 +180,7 @@ export class JsonToCandleUsecase {
   public applyTheme(chartContainer: any): void {
     if (!this.ensureChart()) return;
     const t = this.chartstate.themes[this.chartstate.currentTheme];
+
     this.chartstate.chart.applyOptions({
       localization: {
         priceFormatter: (price: number) => this.formatPrice(price, chartContainer),
@@ -510,7 +511,11 @@ export class JsonToCandleUsecase {
           }
           return;
         }
-        if (this.chartstate.isDrawing && this.chartstate.hasFirstPoint && this.chartstate.previewSeries) {
+        if (
+          this.chartstate.isDrawing &&
+          this.chartstate.hasFirstPoint &&
+          this.chartstate.previewSeries
+        ) {
           const drawingUsecase = this.injector.get(DrawingUsecase);
           drawingUsecase.updatePreviewLine(param);
         }
@@ -684,19 +689,29 @@ export class JsonToCandleUsecase {
   }
 
   public async reconcileLinesWithLocalDb(localdb: LocalDatabaseService): Promise<void> {
-    const dbLines = await localdb.getByChartAndTask(this.chartstate.chartId, this.chartstate.taskId);
+    const dbLines = await localdb.getByChartAndTask(
+      this.chartstate.chartId,
+      this.chartstate.taskId,
+    );
 
     // Lines that exist in localdb but aren't currently in memory → pull them in,
     // but never exceed requiredLineCount (guards against stale/orphaned rows
     // from a previous session pushing the total over the cap).
-    const inMemoryIds = new Set(this.chartstate.newDrawLine.map((l) => l.localDbId).filter(Boolean));
+    const inMemoryIds = new Set(
+      this.chartstate.newDrawLine.map((l) => l.localDbId).filter(Boolean),
+    );
     for (const row of dbLines) {
       if (
         row.id &&
         !inMemoryIds.has(row.id) &&
-        this.chartstate.newDrawLine.filter((l) => !l.is_delete).length < this.chartstate.requiredLineCount
+        this.chartstate.newDrawLine.filter((l) => !l.is_delete).length <
+          this.chartstate.requiredLineCount
       ) {
-        this.chartstate.newDrawLine.push({ ...row, localDbId: row.id, id: (row as any).uuid ?? uuidv4() });
+        this.chartstate.newDrawLine.push({
+          ...row,
+          localDbId: row.id,
+          id: (row as any).uuid ?? uuidv4(),
+        });
       }
     }
 
@@ -711,7 +726,10 @@ export class JsonToCandleUsecase {
           end_price: line.end_price,
           start_time: line.start_time,
           end_time: line.end_time,
-          start_x: 0, end_x: 0, start_y: 0, end_y: 0,
+          start_x: 0,
+          end_x: 0,
+          start_y: 0,
+          end_y: 0,
           is_edit: line.is_edit ?? false,
           is_delete: false,
         } as Answers);
@@ -722,97 +740,112 @@ export class JsonToCandleUsecase {
     this.renderLines();
   }
 
-public renderLine(line: Answers, id: string): void {
-  if (!this.ensureChart()) return;
-  try {
+  public renderLine(line: Answers, id: string): void {
+    if (!this.ensureChart()) return;
+    try {
+      const existing = this.chartstate.lineSeriesMap.get(id);
+      if (existing) {
+        try {
+          this.chartstate.chart.removeSeries(existing);
+        } catch {}
+        this.chartstate.lineSeriesMap.delete(id);
+      }
+
+      let color = '#FF6B6B'; // default user-drawn
+      const isSelected = this.chartstate.selectedLineId === line.id;
+      let lineStyle = LineStyle.Solid;
+      if (this.chartstate.hasSubmitted && this.chartstate.userLineResults.has(id)) {
+        const isCorrect = this.chartstate.userLineResults.get(id);
+        const isDarkTheme = this.chartstate.currentTheme === 'dark';
+        color = isCorrect
+          ? isDarkTheme
+            ? '#FFFFFF'
+            : '#000000' // White in dark theme, Black in light theme
+          : '#E74C3C'; // Red if incorrect
+        lineStyle = isCorrect ? LineStyle.Solid : LineStyle.Dotted;
+      } else if (isSelected) {
+        color = '#FFA500';
+      }
+
+      const series = this.chartstate.chart.addSeries(LineSeries, {
+        color,
+        lineWidth: 2,
+        lineStyle,
+        priceLineVisible: false,
+        lastValueVisible: false,
+        crosshairMarkerVisible: false,
+      });
+      series.setData([
+        { time: Number(line.start_time), value: Number(line.start_price) },
+        { time: Number(line.end_time), value: Number(line.end_price) },
+      ]);
+      this.chartstate.lineSeriesMap.set(id, series);
+    } catch (e) {
+      console.error('[Chart] renderLine error:', e, line);
+    }
+  }
+
+  public validateLinesPixelBased(
+    adminLines: Answers[],
+    userLines: Answers[],
+  ): Map<number, boolean> {
+    const results = new Map<number, boolean>();
+    const PIXEL_TOLERANCE = 5; // px — tune this to taste
+
+    for (const user of userLines) {
+      let matched = false;
+
+      const userStartPx = this.chartToScreenPoint(user.start_time, user.start_price);
+      const userEndPx = this.chartToScreenPoint(user.end_time, user.end_price);
+      if (!userStartPx || !userEndPx) {
+        results.set(user.id!, false);
+        continue;
+      }
+
+      for (const admin of adminLines) {
+        const adminStartPx = this.chartToScreenPoint(admin.start_time, admin.start_price);
+        const adminEndPx = this.chartToScreenPoint(admin.end_time, admin.end_price);
+        if (!adminStartPx || !adminEndPx) continue;
+
+        const startDist = Math.hypot(
+          userStartPx.x - adminStartPx.x,
+          userStartPx.y - adminStartPx.y,
+        );
+        const endDist = Math.hypot(userEndPx.x - adminEndPx.x, userEndPx.y - adminEndPx.y);
+
+        if (startDist <= PIXEL_TOLERANCE && endDist <= PIXEL_TOLERANCE) {
+          matched = true;
+          break;
+        }
+      }
+
+      results.set(user.id!, matched);
+    }
+
+    return results;
+  }
+  private removeLineSeries(id: string): void {
     const existing = this.chartstate.lineSeriesMap.get(id);
     if (existing) {
-      try { this.chartstate.chart.removeSeries(existing); } catch {}
+      try {
+        this.chartstate.chart.removeSeries(existing);
+      } catch {}
       this.chartstate.lineSeriesMap.delete(id);
     }
-
-    let color = '#FF6B6B'; // default user-drawn
-    const isSelected = this.chartstate.selectedLineId === line.id;
-let lineStyle = LineStyle.Solid;
-    if (this.chartstate.hasSubmitted && this.chartstate.userLineResults.has(id)) {
-      const isCorrect = this.chartstate.userLineResults.get(id);
-      color = isCorrect ? '#ffffff' : '#E74C3C'; // green / red
-      lineStyle = isCorrect ? LineStyle.Solid : LineStyle.Dotted;
-    } else if (isSelected) {
-      color = '#FFA500';
+    const existingEnd = this.chartstate.lineSeriesMap.get(id + ':end');
+    if (existingEnd) {
+      try {
+        this.chartstate.chart.removeSeries(existingEnd);
+      } catch {}
+      this.chartstate.lineSeriesMap.delete(id + ':end');
     }
-
-    const series = this.chartstate.chart.addSeries(LineSeries, {
-      color,
-      lineWidth: 2,
-      lineStyle,
-      priceLineVisible: false,
-      lastValueVisible: false,
-      crosshairMarkerVisible: false,
-    });
-    series.setData([
-      { time: Number(line.start_time), value: Number(line.start_price) },
-      { time: Number(line.end_time), value: Number(line.end_price) },
-    ]);
-    this.chartstate.lineSeriesMap.set(id, series);
-  } catch (e) {
-    console.error('[Chart] renderLine error:', e, line);
   }
-}
-
-public validateLinesPixelBased(
-  adminLines: Answers[],
-  userLines: Answers[],
-): Map<number, boolean> {
-
-  const results = new Map<number, boolean>();
-  const PIXEL_TOLERANCE = 5; // px — tune this to taste
-
-  for (const user of userLines) {
-    let matched = false;
-
-    const userStartPx = this.chartToScreenPoint(user.start_time, user.start_price);
-    const userEndPx = this.chartToScreenPoint(user.end_time, user.end_price);
-    if (!userStartPx || !userEndPx) {
-      results.set(user.id!, false);
-      continue;
-    }
-
-    for (const admin of adminLines) {
-      const adminStartPx = this.chartToScreenPoint(admin.start_time, admin.start_price);
-      const adminEndPx = this.chartToScreenPoint(admin.end_time, admin.end_price);
-      if (!adminStartPx || !adminEndPx) continue;
-
-      const startDist = Math.hypot(userStartPx.x - adminStartPx.x, userStartPx.y - adminStartPx.y);
-      const endDist = Math.hypot(userEndPx.x - adminEndPx.x, userEndPx.y - adminEndPx.y);
-
-      if (startDist <= PIXEL_TOLERANCE && endDist <= PIXEL_TOLERANCE) {
-        matched = true;
-        break;
-      }
-    }
-
-    results.set(user.id!, matched);
-  }
-
-  return results;
-}
-private removeLineSeries(id: string): void {
-  const existing = this.chartstate.lineSeriesMap.get(id);
-  if (existing) {
-    try { this.chartstate.chart.removeSeries(existing); } catch {}
-    this.chartstate.lineSeriesMap.delete(id);
-  }
-  const existingEnd = this.chartstate.lineSeriesMap.get(id + ':end');
-  if (existingEnd) {
-    try { this.chartstate.chart.removeSeries(existingEnd); } catch {}
-    this.chartstate.lineSeriesMap.delete(id + ':end');
-  }
-}
 
   private renderAdminOverlay(): void {
     this.adminLineSeriesMap.forEach((series) => {
-      try { this.chartstate.chart.removeSeries(series); } catch {}
+      try {
+        this.chartstate.chart.removeSeries(series);
+      } catch {}
     });
     this.adminLineSeriesMap.clear();
 
@@ -847,7 +880,9 @@ private removeLineSeries(id: string): void {
     }
 
     this.chartstate.lineSeriesMap.forEach((series) => {
-      try { this.chartstate.chart.removeSeries(series); } catch {}
+      try {
+        this.chartstate.chart.removeSeries(series);
+      } catch {}
     });
     this.chartstate.lineSeriesMap.clear();
 
@@ -863,7 +898,8 @@ private removeLineSeries(id: string): void {
 
     if (wasZoomed && savedMin != null && savedMax != null) {
       this.chartstate.chart.priceScale('right').applyOptions({ autoScale: false });
-      this.chartstate.chart.priceScale('right')
+      this.chartstate.chart
+        .priceScale('right')
         .setVisiblePriceRange({ minValue: savedMin, maxValue: savedMax });
     }
   }
@@ -876,17 +912,20 @@ private removeLineSeries(id: string): void {
 
     // Admin lines kept OUT of newDrawLine — never rendered/persisted as user
     // answers, only used for validation + the post-submit overlay.
-    this.chartstate.adminLines = serverLines.map((server) => ({
-      id: uuidv4(),
-      answer_id: server.id ?? null,
-      task_id: this.chartstate.taskId,
-      chart_id: this.chartstate.chartId,
-      start_time: Number(server.start_time),
-      start_price: Number(server.start_price),
-      end_time: Number(server.end_time),
-      end_price: Number(server.end_price),
-      is_edit: false,
-    } as Answers));
+    this.chartstate.adminLines = serverLines.map(
+      (server) =>
+        ({
+          id: uuidv4(),
+          answer_id: server.id ?? null,
+          task_id: this.chartstate.taskId,
+          chart_id: this.chartstate.chartId,
+          start_time: Number(server.start_time),
+          start_price: Number(server.start_price),
+          end_time: Number(server.end_time),
+          end_price: Number(server.end_price),
+          is_edit: false,
+        }) as Answers,
+    );
 
     // Persist to answerChart so validateLinesAgainstDb() and any reload have
     // something to read.
