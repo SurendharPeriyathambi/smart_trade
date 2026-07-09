@@ -12,7 +12,7 @@ import { LoaderService } from '../../../services/engine/loader.service';
 import { ToastService } from '../../../services/engine/toast.service';
 
 @Component({
-  selector: 'app-chart',
+  selector: 'app-list-chart',
   imports: [CommonModule, FormsModule],
   templateUrl: './view/chartlist.html',
   styleUrl: './view/chartlist.scss',
@@ -45,19 +45,19 @@ export class ChartList {
   pagedData!: any;
 
   ngOnInit(): void {
-    this.loaderService.show();
+  // this.loaderService.show();
     this.chartlist.getListData().subscribe({
       next: (res) => {
         this.toast.success(res.message);
         this.limit = 12;
         this.chartDataList = res.data?.taskList;
-        this.loaderService.hide();
+        // this.loaderService.hide();
         
         this.cdr.detectChanges();
       },
       error:(err)=>{
         this.toast.error(err.error.message);
-        this.loaderService.hide();
+        // this.loaderService.hide();
       }
     });
   }

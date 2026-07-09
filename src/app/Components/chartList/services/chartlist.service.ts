@@ -1,21 +1,15 @@
-import { inject, Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { ApiResponce } from "../../../../interfaces/banner_interface";
-import { List, ListData } from "../model/chartlist.model";
-import { HttpClient, HttpParams ,HttpHeaders} from "@angular/common/http";
-import { environment } from "../../../environment";
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ApiResponce } from '../../../../interfaces/banner_interface';
+import { ListData } from '../model/chartlist.model';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../environment';
 
-@Injectable({providedIn:'root'})
+@Injectable({ providedIn: 'root' })
 export class ListService {
-    private http = inject(HttpClient);
-    url="";
+  private http = inject(HttpClient);
 
-    getList():Observable<ApiResponce<ListData>>{
-        const params = new HttpParams()
-  .set('tag', 'active');
-        return this.http.get<ApiResponce<ListData>>(`task/list`, 
-    {
-      params: params
-    });  
-    }
+  getList(): Observable<ApiResponce<ListData>> {
+    return this.http.get<ApiResponce<ListData>>(environment.chartUrl+'task/list?tag=active');
+  }
 }
