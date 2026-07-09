@@ -336,6 +336,7 @@ async submitAnswers(): Promise<void> {
     this.JsonState.activeTool = 'trendline';
     this.JsonToCandleUsecase.renderLines();
     this.toast.info('Try again — draw your lines.');
+    this.location.back();
   }
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
@@ -443,7 +444,7 @@ async submitAnswers(): Promise<void> {
   resetAllLines(): void {}
 
   async backToDashboard() {
-    await this.retryDrawing(); // Execute retryDrawing first
+    await this.retryDrawing(); 
     this.location.back();
   }
 
