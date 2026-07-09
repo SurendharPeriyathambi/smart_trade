@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { ApiResponce } from "../../../../interfaces/banner_interface";
-import { ListData } from "../model/chart.model";
-import { HttpClient, HttpParams } from "@angular/common/http";
-
+import { List, ListData } from "../model/chartlist.model";
+import { HttpClient, HttpParams ,HttpHeaders} from "@angular/common/http";
+import { environment } from "../../../environment";
 
 @Injectable({providedIn:'root'})
 export class ListService {

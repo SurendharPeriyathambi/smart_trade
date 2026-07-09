@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
-import { ListRepository } from "./chart.repositories";
+import { ListRepository } from "./chartlist.repositories";
 import { Observable } from "rxjs";
 import { ApiResponce } from "../../../../interfaces/banner_interface";
-import { List, ListData } from "../model/chart.model";
-import { ListService } from "../services/chart.service";
+import { List, ListData } from "../model/chartlist.model";
+import { ListService } from "../services/chartlist.service";
 
 @Injectable({providedIn:"root"})
     export class ListImpl implements ListRepository {

@@ -1,14 +1,18 @@
 import { inject, Injectable } from "@angular/core";
-import { ListRepository } from "../repositories/chart.repositories";
+import { ChartRepository } from "../repositories/chart.repository";
+import { getChartAnswer } from "../model/drawing.model";
 import { Observable } from "rxjs";
-import { ApiResponce } from "../../../../interfaces/banner_interface";
-import { List, ListData } from "../model/chart.model";
+import { Apiresponse } from "../../chartList/model/chartlist.model";
 
-@Injectable({providedIn:'root'})
-export class ListUsecase{
-    repo = inject(ListRepository) 
+@Injectable({ providedIn: 'root' })
+export class ChartUseCase {
+  repo = inject(ChartRepository);
 
-    getListData():Observable<ApiResponce<ListData>>{
-        return this.repo.getList();
-    }
+  getChart(payload: getChartAnswer): Observable<Apiresponse<any>> {
+    return this.repo.getChart(payload);
+  }
+
+  wasabiUsecase(path: string) {
+    return this.repo.getWasabiFile(path);
+  }
 }
