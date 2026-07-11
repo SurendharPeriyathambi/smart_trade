@@ -6,6 +6,7 @@
   --surface2: #2a2e39;
   --border: #363a45;
   --text: #d1d4dc;
+  --count-text:#333333;
   --text-muted: #787b86;
   --accent: #4ECDC4;
   --accent-admin: #FF6B6B;
@@ -24,6 +25,7 @@
   --surface2: #f5f7fb;
   --border: #dce0ea;
   --text: #333333;
+  --count-text:#d1d4dc;
   --text-muted: #888888;
 }
 
@@ -505,7 +507,6 @@ kbd {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-/* ── Add these rules to your existing chart.component.scss ── */
 
 /* ── Measure canvas overlay ──────────────────────────────────────────────── */
 .measure-canvas {
@@ -549,17 +550,6 @@ kbd {
   background: rgba(96, 165, 250, 0.1);
 }
 
-.submit-answer:not(:disabled):hover {
-  color: #00B746;
-  border-color: #00B746;
-  background: rgba(0, 183, 70, 0.1);
-}
-
-// Active state after results shown
-.submit-answer.has-results {
-  color: var(--success);
-  border-color: var(--success);
-}
 .line-counter-bar {
   display: flex;
   align-items: center;
@@ -688,4 +678,189 @@ kbd {
     font-size: 13px;
     font-weight: 700;
   }
+}
+// Correct / wrong stats pill — header, next to line counter
+$accent-green: #00D4AA;
+$accent-red: #FF5C5C;
+
+.results-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 16px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  font-weight: 600;
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .stat-correct {
+    color: $accent-green;
+  }
+
+  .stat-wrong {
+    color: $accent-red;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+// Light theme override
+.light-theme .results-pill {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.08);
+
+  .stat-divider {
+    background: rgba(0, 0, 0, 0.08);
+  }
+}
+
+// ── Bottom-right chart action container (Submit / Results / Reset) ──────────
+// A single unified card — not separate floating pieces — sitting as an
+// overlay in the bottom-right corner of the chart.
+.chart-action-container {
+  position: absolute;
+  bottom: 20%;
+  right: 5%;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  min-width: 220px;
+  padding: 14px;
+  border-radius: 14px;
+  
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  animation: fadeInUp .2s ease;
+}
+
+.light-theme .chart-action-container {
+ background: rgba(30, 34, 45, .92) !important;
+  border-color: var(--border);
+}
+
+// Correct/wrong summary, shown above the buttons once submitted
+.results-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  // Icon + label sit on the same line, vertically centered together
+  .stat-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    svg { flex-shrink: 0; }
+
+    span {
+      font-size: 15px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+  }
+
+  // Count sits centered on its own line below the label row
+  .stat-count {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .stat-total {
+    .stat-label-row span,
+    .stat-count { color: var(--count-text); }
+  }
+
+  .stat-correct {
+    .stat-label-row, .stat-count { color: #00D4AA; }
+  }
+
+  .stat-wrong {
+    .stat-label-row, .stat-count { color: #FF5C5C; }
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 14px;
+    background: var(--border);
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+
+  .btn-action { flex: 1; }
+}
+
+.btn-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: .02em;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform .15s, background .15s, border-color .15s;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+  }
+
+  &.submit-action {
+    background: var(--success);
+    color: #ffffff;
+    &:hover:not(:disabled) { background: #00cf59; }
+  }
+
+  &.reset-action {
+    background: var(--surface2);
+    color: var(--text);
+    border-color: var(--border);
+    &:hover { border-color: var(--accent-warn); color: var(--accent-warn); }
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

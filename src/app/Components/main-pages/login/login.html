@@ -4,12 +4,40 @@
 <!-- Main Content -->
 <main class="main-content">
   <div class="forms-container">
-    <!-- Sign In Component -->
-   <app-sign-in />
+ @if (isMobile) {
+
+  @if (isSignIn) {
+
+    <app-sign-in
+      (goToSignup)="showSignUp()">
+    </app-sign-in>
+
+  } @else {
+
+    <app-sign-up
+      (goToSignin)="showSignIn()"
+      (privacyClick)="openPrivacy()"
+      (termsClick)="openTerms()">
+    </app-sign-up>
+
+  }
+
+} @else {
+
+
+
+    <app-sign-in></app-sign-in>
+
+    <app-sign-up
+      (privacyClick)="openPrivacy()"
+      (termsClick)="openTerms()">
+    </app-sign-up>
+
+
+
+}
     
-    <!-- Sign Up Component -->
-<app-sign-up  (privacyClick)="openPrivacy()"
-      (termsClick)="openTerms()" />
+
 
   </div>
 </main>

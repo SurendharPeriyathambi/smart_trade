@@ -31,7 +31,7 @@ export class ChartState {
 
   public chartClickSubscription: (() => void) | null = null;
   public chartCrosshairSubscription: (() => void) | null = null;
-  activeTimeframe: string = '15m';
+  activeTimeframe: string = '4H';
   public themes = {
     light: {
       background: '#ffffff',
