@@ -282,3 +282,23 @@ input:-webkit-autofill:active {
 .password-input-wrapper input {
   padding-right: 40px;
 }
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+    text-align: center;
+    font-size:calc(1rem - 2px);
+    margin-top: 20px;
+  }
+
+  .mobile-only a {
+    color: #0d6efd;
+    font-size:calc(1rem - 2px);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

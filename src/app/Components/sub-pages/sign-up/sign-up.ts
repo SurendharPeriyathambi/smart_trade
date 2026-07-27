@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, inject, output, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthServices } from '../../main-pages/login/auth.service';
@@ -13,10 +13,13 @@ import { AuthStateService } from '../../main-pages/login/auth-state.service';
   styleUrl: './sign-up.scss',
 })
 export class SignUp {
+   goToSignin = output<void>();
 protected authState = inject(AuthStateService);
   showPassword = false;
   showConfirmPassword = false;
-
+ openSignin() {
+    this.goToSignin.emit();
+  }
 togglePassword(){
   this.showPassword = !this.showPassword;
 }

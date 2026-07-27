@@ -34,6 +34,8 @@
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "hls.js": "^1.6.15",
+    "idb": "^8.0.3",
+    "lightweight-charts": "^5.2.0",
     "ngx-cookie-service": "^21.1.0",
     "ngx-toastr": "^20.0.5",
     "rxjs": "~7.8.0",

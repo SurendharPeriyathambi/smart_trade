@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, NgModule, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, NgModule, OnInit, output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthServices } from '../../main-pages/login/auth.service';
@@ -19,7 +19,7 @@ import { DeviceService } from '../../main-pages/login/device.service';
 })
 export class SignIn {
   
- 
+  goToSignup = output<void>();
   showPassword = false;
   deviceId:string='';
 
@@ -52,5 +52,8 @@ export class SignIn {
 
   get password() {
     return this.signInForm.get('password');
+  }
+    openSignup() {
+    this.goToSignup.emit();
   }
 }

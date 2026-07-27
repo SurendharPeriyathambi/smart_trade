@@ -1,13 +1,9 @@
 <app-header [isAuthButton]="false" [showLogout]="true"/>
 
-
-
-
   <app-subscription-summary/> 
 
   <!--    FIX 3: Correct condition — hide entire plans section when active OR approved -->
 
-  
   
   <app-subscription-plans
     *ngIf="subscriptionStatus() !== 'active' && subscriptionStatus() !== 'approved'"
@@ -30,5 +26,5 @@
   <app-course-curriculam
     *ngIf="subscriptionStatus() === 'active' || subscriptionStatus() === 'approved'"/>
 
-
+<!-- <app-list-chart/> -->
 <app-footer/>

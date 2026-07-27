@@ -5,10 +5,11 @@ import Hls from 'hls.js';
 import { CourseLesson, CourseVideo } from '../../../../interfaces/subscriptions_interface';
 import { WeeklyReport } from '../weekly-report/weekly-report';
 import { AuthStateService } from '../../main-pages/login/auth-state.service';
+import { ChartList } from '../../chartList/chartlist';
 
 @Component({
   selector: 'app-course-curriculam',
-  imports: [CommonModule, WeeklyReport],
+  imports: [CommonModule, WeeklyReport,ChartList],
   templateUrl: './course-curriculam.html',
   styleUrl: './course-curriculam.scss',
 })

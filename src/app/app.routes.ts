@@ -6,8 +6,11 @@ import { CourseDetails } from './Components/main-pages/course-details/course-det
 import { ForgotPassword } from './Components/sub-pages/forgot-password/forgot-password';
 import { bannerResolver } from './Components/sub-pages/hero/banner.resolver';
 import { AboutUs } from './Components/main-pages/about-us/about-us';
-import { Chart } from './Components/chart/chart';
+
 import { WeeklyReport } from './Components/sub-pages/weekly-report/weekly-report';
+import { ChartList } from './Components/chartList/chartlist';
+import { NewChart } from './Components/chart/view/newchart';
+
 
 
 
@@ -19,7 +22,8 @@ const routes: Routes = [
 {path:'course-details',component:CourseDetails}
 ,{ path: 'forgot-password', component: ForgotPassword },
 {path:'about',component:AboutUs},
-{path:'chart',component:Chart},
+{path:'chart',component:ChartList},
+{path:'newchart',component:NewChart},
 {path:'week',component:WeeklyReport},
 {
     path: '',

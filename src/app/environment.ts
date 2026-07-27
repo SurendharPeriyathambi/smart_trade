@@ -2,5 +2,5 @@ export const environment = {
   production: false,
   // apiUrl: 'https://webplatf.site/'
   apiUrl: 'https://api.smarttradeind.com/',
-  chartUrl:'https://smartchart.lampauto.in/'
+   chartUrl:'https://chartapi.smarttradeind.com/'
 };

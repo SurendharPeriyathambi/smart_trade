@@ -8,10 +8,11 @@ import { CommonModule } from '@angular/common';
 import { CourseCurriculam } from "../../sub-pages/course-curriculam/course-curriculam";
 import { SubscriptionState } from './subscription_state.service';
 import { Coopen } from "../../sub-pages/coopen/coopen";
+import { ChartList } from '../../chartList/chartlist';
 @Component({
   selector: 'app-subscriptions',
   imports: [Header, SubscriptionSummary, SubscriptionPlans,
-    Footer, CommonModule, CourseCurriculam, Coopen],
+    Footer, CommonModule, CourseCurriculam, Coopen,ChartList],
   templateUrl: './subscriptions.html',
   styleUrl: './subscriptions.scss',
 })

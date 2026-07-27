@@ -1,10 +1,11 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import routes from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { InterCeptorEngine } from '../services/engine/interceptor_engine';
+import { LocalDatabaseService } from '../services/engine/localdatabase.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,7 +18,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes,  withInMemoryScrolling({
         scrollPositionRestoration: 'enabled',
         anchorScrolling: 'enabled'
-      })), provideClientHydration(withEventReplay())
-      
+      })), provideClientHydration(withEventReplay()),
+      provideAppInitializer(async () => {
+      const db = inject(LocalDatabaseService);
+      await db.init();
+    }),
   ]
 };

@@ -1,4 +1,4 @@
-<div class="weekly-videos container">
+<div class="weekly-videos container" *ngIf="weeks().length > 0">
   <div class="videos-grid">
     <div class="video-card" *ngFor="let video of weeks()">
       <h3 class="section-title">Weekly Analysis</h3>  

@@ -1,4 +1,4 @@
-import { afterNextRender, Component, inject, OnInit } from '@angular/core';
+import { afterNextRender, Component, HostListener, inject, OnInit } from '@angular/core';
 import { SignIn } from "../../sub-pages/sign-in/sign-in";
 import { SignUp } from "../../sub-pages/sign-up/sign-up";
 import { Header } from "../../sub-pages/header/header";
@@ -16,6 +16,8 @@ import { DeviceService } from './device.service';
   styleUrl: './login.scss',
 })
 export class Login implements OnInit {
+ isSignIn = true;
+  isMobile = window.innerWidth < 768;
 
   private authService =inject (AuthServices);
   private authState = inject (AuthStateService);
@@ -62,4 +64,18 @@ closeModal() {
   this.isTermsOpen = false;
   document.body.style.overflow = 'auto';
 }
+
+
+  @HostListener('window:resize')
+  onResize() {
+    this.isMobile = window.innerWidth < 768;
+  }
+
+  showSignUp() {
+    this.isSignIn = false;
+  }
+
+  showSignIn() {
+    this.isSignIn = true;
+  }
 }
