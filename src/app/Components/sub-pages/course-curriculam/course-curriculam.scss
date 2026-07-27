@@ -552,15 +552,15 @@
   .floating-watermark {
     position: absolute;
     z-index: 10;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.18);
     font-size: 14px;
     font-weight: 500;
     white-space: nowrap;
     pointer-events: none;
     user-select: none;
     transform: translate(-50%, -50%);
-    transition: top 1s ease, left 1s ease;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+    transition: top 4s ease, left 4s ease;
+    // text-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
   }
 
   .seek-zone {
@@ -682,9 +682,9 @@
   100% { transform: translate(0, 30vh); }
 }
 
-.move-random-1 { animation: float-random-1 18s ease-in-out infinite; }
-.move-random-2 { animation: float-random-2 22s ease-in-out infinite; }
-.move-random-3 { animation: float-random-3 28s ease-in-out infinite; }
+.move-random-1 { animation: float-random-1 60s ease-in-out infinite; }
+.move-random-2 { animation: float-random-2 70s ease-in-out infinite; }
+.move-random-3 { animation: float-random-3 90s ease-in-out infinite; }
 
 // ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 499px) {
