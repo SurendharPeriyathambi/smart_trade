@@ -12,6 +12,7 @@ export interface ChartDB extends DBSchema {
   };
 }
 
+
 export interface Answers {
   id?: any;                    // uuid — in-memory tracking id (used for selection/hit-test)
   localDbId?: number | null;   // IndexedDB row key — persists across drag/extend edits
