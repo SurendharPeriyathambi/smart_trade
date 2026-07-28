@@ -15,8 +15,31 @@
       <!-- <span *ngIf="JsonState.hasSubmitted" class="matched">✓ {{ JsonState.matchedCount }} correct</span> -->
     </div>
 
+<div class="line-counter ms-1 bg-accent text-dark">
+  <span *ngFor="let tag of JsonState.requiredCountByTag | keyvalue">
+    {{ tag.key }}:
+    {{ JsonState.hasSubmitted
+        ? (JsonState.matchedCountByTag[tag.key] || 0)
+        : (JsonState.drawnCountByTag[tag.key] || 0) }}
+    / {{ tag.value }}
+  </span>
+</div>
 
     <div class="header-controls">
+      <button class="btn-theme submit-answer" (click)="submitAnswers()"
+    [disabled]="JsonState.newDrawLine.length === 0 || JsonState.hasSubmitted || !JsonState.allTagsComplete">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+  <span>Submit</span>
+</button>
+        <button class="btn-theme retry" *ngIf="JsonState.hasSubmitted" (click)="retryDrawing()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10" />
+            <path d="M3.51 15a9 9 0 1 0 .49-3.5" />
+          </svg>
+          <span>Retry</span>
+        </button>
       <button class="btn-theme" (click)="toggleTheme()" title="Toggle Theme">
         <svg *ngIf="JsonState.currentTheme === 'dark'" width="20" height="20" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2">

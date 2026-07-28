@@ -28,6 +28,7 @@ export interface Answers {
   start_y: number |any;
   end_y: number |any;
   is_edit: boolean;
+  tag:string;
   is_delete?: boolean;
 }
 
@@ -48,4 +49,5 @@ export interface LineRecord {
   is_delete: boolean;
   created_at: string;
   updated_at: string;
+   tag?: string | undefined;
 }

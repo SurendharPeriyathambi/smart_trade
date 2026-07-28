@@ -72,7 +72,7 @@ export class LocalDatabaseService {
 
   await tx.done;
 }
-async createUserAnswer(answer: Answers): Promise<Answers & { id: number }> {
+async createUserAnswer(answer: any): Promise<Answers & { id: number }> {
 
   const id = await this.db.add('userChart', answer) as number;
 

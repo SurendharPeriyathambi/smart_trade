@@ -19,8 +19,8 @@ const routes: Routes = [
 {path:'home',component:Home},
 {path:'subscriptions',component:Subscriptions},
 {path:'login',component:Login},
-{path:'course-details',component:CourseDetails}
-,{ path: 'forgot-password', component: ForgotPassword },
+{path:'course-details',component:CourseDetails},
+{ path: 'forgot-password', component: ForgotPassword },
 {path:'about',component:AboutUs},
 {path:'chart',component:ChartList},
 {path:'newchart',component:NewChart},
@@ -30,7 +30,7 @@ const routes: Routes = [
     loadComponent: () =>
       import('./Components/main-pages/home/home').then((m) => m.Home),
     resolve: {
-      banners: bannerResolver   // ✅ runs before HomeComponent renders
+      banners: bannerResolver   
     }
   }
 ];export default routes;

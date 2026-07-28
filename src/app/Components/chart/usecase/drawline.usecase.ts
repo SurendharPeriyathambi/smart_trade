@@ -131,6 +131,7 @@ export class DrawingUsecase {
       end_time: end.time,
       end_price: end.price,
       is_edit: false,
+      tag:'Select a name'
     };
 
     this.ToolsUsecase.pushUndo();
@@ -139,7 +140,7 @@ export class DrawingUsecase {
     this.chartState.pendingSaves++;
     try {
       const savedRecord = await this.localdb.createUserAnswer(this.toLineRecord(newLines, false, false));
-      newLines.localDbId = (savedRecord as any).id;
+      newLines.localDbId = (savedRecord as Answers).id;
     } finally {
       this.chartState.pendingSaves--;
     }
@@ -169,6 +170,7 @@ export class DrawingUsecase {
       end_y: e?.y ?? 0,
       is_edit: isEdit,
       is_delete: isDelete,
+      tag:line.tag
     };
   }
 
