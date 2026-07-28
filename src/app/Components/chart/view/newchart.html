@@ -9,7 +9,7 @@
         {{ tf.label }}
       </button>
     </div>
-    <div class="line-counter ms-4" *ngIf="!JsonState.hasSubmitted">
+    <div class="line-counter ms-4 bg-secondary text-white" *ngIf="!JsonState.hasSubmitted">
       <span>Lines: {{ JsonState.requiredLineCount - JsonState.remainingLines }} / {{ JsonState.requiredLineCount
         }}</span>
       <!-- <span *ngIf="JsonState.hasSubmitted" class="matched">✓ {{ JsonState.matchedCount }} correct</span> -->
@@ -26,20 +26,20 @@
 </div>
 
     <div class="header-controls">
-      <button class="btn-theme submit-answer" (click)="submitAnswers()"
+      <!-- <button class="btn-theme submit-answer" (click)="submitAnswers()"
     [disabled]="JsonState.newDrawLine.length === 0 || JsonState.hasSubmitted || !JsonState.allTagsComplete">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
     <polyline points="20 6 9 17 4 12" />
   </svg>
   <span>Submit</span>
-</button>
-        <button class="btn-theme retry" *ngIf="JsonState.hasSubmitted" (click)="retryDrawing()">
+</button> -->
+        <!-- <button class="btn-theme retry" *ngIf="JsonState.hasSubmitted" (click)="retryDrawing()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="1 4 1 10 7 10" />
             <path d="M3.51 15a9 9 0 1 0 .49-3.5" />
           </svg>
           <span>Retry</span>
-        </button>
+        </button> -->
       <button class="btn-theme" (click)="toggleTheme()" title="Toggle Theme">
         <svg *ngIf="JsonState.currentTheme === 'dark'" width="20" height="20" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2">
@@ -193,11 +193,27 @@
       -->
       <canvas #measureCanvas class="measure-canvas"></canvas>
 
+  <!-- Inline label editor — floats over the clicked label's position -->
+  <select
+    #labelInput
+    *ngIf="JsonState.editingLabelLineId"
+    class="line-label-input"
+    [ngModel]="JsonState.editingLabelValue"
+    (ngModelChange)="JsonState.editingLabelValue = $event; closeLabelEditor(true)"
+    (blur)="closeLabelEditor(true)"
+    [style.left.px]="JsonState.editingLabelScreenX - 60"
+    [style.top.px]="JsonState.editingLabelScreenY - 30"
+  >
+    <!-- <option value="" disabled selected>Select</option> -->
+    <option value="CHO">CHO</option>
+    <option value="STR">STR</option>
+  </select>
+
       <!-- ══════════════ BOTTOM-RIGHT SUBMIT / RESULTS CONTAINER ══════════════ -->
       <!-- Single unified card, only appears once ALL required lines are drawn, or after a submit.
            retryDrawing() resets remainingLines/hasSubmitted, which makes this
            condition false again and hides the whole overlay. -->
-      <div class="chart-action-container" *ngIf="JsonState.remainingLines <= 0 || JsonState.hasSubmitted" [ngStyle]="{'background': JsonState.hasSubmitted ? 'rgba(255, 255, 255, .96)':'none'}">
+      <div class="chart-action-container" *ngIf="JsonState.remainingLines <= 0 || JsonState.hasSubmitted " [ngStyle]="{'background': JsonState.hasSubmitted ? 'rgba(255, 255, 255, .96)':'none'}">
 
         <!-- Results summary — shown only after submit -->
         <div class="results-summary" *ngIf="JsonState.hasSubmitted">
@@ -237,22 +253,27 @@
 
         <!-- Action buttons -->
         <div class="action-buttons">
-          <button class="btn-action submit-action" *ngIf="!JsonState.hasSubmitted" (click)="submitAnswers()"
-            [disabled]="JsonState.remainingLines > 0">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-            <span>Submit</span>
-          </button>
+  <button class="btn-action submit-action" *ngIf="!JsonState.hasSubmitted" (click)="submitAnswers()"
+      [disabled]="JsonState.remainingLines > 0 || !JsonState.allTagsComplete">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+    <span>Submit</span>
+  </button>
 
-          <button class="btn-action submit-action" *ngIf="JsonState.hasSubmitted" (click)="retryDrawing()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="1 4 1 10 7 10" />
-              <path d="M3.51 15a9 9 0 1 0 .49-3.5" />
-            </svg>
-            <span>Reset</span>
-          </button>
-        </div>
+  <button class="btn-action submit-action" *ngIf="JsonState.hasSubmitted" (click)="retryDrawing()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="1 4 1 10 7 10" />
+      <path d="M3.51 15a9 9 0 1 0 .49-3.5" />
+    </svg>
+    <span>Reset</span>
+  </button>
+</div>
+
+<div class="tag-mismatch-hint"
+     *ngIf="!JsonState.hasSubmitted && JsonState.remainingLines <= 0 && !JsonState.allTagsComplete">
+  Tag counts don't match — check your CHO/STR split above.
+</div>
       </div>
 
     </div>
