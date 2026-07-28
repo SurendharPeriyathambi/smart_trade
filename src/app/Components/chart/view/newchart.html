@@ -9,12 +9,12 @@
         {{ tf.label }}
       </button>
     </div>
-   <div class="line-counter ms-4">
+   <div class="line-counter ms-4 bg-secondary border-white text-white">
   <span>Lines: {{ JsonState.requiredLineCount - JsonState.remainingLines }} / {{ JsonState.requiredLineCount }}</span>
   <span *ngIf="JsonState.hasSubmitted" class="matched">✓ {{ JsonState.matchedCount }} correct</span>
 </div>
 
-<div class="line-counter ms-4">
+<div class="line-counter ms-1 bg-accent text-dark">
   <span *ngFor="let tag of JsonState.requiredCountByTag | keyvalue">
     {{ tag.key }}:
     {{ JsonState.hasSubmitted
