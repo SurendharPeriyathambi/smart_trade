@@ -1,0 +1,123 @@
+<div class="wallet-card">
+
+    <div class="card-header">
+
+        <h5>Wallet Summary</h5>
+
+        <button class="icon-btn">
+            <i class="bi bi-eye"></i>
+        </button>
+
+    </div>
+
+    <div class="balance-section">
+
+        <small>Current Balance</small>
+
+        <h2>
+            ₹{{ currentBalance | number:'1.2-2' }}
+        </h2>
+
+        <!-- <span class="growth">
+            ▲ {{ monthlyGrowth }}%
+            <small>vs last month</small>
+        </span> -->
+
+    </div>
+
+    <!-- <div class="summary-list">
+
+        <div class="summary-item">
+
+            <span>
+                <i class="bi bi-download text-success"></i>
+                Total Deposit
+            </span>
+
+            <strong class="text-success">
+                ₹{{ totalDeposit | number:'1.2-2' }}
+            </strong>
+
+        </div>
+
+        <div class="summary-item">
+
+            <span>
+                <i class="bi bi-upload text-danger"></i>
+                Total Withdraw
+            </span>
+
+            <strong class="text-danger">
+                ₹{{ totalWithdraw | number:'1.2-2' }}
+            </strong>
+
+        </div>
+
+        <div class="summary-item">
+
+            <span>
+                <i class="bi bi-graph-up-arrow text-primary"></i>
+                Net Profit
+            </span>
+
+            <strong>
+                ₹{{ netProfit | number:'1.2-2' }}
+            </strong>
+
+        </div>
+
+        <div class="summary-item">
+
+            <span>
+                <i class="bi bi-bar-chart"></i>
+                Total Trades
+            </span>
+
+            <strong>
+                {{ totalTrades }}
+            </strong>
+
+        </div>
+
+    </div> -->
+<div class="quick-actions">
+
+    <h6>Quick Actions</h6>
+
+    <div class="action-row">
+<div> <button class="add-btn">
+
+        <i class="bi bi-plus-lg"></i>
+
+        <span>Add</span>
+
+    </button></div>
+    <div class="wallet-actions">
+  <button
+            class="wallet-action deposit"
+            (click)="openDeposit()">
+
+           <i class="bi bi-arrow-down-right"></i>
+
+            <span>Add Deposit</span>
+
+        </button>
+
+        <button
+            class="wallet-action withdraw"
+             (click)="openWithdraw()">
+
+           <i class="bi bi-arrow-up-right"></i>
+
+            <span>Withdraw</span>
+
+        </button>
+    </div>
+      
+
+    </div>
+
+   
+
+</div>
+</div>

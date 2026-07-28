@@ -1,0 +1,428 @@
+.payment-history {
+
+    width: 100%;
+
+}
+
+/* Header */
+
+.payment-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+
+}
+
+.payment-header h5 {
+
+    margin: 0;
+
+    font-size: 22px;
+
+    font-weight: 600;
+
+}
+
+/* Export */
+
+.export-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    height: 42px;
+
+    padding: 0 18px;
+
+    border: 1px solid #E5E7EB;
+
+    border-radius: 12px;
+
+    background: white;
+
+}
+
+/* Toolbar */
+
+.toolbar {
+
+    display: grid;
+
+    grid-template-columns: 2fr 220px;
+
+    gap: 16px;
+
+    margin-bottom: 20px;
+
+}
+
+.search-box {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    height: 46px;
+
+    padding: 0 16px;
+
+    border: 1px solid #E5E7EB;
+
+    border-radius: 12px;
+
+    background: white;
+
+}
+
+.search-box input {
+
+    flex: 1;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+}
+
+.filter select {
+
+    width: 100%;
+
+    height: 46px;
+
+    border: 1px solid #E5E7EB;
+
+    border-radius: 12px;
+
+    padding: 0 14px;
+
+}
+
+/* Table */
+
+.table-container {
+
+    border: 1px solid #E5E7EB;
+
+    border-radius: 16px;
+
+    overflow-x: auto;
+
+    background: white;
+
+}
+
+.table-header,
+.table-row {
+
+    display: grid;
+
+    grid-template-columns:
+        180px
+        180px
+        180px
+        220px
+       ;
+
+    min-width: 766px;
+
+}
+
+.table-header {
+
+    height: 56px;
+
+    background: #F8FAFC;
+
+    font-weight: 600;
+
+    color: #475569;
+
+    align-items: center;
+
+}
+
+.table-row {
+
+    min-height: 64px;
+
+    align-items: center;
+
+    border-top: 1px solid #EEF2F7;
+
+    transition: .25s;
+
+}
+
+.table-row:hover {
+
+    background: #FAFBFC;
+
+}
+
+.table-header>div,
+.table-row>div {
+
+    padding: 0 20px;
+
+}
+
+/* Transaction Badge */
+
+.transaction-type {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 6px 14px;
+
+    border-radius: 999px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+.deposit {
+
+    background: #ECFDF3;
+
+    color: #16A34A;
+
+}
+
+.withdraw {
+
+    background: #FEF2F2;
+
+    color: #DC2626;
+
+}
+
+/* Sticky Action */
+
+.sticky-action {
+
+    position: sticky;
+
+    right: 0;
+
+    background: white;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    box-shadow: -8px 0 12px rgba(15,23,42,.04);
+
+}
+
+/* Action */
+
+.action-btn {
+
+    width: 36px;
+
+    height: 36px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: transparent;
+
+    transition: .2s;
+
+}
+
+.action-btn:hover {
+
+    background: #F3F4F6;
+
+}
+
+/* Responsive */
+
+@media (max-width:768px){
+
+    .toolbar{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+/* ==========================================
+   Pagination
+========================================== */
+
+.table-pagination {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-top: 22px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #EEF2F7;
+
+}
+
+.pagination-info {
+
+    font-size: 14px;
+
+    color: #64748B;
+
+}
+
+.pagination-info strong {
+
+    color: #111827;
+
+    font-weight: 600;
+
+}
+
+.pagination-controls {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+.page-btn {
+
+    height: 40px;
+
+    padding: 0 16px;
+
+    border: 1px solid #E5E7EB;
+
+    border-radius: 10px;
+
+    background: white;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #475569;
+
+    transition: .25s;
+
+}
+
+.page-btn:hover {
+
+    background: #F8FAFC;
+
+}
+
+.page-number {
+
+    width: 40px;
+
+    height: 40px;
+
+    border: 1px solid #E5E7EB;
+
+    border-radius: 10px;
+
+    background: white;
+
+    color: #334155;
+
+    font-weight: 600;
+
+    transition: .25s;
+
+}
+
+.page-number:hover {
+
+    background: #F1F5F9;
+
+}
+
+.page-number.active {
+
+    background: #2563EB;
+
+    border-color: #2563EB;
+
+    color: white;
+
+}
+
+.page-btn:disabled {
+
+    opacity: .45;
+
+    cursor: not-allowed;
+
+}
+
+.dots {
+
+    padding: 0 6px;
+
+    color: #94A3B8;
+
+    font-weight: 600;
+
+}
+
+/* Mobile */
+
+@media (max-width:768px) {
+
+    .table-pagination {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 16px;
+
+    }
+
+    .pagination-controls {
+
+        width: 100%;
+
+        overflow-x: auto;
+
+        padding-bottom: 6px;
+
+    }
+
+}

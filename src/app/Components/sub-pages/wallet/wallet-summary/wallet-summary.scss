@@ -1,0 +1,295 @@
+.wallet-card {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, .05);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.card-header h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.icon-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 10px;
+    background: #F8FAFC;
+}
+
+.balance-section {
+    margin-bottom: 24px;
+}
+
+.balance-section small {
+    color: #6B7280;
+}
+
+.balance-section h2 {
+    margin: 8px 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.growth {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #DCFCE7;
+    color: #15803D;
+    font-size: .85rem;
+}
+
+.summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.summary-item span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #475569;
+}
+
+.quick-actions{
+
+    margin-top:28px;
+
+}
+
+.quick-actions h6{
+
+    margin-bottom:16px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    color:#334155;
+
+}
+
+.action-row{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:14px;
+
+    margin-bottom:14px;
+
+}
+
+.wallet-action{
+
+    height:38px;
+
+    border:none;
+
+    border-radius:4px;
+    font-size: 14px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+    padding: 15px;
+
+    font-weight:500;
+
+    transition:.25s;
+
+}
+
+.wallet-action.deposit{
+
+    background:#04d141;
+
+    color:#ffff;
+
+}
+
+.wallet-action.deposit:hover{
+
+    background:#02a533;
+
+}
+
+.wallet-action.withdraw{
+
+    color:#fff;
+
+    background:#DC2626;
+
+}
+
+.wallet-action.withdraw:hover{
+
+    background:#b61212;
+
+}
+
+.add-btn{
+
+    width:55%;
+
+    height:36px;
+
+    border:none;
+
+    border-radius:4px;
+
+    background:#143aa3;
+
+    color:#fff;
+
+    font-weight:500;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    transition:.25s;
+
+}
+
+.add-btn:hover{
+
+    background:#1D4ED8;
+
+}
+/* ==========================================
+   Responsive
+========================================== */
+
+@media (max-width: 991.98px) {
+
+    .wallet-card {
+        padding: 20px;
+    }
+
+    .balance-section h2 {
+        font-size: 1.8rem;
+    }
+
+    .add-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 767.98px) {
+
+    .wallet-card {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .card-header {
+        margin-bottom: 18px;
+    }
+
+    .balance-section {
+        margin-bottom: 20px;
+    }
+
+    .balance-section h2 {
+        font-size: 1.6rem;
+        word-break: break-word;
+    }
+
+    .quick-actions {
+        margin-top: 22px;
+    }
+
+    .action-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .action-row > div {
+        width: 100%;
+    }
+
+    .action-row .d-flex {
+        flex-direction: column;
+        gap: 12px !important;
+    }
+
+    .add-btn,
+    .wallet-action {
+        width: 100%;
+        height: 44px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .wallet-card {
+        padding: 16px;
+    }
+
+    .card-header h5 {
+        font-size: 18px;
+    }
+
+    .balance-section small {
+        font-size: 13px;
+    }
+
+    .balance-section h2 {
+        font-size: 1.4rem;
+    }
+
+    .wallet-action {
+        font-size: 13px;
+    }
+
+    .add-btn {
+        font-size: 13px;
+    }
+}
+.wallet-actions {
+    display: flex;
+    gap: 12px;
+}
+
+@media (max-width: 767.98px) {
+
+    .wallet-actions {
+        flex-direction: column;
+    }
+}

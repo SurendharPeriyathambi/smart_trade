@@ -1,0 +1,173 @@
+<section class="payment-history">
+
+    <!-- Header -->
+
+    
+
+    <!-- Search -->
+
+    <div class="toolbar">
+<div class="payment-header">
+
+        <h5>Payment Transaction History</h5>
+
+    </div>
+        <div class="filter">
+
+            <select>
+
+                <option>All Transactions</option>
+                <option>Deposit</option>
+                <option>Withdraw</option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+    <!-- Table -->
+
+    <div class="table-container">
+
+        <div class="table-header">
+
+            <div>Date</div>
+
+            <div>Action</div>
+
+            <div>Amount</div>
+
+            <div>Closing Balance</div>
+
+            <!-- <div class="sticky-action">
+
+                Action
+
+            </div> -->
+
+        </div>
+
+        <div class="table-body">
+
+            @for(transaction of transactions;track transaction.id){
+
+            <div class="table-row">
+
+                <div>
+
+                    {{transaction.date}}
+
+                </div>
+
+                <div>
+
+                    <span
+                        class="transaction-type"
+                        [class.deposit]="transaction.action==='Deposit'"
+                        [class.withdraw]="transaction.action==='Withdraw'">
+
+                        {{transaction.action}}
+
+                    </span>
+
+                </div>
+
+                <div>
+
+                    ₹{{transaction.amount | number}}
+
+                </div>
+
+                <div>
+
+                    ₹{{transaction.closingBalance | number}}
+
+                </div>
+
+                <!-- <div class="sticky-action">
+
+                    <button class="action-btn">
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+                </div> -->
+
+            </div>
+
+            }
+
+        </div>
+
+    </div>
+
+    <div class="table-pagination">
+
+    <div class="pagination-info">
+
+        Showing
+
+        <strong>1-10</strong>
+
+        of
+
+        <strong>45</strong>
+
+        transactions
+
+    </div>
+
+    <div class="pagination-controls">
+
+        <button class="page-btn">
+
+            <i class="bi bi-chevron-left"></i>
+
+            
+
+        </button>
+
+        <button class="page-number active">
+
+            1
+
+        </button>
+
+        <button class="page-number">
+
+            2
+
+        </button>
+
+        <button class="page-number">
+
+            3
+
+        </button>
+
+        <span class="dots">
+
+            ...
+
+        </span>
+
+        <button class="page-number">
+
+            10
+
+        </button>
+
+        <button class="page-btn">
+
+            
+
+            <i class="bi bi-chevron-right"></i>
+
+        </button>
+
+    </div>
+
+</div>
+</section>

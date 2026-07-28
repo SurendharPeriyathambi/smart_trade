@@ -1,0 +1,721 @@
+<section class="trade-history">
+
+    <!-- Header -->
+
+    <div class="trade-header">
+
+        <div class="header-left">
+
+            <h5>Trade History</h5>
+
+        </div>
+
+        <div class="header-right">
+
+            <!-- <button class="export-btn">
+
+                <i class="bi bi-upload"></i>
+
+                Export
+
+            </button> -->
+               <button
+            class="add-trade-btn"
+             (click)="openAddTrade($event)">
+
+            <i class="bi bi-plus-lg"></i>
+
+            <span>Add Trade</span>
+
+        </button>
+
+        </div>
+
+    </div>
+
+    <!-- Toolbar -->
+
+    <div class="toolbar">
+
+        <div class="search-box">
+
+            <i class="bi bi-search"></i>
+
+            <input
+                type="text"
+                placeholder="Search pair, notes...">
+
+        </div>
+
+        <div class="filter">
+
+            <select>
+
+                <option>All Pairs</option>
+
+            </select>
+
+        </div>
+
+        <div class="filter">
+
+            <select>
+
+                <option>All Status</option>
+
+            </select>
+
+        </div>
+
+        <button class="filter-btn">
+
+            <i class="bi bi-funnel"></i>
+
+            Filters
+
+        </button>
+
+    </div>
+
+    <!-- Table -->
+
+    <div class="table-container">
+
+        <div class="table-header">
+
+            <div>Date</div>
+
+            <div>Pair</div>
+
+            <div>Direction</div>
+
+            <div>Entry Price</div>
+            <div>Stop loss</div>
+            <div> Take Profit</div>
+
+            <div>Exit Price</div>
+            <div>Points captured</div>
+            <div>Risks/Reward</div>
+            <div>Win / Loss</div>
+            <div>Profit</div>
+            
+            <div>Loss</div>
+
+           
+            <div>Why You Took This Trade</div>
+
+            <div class="sticky-action">
+                Action
+            </div>
+
+        </div>
+
+        <div class="table-body">
+
+    @for (trade of trades; track trade.id) {
+
+    <div class="table-row">
+
+     <div>{{ trade.date }}</div>
+
+<div> @if(!trade.isEditing){
+
+        {{trade.pair}}
+
+    } @else {
+
+        <input
+            class="table-input"
+            [(ngModel)]="trade.pair">
+
+    }</div>
+
+<div>
+  @if(!trade.isEditing){  <span
+        class="direction"
+        [class.buy]="trade.direction === 'Buy'"
+        [class.sell]="trade.direction === 'Sell'">
+        {{ trade.direction }}
+    </span>}
+    @else{
+
+<select
+class="table-select"
+[(ngModel)]="trade.direction">
+
+<option>Buy</option>
+
+<option>Sell</option>
+
+</select>
+
+}
+</div>
+
+<div>
+
+@if(!trade.isEditing){
+
+{{trade.entryPrice}}
+
+}
+@else{
+
+<input
+type="number"
+class="table-input"
+[(ngModel)]="trade.entryPrice">
+
+}
+
+</div>
+
+<div>
+
+@if(!trade.isEditing){
+
+{{trade.stopLoss}}
+
+}
+@else{
+
+<input
+type="number"
+class="table-input"
+[(ngModel)]="trade.stopLoss">
+
+}
+
+</div>
+
+<div>
+
+@if(!trade.isEditing){
+
+{{trade.takeProfit}}
+
+}
+@else{
+
+<input
+type="number"
+class="table-input"
+[(ngModel)]="trade.takeProfit">
+
+}
+
+</div>
+<div>
+
+@if(!trade.isEditing){
+
+{{trade.exitPrice}}
+
+}
+@else{
+
+<input
+type="number"
+class="table-input"
+[(ngModel)]="trade.exitPrice">
+
+}
+
+</div>
+
+<div>
+
+@if(!trade.isEditing){
+
+{{trade.pointsCaptured}}
+
+}
+@else{
+
+<input
+type="number"
+class="table-input"
+[(ngModel)]="trade.pointsCaptured">
+
+}
+
+</div>
+
+<div>
+
+@if(!trade.isEditing){
+
+{{trade.riskReward}}
+
+}
+@else{
+
+<input
+class="table-input"
+[(ngModel)]="trade.riskReward">
+
+}
+
+</div>
+
+<div>
+
+@if(!trade.isEditing){
+
+<span
+class="status"
+[class.win]="trade.winLoss==='Win'"
+[class.loss]="trade.winLoss==='Loss'">
+
+{{trade.winLoss}}
+
+</span>
+
+}
+@else{
+
+<select
+class="table-select"
+[(ngModel)]="trade.winLoss">
+
+<option value="Win">Win</option>
+<option value="Loss">Loss</option>
+
+</select>
+
+}
+
+</div>
+
+<div>
+
+@if(!trade.isEditing){
+
+<span class="text-success">
+
+{{trade.profit}}
+
+</span>
+
+}
+@else{
+
+<input
+type="number"
+class="table-input"
+[(ngModel)]="trade.profit">
+
+}
+
+</div>
+
+<div>
+
+@if(!trade.isEditing){
+
+<span class="text-danger">
+
+{{trade.loss}}
+
+</span>
+
+}
+@else{
+
+<input
+type="number"
+class="table-input"
+[(ngModel)]="trade.loss">
+
+}
+
+</div>
+
+<div class="reason">
+
+@if(!trade.isEditing){
+
+{{trade.reason}}
+
+}
+@else{
+
+<textarea
+rows="2"
+class="table-textarea"
+[(ngModel)]="trade.reason">
+</textarea>
+
+}
+
+</div>
+
+<div class="sticky-action">
+
+@if(!trade.isEditing){
+
+
+
+<button
+class="action-btn"
+(click)="editTrade(trade)"
+title="Edit">
+
+<i class="bi bi-pencil"></i>
+
+</button>
+
+<button
+class="action-btn">
+
+<i class="bi bi-three-dots-vertical"></i>
+
+</button>
+
+}
+@else{
+
+<button
+class="action-btn success"
+(click)="saveEdit(trade)">
+
+<i class="bi bi-check-lg"></i>
+
+</button>
+
+<button
+class="action-btn danger"
+(click)="cancelEdit(trade)">
+
+<i class="bi bi-x-lg"></i>
+
+</button>
+
+}
+
+</div>
+    </div>
+
+    }
+
+</div>
+
+    </div>
+<div class="table-pagination">
+
+    <div class="pagination-info">
+
+        Showing
+        <strong>1-10</strong>
+        of
+        <strong>128</strong>
+        trades
+
+    </div>
+
+    <div class="pagination-controls">
+
+        <button class="page-btn">
+
+            <i class="bi bi-chevron-left"></i>
+
+           
+        </button>
+
+        <button class="page-number active">
+            1
+        </button>
+
+        <button class="page-number">
+            2
+        </button>
+
+        <button class="page-number">
+            3
+        </button>
+
+        <button class="page-number">
+            4
+        </button>
+
+        <button class="page-number">
+            5
+        </button>
+
+        <span class="dots">
+            ...
+        </span>
+
+        <button class="page-number">
+            13
+        </button>
+
+        <button class="page-btn">
+
+            
+
+            <i class="bi bi-chevron-right"></i>
+
+        </button>
+
+    </div>
+
+</div>
+</section>
+
+@if(showTradeModal){
+
+<div
+    class="trade-modal"
+    (click)="closeTradeModal()">
+
+    <div
+        class="modal-dialog"
+        (click)="$event.stopPropagation()">
+
+        <!-- Header -->
+
+        <div class="modal-header">
+
+            <div>
+
+                <h4>Add Trade</h4>
+
+                <!-- <p>Record your completed trade for future analysis.</p> -->
+
+            </div>
+
+            <button
+                type="button"
+                class="close-btn"
+                (click)="closeTradeModal()">
+
+                <i class="bi bi-x-lg"></i>
+
+            </button>
+
+        </div>
+
+        <!-- Body -->
+
+        <div class="modal-body">
+
+            <form class="trade-form">
+
+                <!-- ========================= -->
+                <!-- Trade Information -->
+                <!-- ========================= -->
+
+                <div class="section-title">
+
+                    <i class="bi bi-bar-chart"></i>
+
+                    <span>Trade Information</span>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        [(ngModel)]="newTrade.date"
+                        name="date">
+                </div>
+
+                <div class="form-group">
+                    <label>Pair</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        placeholder="BTC / USDT"
+                        [(ngModel)]="newTrade.pair"
+                        name="pair">
+                </div>
+
+                <div class="form-group">
+                    <label>Direction</label>
+
+                    <select
+                        class="form-select"
+                        [(ngModel)]="newTrade.direction"
+                        name="direction">
+
+                        <option value="Buy">Buy</option>
+                        <option value="Sell">Sell</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Entry Price</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        [(ngModel)]="newTrade.entryPrice"
+                        name="entryPrice">
+                </div>
+
+                <!-- ========================= -->
+                <!-- Risk -->
+                <!-- ========================= -->
+
+                <div class="section-title full-width">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    <span>Risk Management</span>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Stop Loss</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        [(ngModel)]="newTrade.stopLoss"
+                        name="stopLoss">
+                </div>
+
+                <div class="form-group">
+                    <label>Take Profit</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        [(ngModel)]="newTrade.takeProfit"
+                        name="takeProfit">
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Risk / Reward</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        placeholder="1 : 2"
+                        [(ngModel)]="newTrade.riskReward"
+                        name="riskReward">
+                </div>
+
+                <!-- ========================= -->
+                <!-- Result -->
+                <!-- ========================= -->
+
+                <div class="section-title full-width">
+
+                    <i class="bi bi-graph-up-arrow"></i>
+
+                    <span>Trade Result</span>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Exit Price</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        [(ngModel)]="newTrade.exitPrice"
+                        name="exitPrice">
+                </div>
+
+                <div class="form-group">
+                    <label>Points Captured</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        [(ngModel)]="newTrade.pointsCaptured"
+                        name="pointsCaptured">
+                </div>
+
+                <div class="form-group">
+                    <label>Win / Loss</label>
+
+                    <select
+                        class="form-select"
+                        [(ngModel)]="newTrade.winLoss"
+                        name="winLoss">
+
+                        <option value="Win">Win</option>
+                        <option value="Loss">Loss</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Profit</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        [(ngModel)]="newTrade.profit"
+                        name="profit">
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Loss</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        [(ngModel)]="newTrade.loss"
+                        name="loss">
+                </div>
+
+                <!-- ========================= -->
+                <!-- Notes -->
+                <!-- ========================= -->
+
+                <div class="section-title full-width">
+
+                    <i class="bi bi-journal-text"></i>
+
+                    <span>Notes</span>
+
+                </div>
+
+                <div class="form-group full-width">
+
+                    <label>Why You Took This Trade</label>
+
+                    <textarea
+                        rows="5"
+                        class="form-control"
+                        [(ngModel)]="newTrade.reason"
+                        name="reason">
+
+                    </textarea>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- Footer -->
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn-cancel"
+                (click)="closeTradeModal()">
+
+                Cancel
+
+            </button>
+
+            <button
+                type="button"
+                class="btn-save"
+                (click)="saveTrade()">
+
+                Save Trade
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+}
