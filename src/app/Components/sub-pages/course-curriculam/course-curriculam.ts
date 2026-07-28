@@ -5,10 +5,11 @@ import Hls from 'hls.js';
 import { CourseLesson, CourseVideo } from '../../../../interfaces/subscriptions_interface';
 import { WeeklyReport } from '../weekly-report/weekly-report';
 import { AuthStateService } from '../../main-pages/login/auth-state.service';
+import { ChartList } from '../../chartList/chartlist';
 
 @Component({
   selector: 'app-course-curriculam',
-  imports: [CommonModule, WeeklyReport],
+  imports: [CommonModule, WeeklyReport,ChartList],
   templateUrl: './course-curriculam.html',
   styleUrl: './course-curriculam.scss',
 })
@@ -77,13 +78,10 @@ watermarkVisible = true;
         this.pendingUrl = url;       // ← 1. store URL
         this.videoPlayerOpen = true; // ← 2. show modal
 
-        // ✅ KEY FIX: force Angular to render *ngIf immediately
-        // so @ViewChild setter fires RIGHT NOW in this cycle
+       
         this.cdr.detectChanges();
 
-        // ← 3. After detectChanges, videoElement NOW exists
-        // If ViewChild setter already picked it up, pendingUrl is null
-        // If not (edge case), try directly here as fallback
+       
         if (this.pendingUrl && this.videoElement) {
           const u = this.pendingUrl;
           this.pendingUrl = null;
@@ -291,7 +289,7 @@ watermarkVisible = true;
       };
     };
     setRandom();
-    setInterval(setRandom, 5000);
+    setInterval(setRandom, 6000);
   }
 toggleFullscreen() {
   const container = this.videoContainer?.nativeElement;

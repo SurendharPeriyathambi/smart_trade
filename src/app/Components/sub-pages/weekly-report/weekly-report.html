@@ -1,10 +1,7 @@
-<div class="weekly-videos container">
-
-  <h3 class="section-title">Weekly Analysis</h3>
-    
+<div class="weekly-videos container" *ngIf="weeks().length > 0">
   <div class="videos-grid">
     <div class="video-card" *ngFor="let video of weeks()">
-
+      <h3 class="section-title">Weekly Analysis</h3>  
       <div class="video-thumbnail">
         <img [src]="video.thumbnail" [alt]="video.title">
         <button class="play-button" (click)="openVideo(video)">
@@ -34,4 +31,4 @@
     <video #videoPlayer controls autoplay></video>
   </div>
 </div>
-<app-chart/>
+<!-- <app-chart/> -->

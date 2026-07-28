@@ -57,7 +57,7 @@ type ToolMode = 'trendline' | 'hline' | 'vline' | 'ray' | 'straightline' | 'sele
   ],
 })
 export class NewChart implements OnInit, OnDestroy {
-  private loader = inject (LoaderService);
+  private loader = inject(LoaderService);
   private wheelZoomHandler = (event: WheelEvent) => {
     this.JsonToCandleUsecase.handleWheelZoom(event, this.chartContainer);
   };
@@ -292,36 +292,37 @@ export class NewChart implements OnInit, OnDestroy {
     this.toast.info(`Tool: ${tool}`);
     this.JsonToCandleUsecase.renderLines();
   }
-async submitAnswers(): Promise<void> {
-  if (this.JsonState.pendingSaves > 0) {
-    this.toast.info('Still saving your last edit — try again in a moment.');
-    return;
-  }
 
-  this.loader.show();
-  try {
-    this.JsonState.hasSubmitted = true;
+  async submitAnswers(): Promise<void> {
+    if (this.JsonState.pendingSaves > 0) {
+      this.toast.info('Still saving your last edit — try again in a moment.');
+      return;
+    }
 
-    const adminLines = await this.localDatabaseService.getByChartAndTask(
-      this.JsonState.chartId,
-      this.JsonState.taskId,
-    );
-    const userLines = await this.localDatabaseService.getUserByChartAndTask(
-      this.JsonState.chartId,
-      this.JsonState.taskId,
-    );
+    this.loader.show();
+    try {
+      this.JsonState.hasSubmitted = true;
 
-    const resultsById = this.JsonToCandleUsecase.validateLinesPixelBased(adminLines, userLines);
+      const adminLines = await this.localDatabaseService.getByChartAndTask(
+        this.JsonState.chartId,
+        this.JsonState.taskId,
+      );
+      const userLines = await this.localDatabaseService.getUserByChartAndTask(
+        this.JsonState.chartId,
+        this.JsonState.taskId,
+      );
+
+      const resultsById = this.JsonToCandleUsecase.validateLinesPixelBased(adminLines, userLines);
 
     this.JsonState.userLineResults.clear();
     const matchedByTag: Record<string, number> = {};
     let matched = 0;
 
-    for (const line of this.JsonState.newDrawLine.filter((l) => !l.is_delete)) {
-      const isCorrect =
-        line.localDbId != null ? (resultsById.get(line.localDbId) ?? false) : false;
+      for (const line of this.JsonState.newDrawLine.filter((l) => !l.is_delete)) {
+        const isCorrect =
+          line.localDbId != null ? (resultsById.get(line.localDbId) ?? false) : false;
 
-      this.JsonState.userLineResults.set(String(line.id), isCorrect);
+        this.JsonState.userLineResults.set(String(line.id), isCorrect);
 
       if (isCorrect) {
         matched++;
@@ -331,7 +332,6 @@ async submitAnswers(): Promise<void> {
       } else {
         this.toast.info('Line incorrect — start or end point does not match.');
       }
-    }
 
     this.JsonState.matchedCount = matched;
     this.JsonState.matchedCountByTag = matchedByTag;
@@ -340,7 +340,6 @@ async submitAnswers(): Promise<void> {
   } finally {
     this.loader.hide();
   }
-}
 
   // ── NEW: retryDrawing() ──
   async retryDrawing(): Promise<void> {
@@ -366,7 +365,6 @@ this.JsonState.userLineResults.clear();
     this.JsonState.activeTool = 'trendline';
     this.JsonToCandleUsecase.renderLines();
     this.toast.info('Try again — draw your lines.');
-    this.location.back();
   }
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
@@ -530,8 +528,9 @@ if (event.key === 'Delete' || event.key === 'Backspace') {
 
 
   async backToDashboard() {
-    await this.retryDrawing(); 
-    this.location.back();
+    this.retryDrawing().then(() => {
+      this.location.back();
+    });
   }
 
   async loadLinesFromServer(): Promise<void> {

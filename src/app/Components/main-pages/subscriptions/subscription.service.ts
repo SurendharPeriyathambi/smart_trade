@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpEngine } from "../../../../services/engine/http_engine";
 import { Observable } from "rxjs";
-import { CourseResponse, ImageUploadResponse, Profile, SubResponse, SubscriptionList, UserSubscription, UserSubscriptionRequest, WeeklkyVideoUrlResponce, WeeklyMeetingResponse, WeeklyVideos } from "../../../../interfaces/subscriptions_interface";
+import { CourseResponse, DisountResponse, ImageUploadResponse, OrderRequest, OrderResponse, Profile, SubResponse, SubscriptionList, UserSubscription, UserSubscriptionRequest, WeeklkyVideoUrlResponce, WeeklyMeetingResponse, WeeklyVideos } from "../../../../interfaces/subscriptions_interface";
 import { environment } from "../../../environment";
 import { ApiResponce, VideoUrlResponce } from "../../../../interfaces/banner_interface";
 
@@ -75,7 +75,13 @@ export class SubscriptionService {
         return this.http.get<SubResponse<WeeklyMeetingResponse>>(this.weekUrl)
     }
     getWeeklyUrl(videoId:string):Observable <SubResponse<WeeklkyVideoUrlResponce>>{
-        return this,this.http.get(`api/get_video_url?path=${videoId}`)
+        return this.http.get(`api/get_video_url?path=${videoId}`)
     }
 
+    getOrder(payload:OrderRequest):Observable<SubResponse<OrderResponse>>{
+        return  this.http.post('api/payment/order',payload)
+    }
+    getCouponDiscount(coupon:string):Observable<SubResponse<DisountResponse>>{
+        return this.http.get<SubResponse<DisountResponse>>(`api/apply_coupon?code=${coupon}`)
+    }
 }

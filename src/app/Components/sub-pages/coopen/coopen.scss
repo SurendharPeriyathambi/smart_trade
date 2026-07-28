@@ -1,0 +1,228 @@
+*{
+    box-sizing: border-box;
+}
+
+.payment-container{
+    display:flex;
+    gap:24px;
+    max-width:950px;
+    margin:auto;
+    padding:20px;
+    align-items:flex-start;
+}
+
+.card{
+    flex:1;
+    background:#fff;
+    border-radius:12px;
+    padding:22px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+}
+
+.plan-card{
+    flex:.9;
+}
+
+.card h2{
+    margin:0 0 18px;
+    font-size:18px;
+    font-weight:600;
+    color:#1d1d1d;
+}
+
+/* Plan */
+
+.plan-box{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    border:1px solid #ececec;
+    border-radius:10px;
+    padding:15px;
+}
+
+.plan-icon{
+    width:55px;
+    height:55px;
+    background:#143AA3;
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:10px;
+    font-size:24px;
+}
+
+.plan-info{
+    flex:1;
+}
+
+.plan-info h3{
+    margin:0;
+    font-size:16px;
+}
+
+.plan-info p{
+    margin-top:5px;
+    color:#777;
+    font-size:13px;
+}
+
+.plan-price{
+    font-size:20px;
+    font-weight:700;
+    color:#143AA3;
+}
+
+/* Coupon */
+
+.coupon-section{
+    display:flex;
+    gap:10px;
+    margin-bottom:22px;
+}
+
+.coupon-section input{
+    flex:1;
+    height:42px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    padding:0 12px;
+    font-size:14px;
+}
+
+.coupon-section input:focus{
+    outline:none;
+    border-color:#143AA3;
+}
+
+.coupon-section button{
+    background:#143AA3;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:0 20px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.coupon-section button:hover{
+    background:#0d2d82;
+}
+
+/* Price */
+
+.price-row,
+.total-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
+    font-size:15px;
+}
+
+.discount{
+    color:#28a745;
+    font-weight:600;
+}
+
+.total-row{
+    font-size:18px;
+    font-weight:700;
+}
+
+hr{
+    border:none;
+    border-top:1px solid #eee;
+}
+
+/* Button */
+
+.pay-btn{
+    width:100%;
+    margin-top:20px;
+    height:46px;
+    border:none;
+    border-radius:6px;
+    background:#143AA3;
+    color:#fff;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.pay-btn:hover{
+    background:#0d2d82;
+    transform:translateY(-2px);
+}
+
+/* Tablet */
+
+@media (max-width:992px){
+
+.payment-container{
+    flex-direction:column;
+}
+
+.card{
+    width:100%;
+}
+
+.plan-card{
+    order:1;
+}
+
+}
+
+/* Mobile */
+
+@media (max-width:576px){
+
+.payment-container{
+    padding:15px;
+    gap:18px;
+}
+
+.card{
+    padding:16px;
+}
+
+.card h2{
+    font-size:16px;
+}
+
+.plan-box{
+    flex-direction:column;
+    text-align:center;
+}
+
+.plan-info{
+    text-align:center;
+}
+
+.plan-price{
+    margin-top:8px;
+    font-size:22px;
+}
+
+.coupon-section{
+    flex-direction:column;
+}
+
+.coupon-section input,
+.coupon-section button{
+    width:100%;
+    height:42px;
+}
+
+.price-row,
+.total-row{
+    font-size:14px;
+}
+
+.pay-btn{
+    height:44px;
+}
+
+}

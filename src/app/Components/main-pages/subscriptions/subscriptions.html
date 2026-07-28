@@ -1,13 +1,9 @@
 <app-header [isAuthButton]="false" [showLogout]="true"/>
 
-
-
-
   <app-subscription-summary/> 
 
   <!--    FIX 3: Correct condition — hide entire plans section when active OR approved -->
 
-  
   
   <app-subscription-plans
     *ngIf="subscriptionStatus() !== 'active' && subscriptionStatus() !== 'approved'"
@@ -16,16 +12,19 @@
 
   <!-- Payment section: shown after choosing a plan, only when status is null/pending -->
   <div #paymentSectionRef>
-    <app-payment-section
+    <!-- <app-payment-section
       *ngIf="selectedPlan && subscriptionStatus() !== 'active' && subscriptionStatus() !== 'approved'"
       [plan]="selectedPlan"
-      (paymentDone)="onPaymentDone()"/>
+      (paymentDone)="onPaymentDone()"/> -->
+
+      
+  <app-coopen  *ngIf="selectedPlan && subscriptionStatus() !== 'active' && subscriptionStatus() !== 'approved'"
+   [plan]="selectedPlan" />
   </div>
 
   <!--    FIX 3: Course shown only when active or approved -->
   <app-course-curriculam
     *ngIf="subscriptionStatus() === 'active' || subscriptionStatus() === 'approved'"/>
 
-
-
+<!-- <app-list-chart/> -->
 <app-footer/>

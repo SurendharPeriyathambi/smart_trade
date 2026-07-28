@@ -9,10 +9,11 @@
         {{ tf.label }}
       </button>
     </div>
-   <div class="line-counter ms-4 bg-secondary border-white text-white">
-  <span>Lines: {{ JsonState.requiredLineCount - JsonState.remainingLines }} / {{ JsonState.requiredLineCount }}</span>
-  <span *ngIf="JsonState.hasSubmitted" class="matched">✓ {{ JsonState.matchedCount }} correct</span>
-</div>
+    <div class="line-counter ms-4" *ngIf="!JsonState.hasSubmitted">
+      <span>Lines: {{ JsonState.requiredLineCount - JsonState.remainingLines }} / {{ JsonState.requiredLineCount
+        }}</span>
+      <!-- <span *ngIf="JsonState.hasSubmitted" class="matched">✓ {{ JsonState.matchedCount }} correct</span> -->
+    </div>
 
 <div class="line-counter ms-1 bg-accent text-dark">
   <span *ngFor="let tag of JsonState.requiredCountByTag | keyvalue">
@@ -129,80 +130,6 @@
           <span>Duplicate</span>
           <span class="kbd-hint">Ctrl+D</span>
         </button>
-        <!-- <button class="tool-btn submit-answer" (click)="submitAnswers()"
-          [disabled]="JsonState.newDrawLine.length === 0 || JsonState.hasSubmitted">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-          <span>Submit</span>
-        </button>
-
-        <button class="tool-btn retry" *ngIf="JsonState.hasSubmitted" (click)="retryDrawing()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="1 4 1 10 7 10" />
-            <path d="M3.51 15a9 9 0 1 0 .49-3.5" />
-          </svg>
-          <span>Retry</span>
-        </button> -->
-
-        <!-- Duplicate & Extend -->
-        <!-- <button class="tool-btn duplicate-extend"
-                (click)="duplicateAndExtendManually()"
-                [disabled]="!JsonState.selectedLineId"
-                title="Duplicate line and extend manually">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="8" y="8" width="13" height="13" rx="2"/>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            <polyline points="15 18 18 21 21 18"/>
-            <polyline points="15 6 18 3 21 6"/>
-          </svg>
-          <span>Dup + Extend</span>
-        </button> -->
-
-        <!-- Delete -->
-        <!-- <button class="tool-btn delete"
-                (click)="deleteSelectedLine()"
-                [disabled]="!JsonState.selectedLineId"
-                title="Delete selected line (Del)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-          </svg>
-          <span>Delete</span>
-          <span class="kbd-hint">Del</span>
-        </button> -->
-
-        <!-- Save (admin only) -->
-        <!-- <button class="tool-btn save"
-                (click)="saveAllLines()" title="Save as correct answers (Ctrl+S)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-            <polygon points="12 3 12 10 8 10 12 14 16 10 12 10"/>
-          </svg>
-          <span>Save</span>
-          <span class="kbd-hint">Ctrl+S</span>
-        </button> -->
-        <!-- Submit Answer (user only) -->
-        <!-- <button *ngIf="userRole !== 'admin'"
-        class="tool-btn submit-answer"
-        (click)="submitUserLines()"
-        [disabled]="userLines.length === 0"
-        title="Submit lines and check answers">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-       stroke="currentColor" stroke-width="2">
-    <polyline points="20 6 9 17 4 12"/>
-  </svg>
-  <span>Submit</span>
-</button> -->
-
-        <!-- Reset -->
-        <!-- <button class="tool-btn reset" (click)="resetAllLines()" title="Reset all lines (Ctrl+R)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="1 4 1 10 7 10"/>
-            <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
-          </svg>
-          <span>Reset</span>
-          <span class="kbd-hint">Ctrl+R</span>
-        </button> -->
       </div>
 
       <!-- Selection info panel -->
@@ -251,9 +178,6 @@
     <!-- ══════════════ CHART AREA ══════════════ -->
     <div class="chart-area">
       <!-- LW Chart host -->
-      <!-- <div #chartContainer class="chart-container"
-           [class.cursor-crosshair]="activeTool !== 'select'"
-           [class.cursor-pointer]="activeTool === 'select'"></div> -->
       <div #chartContainer class="chart-container"></div>
       <!--
         Handle overlay canvas.
@@ -268,25 +192,70 @@
         Draws the blue rectangle + arrows + tooltip for the measure tool.
       -->
       <canvas #measureCanvas class="measure-canvas"></canvas>
-          <!-- Inline label editor — floats over the clicked label's position -->
-            <select
-    #labelInput
-    *ngIf="JsonState.editingLabelLineId"
-    class="line-label-input"
-    [ngModel]="JsonState.editingLabelValue"
-    (ngModelChange)="JsonState.editingLabelValue = $event; closeLabelEditor(true)"
-    (blur)="closeLabelEditor(true)"
-    [style.left.px]="JsonState.editingLabelScreenX - 60"
-    [style.top.px]="JsonState.editingLabelScreenY - 30"
->
-  <!-- <option value="" disabled selected>Select</option> -->
-  <option value="CHO">CHO</option>
-  <option value="STR">STR</option>
-</select>
+
+      <!-- ══════════════ BOTTOM-RIGHT SUBMIT / RESULTS CONTAINER ══════════════ -->
+      <!-- Single unified card, only appears once ALL required lines are drawn, or after a submit.
+           retryDrawing() resets remainingLines/hasSubmitted, which makes this
+           condition false again and hides the whole overlay. -->
+      <div class="chart-action-container" *ngIf="JsonState.remainingLines <= 0 || JsonState.hasSubmitted" [ngStyle]="{'background': JsonState.hasSubmitted ? 'rgba(255, 255, 255, .96)':'none'}">
+
+        <!-- Results summary — shown only after submit -->
+        <div class="results-summary" *ngIf="JsonState.hasSubmitted">
+          <div class="stat stat-total">
+            <div class="stat-label-row">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+              <span>Total Count</span>
+            </div>
+            <span class="stat-count">{{ JsonState.requiredLineCount - JsonState.remainingLines }}</span>
+          </div>
+
+          <div class="stat stat-correct">
+            <div class="stat-label-row">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>Correct</span>
+            </div>
+            <span class="stat-count">{{ JsonState.matchedCount }}</span>
+          </div>
+
+          <div class="stat stat-wrong">
+            <div class="stat-label-row">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+              <span>Wrong</span>
+            </div>
+            <span class="stat-count">{{ (JsonState.requiredLineCount - JsonState.remainingLines) - JsonState.matchedCount }}</span>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="action-buttons">
+          <button class="btn-action submit-action" *ngIf="!JsonState.hasSubmitted" (click)="submitAnswers()"
+            [disabled]="JsonState.remainingLines > 0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span>Submit</span>
+          </button>
+
+          <button class="btn-action submit-action" *ngIf="JsonState.hasSubmitted" (click)="retryDrawing()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 .49-3.5" />
+            </svg>
+            <span>Reset</span>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
-
-  <!-- ══════════════ EXTENSION CONTROL PANEL ══════════════ -->
-
 
 </div>
