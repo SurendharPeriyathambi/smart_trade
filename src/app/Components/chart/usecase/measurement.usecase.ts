@@ -54,7 +54,7 @@ export class MeasureUsecase {
       this.measureState.measureEnd = cp;
       this.measureState.isMeasuring = true;
       lockChartInteraction();
-      this.toast.info('Measure: click a second point to finish.');
+      // this.toast.info('Measure: click a second point to finish.');
     } else {
       this.measureState.measureEnd = cp;
       this.measureState.isMeasuring = false;
@@ -65,7 +65,7 @@ export class MeasureUsecase {
       end: { ...this.measureState.measureEnd },
     });
       this.redrawAllMeasurements(measureCanvas, chartToScreenPoint, countBarsInRange);
-      this.toast.info('Measure complete. Click again to start a new measurement.');
+      // this.toast.info('Measure complete. Click again to start a new measurement.');
     }
   }
  public redrawAllMeasurements(

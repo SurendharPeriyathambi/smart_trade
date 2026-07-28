@@ -289,49 +289,50 @@ export class NewChart implements OnInit, OnDestroy {
       this.JsonState.selectedLineId = null;
       this.clearHandles();
     }
-    this.toast.info(`Tool: ${tool}`);
+    // this.toast.info(`Tool: ${tool}`);
     this.JsonToCandleUsecase.renderLines();
   }
 
-  async submitAnswers(): Promise<void> {
-    if (this.JsonState.pendingSaves > 0) {
-      this.toast.info('Still saving your last edit — try again in a moment.');
-      return;
-    }
+ async submitAnswers(): Promise<void> {
+  if (this.JsonState.pendingSaves > 0) {
+    this.toast.info('Still saving your last edit — try again in a moment.');
+    return;
+  }
 
-    this.loader.show();
-    try {
-      this.JsonState.hasSubmitted = true;
+  this.loader.show();
+  try {
+    this.JsonState.hasSubmitted = true;
 
-      const adminLines = await this.localDatabaseService.getByChartAndTask(
-        this.JsonState.chartId,
-        this.JsonState.taskId,
-      );
-      const userLines = await this.localDatabaseService.getUserByChartAndTask(
-        this.JsonState.chartId,
-        this.JsonState.taskId,
-      );
+    const adminLines = await this.localDatabaseService.getByChartAndTask(
+      this.JsonState.chartId,
+      this.JsonState.taskId,
+    );
+    const userLines = await this.localDatabaseService.getUserByChartAndTask(
+      this.JsonState.chartId,
+      this.JsonState.taskId,
+    );
 
-      const resultsById = this.JsonToCandleUsecase.validateLinesPixelBased(adminLines, userLines);
+    const resultsById = this.JsonToCandleUsecase.validateLinesPixelBased(adminLines, userLines);
 
     this.JsonState.userLineResults.clear();
     const matchedByTag: Record<string, number> = {};
     let matched = 0;
 
-      for (const line of this.JsonState.newDrawLine.filter((l) => !l.is_delete)) {
-        const isCorrect =
-          line.localDbId != null ? (resultsById.get(line.localDbId) ?? false) : false;
+    for (const line of this.JsonState.newDrawLine.filter((l) => !l.is_delete)) {
+      const isCorrect =
+        line.localDbId != null ? (resultsById.get(line.localDbId) ?? false) : false;
 
-        this.JsonState.userLineResults.set(String(line.id), isCorrect);
+      this.JsonState.userLineResults.set(String(line.id), isCorrect);
 
       if (isCorrect) {
         matched++;
         const tag = (line.tag ?? '').trim() || 'Untagged';
         matchedByTag[tag] = (matchedByTag[tag] ?? 0) + 1;
-        this.toast.success('Line correct! ✓');
+        // this.toast.success('Line correct! ✓');
       } else {
-        this.toast.info('Line incorrect — start or end point does not match.');
+        // this.toast.info('Line incorrect — start or end point does not match.');
       }
+    } // ← THIS was the missing brace — closes the for loop
 
     this.JsonState.matchedCount = matched;
     this.JsonState.matchedCountByTag = matchedByTag;
@@ -340,7 +341,7 @@ export class NewChart implements OnInit, OnDestroy {
   } finally {
     this.loader.hide();
   }
-
+}
   // ── NEW: retryDrawing() ──
   async retryDrawing(): Promise<void> {
     // Remove user-drawn lines from IndexedDB + memory
@@ -353,13 +354,10 @@ export class NewChart implements OnInit, OnDestroy {
     // Reset submit/result state (admin lines stay loaded in state,
     // but overlay only renders when hasSubmitted is true, so they'll hide)
     this.JsonState.hasSubmitted = false;
-    this.JsonState.matchedCount = 0;
-    this.JsonState.userLineResults.clear();
-    this.JsonState.selectedLineId = null;
-
-    this.JsonState.matchedCount = 0;
+this.JsonState.matchedCount = 0;
 this.JsonState.matchedCountByTag = {};
 this.JsonState.userLineResults.clear();
+this.JsonState.selectedLineId = null;
 
     this.clearHandles();
     this.JsonState.activeTool = 'trendline';

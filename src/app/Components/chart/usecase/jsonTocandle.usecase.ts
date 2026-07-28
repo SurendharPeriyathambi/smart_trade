@@ -706,8 +706,8 @@ public drawHandles(handleCanvas: any): void {
   
 /** Draws the line's name centered above its midpoint. Skips lines whose midpoint can't be resolved to screen space and skips the line currently being renamed (the <input> overlay covers that spot instead). */
 private drawLineLabel(ctx: CanvasRenderingContext2D, line: Answers, isAdmin: boolean = false): void {
-  const text = line.tag?.trim();
-  if (!text) return;
+  const text = (line.tag?.trim()) || (isAdmin ? '' : '');
+  if (!text) return; // only true for admin lines with no tag — those should stay invisible
   if (this.chartstate.editingLabelLineId === String(line.id)) return;
 
   const sp = this.chartToScreenPoint(line.start_time, line.start_price);
@@ -718,12 +718,18 @@ private drawLineLabel(ctx: CanvasRenderingContext2D, line: Answers, isAdmin: boo
   const midY = (sp.y + ep.y) / 2;
   const isSelected = !isAdmin && this.chartstate.selectedLineId === line.id;
   const isDark = this.chartstate.currentTheme === 'dark';
+  const isPlaceholder = !line.tag?.trim() && !isAdmin;
 
   let bgColor: string, borderColor: string, textColor: string;
   if (isAdmin) {
-    bgColor = 'rgba(54,247,179,0.85)';   // #36F7B3 — matches the dotted admin line color
+    bgColor = 'rgba(54,247,179,0.85)';
     borderColor = '#36F7B3';
     textColor = '#0d1a15';
+  } else if (isPlaceholder) {
+    // Dashed/muted so it visually reads as "needs a tag"
+    bgColor = isDark ? 'rgba(255,165,0,0.25)' : 'rgba(255,193,89,0.35)';
+    borderColor = '#FFA500';
+    textColor = isDark ? '#FFA500' : '#8a5300';
   } else if (isSelected) {
     bgColor = isDark ? 'rgba(255,165,0,0.85)' : 'rgba(255,193,89,0.9)';
     borderColor = isDark ? '#FFA500' : '#FF8C00';
@@ -753,9 +759,11 @@ private drawLineLabel(ctx: CanvasRenderingContext2D, line: Answers, isAdmin: boo
   ctx.fillStyle = bgColor;
   ctx.strokeStyle = borderColor;
   ctx.lineWidth = 1;
+  if (isPlaceholder) ctx.setLineDash([2, 2]); // dashed border signals "not yet set"
   this.roundRect(ctx, midX - boxW / 2, labelY - boxH, boxW, boxH, 4);
   ctx.fill();
   ctx.stroke();
+  ctx.setLineDash([]);
 
   ctx.fillStyle = textColor;
   ctx.fillText(text, midX, labelY - paddingY);
@@ -783,8 +791,7 @@ public getLabelAtPoint(sp: ScreenPoint): Answers | null {
 
   for (const line of this.chartstate.newDrawLine) {
     if (line.is_delete) continue;
-    const text = line.tag?.trim();
-    if (!text) continue;
+    const text = line.tag?.trim() || 'Tag ▾'; // ← same fallback as drawLineLabel
 
     const start = this.chartToScreenPoint(line.start_time, line.start_price);
     const end = this.chartToScreenPoint(line.end_time, line.end_price);

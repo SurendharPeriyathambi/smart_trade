@@ -130,7 +130,7 @@ userLineResults: Map<string, boolean> = new Map();
   }
 get drawnCountByTag(): Record<string, number> {
   const counts: Record<string, number> = {};
-  for (const line of this.newDrawLine) {
+  for (const line of this.newDrawLine ?? []) {
     if (line.is_delete) continue;
     const tag = (line.tag ?? '').trim() || 'Untagged';
     counts[tag] = (counts[tag] ?? 0) + 1;
@@ -138,11 +138,11 @@ get drawnCountByTag(): Record<string, number> {
   return counts;
 }
 
-/** True only when every required tag has exactly the right number of drawn lines
- *  (blocks submit if e.g. all 4 lines are tagged CHO but STR needs 2). */
 get allTagsComplete(): boolean {
-  const required = this.requiredCountByTag;
+  const required = this.requiredCountByTag ?? {};
   const drawn = this.drawnCountByTag;
-  return Object.keys(required).every((tag) => (drawn[tag] ?? 0) === required[tag]);
+  const keys = Object.keys(required);
+  if (keys.length === 0) return false; // not seeded yet — never allow submit prematurely
+  return keys.every((tag) => (drawn[tag] ?? 0) === required[tag]);
 }
 }
