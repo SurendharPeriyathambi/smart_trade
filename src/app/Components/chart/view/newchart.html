@@ -9,21 +9,29 @@
         {{ tf.label }}
       </button>
     </div>
-    <div class="line-counter ms-4">
-      <span>Lines: {{ JsonState.requiredLineCount - JsonState.remainingLines }} / {{ JsonState.requiredLineCount
-        }}</span>
-      <span *ngIf="JsonState.hasSubmitted" class="matched">✓ {{ JsonState.matchedCount }} correct</span>
-    </div>
+   <div class="line-counter ms-4">
+  <span>Lines: {{ JsonState.requiredLineCount - JsonState.remainingLines }} / {{ JsonState.requiredLineCount }}</span>
+  <span *ngIf="JsonState.hasSubmitted" class="matched">✓ {{ JsonState.matchedCount }} correct</span>
+</div>
 
+<div class="line-counter ms-4">
+  <span *ngFor="let tag of JsonState.requiredCountByTag | keyvalue">
+    {{ tag.key }}:
+    {{ JsonState.hasSubmitted
+        ? (JsonState.matchedCountByTag[tag.key] || 0)
+        : (JsonState.drawnCountByTag[tag.key] || 0) }}
+    / {{ tag.value }}
+  </span>
+</div>
 
     <div class="header-controls">
       <button class="btn-theme submit-answer" (click)="submitAnswers()"
-          [disabled]="JsonState.newDrawLine.length === 0 || JsonState.hasSubmitted">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-          <span>Submit</span>
-        </button>
+    [disabled]="JsonState.newDrawLine.length === 0 || JsonState.hasSubmitted || !JsonState.allTagsComplete">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+  <span>Submit</span>
+</button>
         <button class="btn-theme retry" *ngIf="JsonState.hasSubmitted" (click)="retryDrawing()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="1 4 1 10 7 10" />
@@ -260,6 +268,21 @@
         Draws the blue rectangle + arrows + tooltip for the measure tool.
       -->
       <canvas #measureCanvas class="measure-canvas"></canvas>
+          <!-- Inline label editor — floats over the clicked label's position -->
+            <select
+    #labelInput
+    *ngIf="JsonState.editingLabelLineId"
+    class="line-label-input"
+    [ngModel]="JsonState.editingLabelValue"
+    (ngModelChange)="JsonState.editingLabelValue = $event; closeLabelEditor(true)"
+    (blur)="closeLabelEditor(true)"
+    [style.left.px]="JsonState.editingLabelScreenX - 60"
+    [style.top.px]="JsonState.editingLabelScreenY - 30"
+>
+  <!-- <option value="" disabled selected>Select</option> -->
+  <option value="CHO">CHO</option>
+  <option value="STR">STR</option>
+</select>
     </div>
   </div>
 
