@@ -29,6 +29,7 @@ import { ToastService } from '../../../../services/engine/toast.service';
 import { HttpClient } from '@angular/common/http';
 import { LocalDatabaseService } from '../../../../services/engine/localdatabase.service';
 import { LoaderService } from '../../../../services/engine/loader.service';
+import { Answers } from '../model/chart.model';
 
 type ToolMode = 'trendline' | 'hline' | 'vline' | 'ray' | 'straightline' | 'select' | 'measure';
 
@@ -71,7 +72,7 @@ export class NewChart implements OnInit, OnDestroy {
     const rect = container.getBoundingClientRect();
     const sp = { x: event.clientX - rect.left, y: event.clientY - rect.top };
 
-     // ── Label click check FIRST — clicking a name box opens the rename input,
+    // ── Label click check FIRST — clicking a name box opens the rename input,
     // and must win over line-drag / handle-drag detection below.
     const labelHit = this.JsonToCandleUsecase.getLabelAtPoint(sp);
     if (labelHit) {
@@ -134,8 +135,7 @@ export class NewChart implements OnInit, OnDestroy {
   @ViewChild('chartContainer') chartContainer!: ElementRef<HTMLDivElement>;
   @ViewChild('handleCanvas') handleCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('measureCanvas') measureCanvas!: ElementRef<HTMLCanvasElement>;
-    @ViewChild('labelInput') labelInput?: ElementRef<HTMLInputElement>;
-
+  @ViewChild('labelInput') labelInput?: ElementRef<HTMLInputElement>;
 
   ngOnInit(): void {
     this.JsonState.fetchTaskData = history.state.editData;
@@ -149,8 +149,6 @@ export class NewChart implements OnInit, OnDestroy {
     this.chartUseCase.wasabiUsecase(data).subscribe({
       next: (res) => {
         this.jsonPathConvert(res.data.wasabi_url);
-        this.loader.hide();
-        this.cdr.detectChanges();
       },
       error: (err) => {
         this.loader.hide();
@@ -170,6 +168,7 @@ export class NewChart implements OnInit, OnDestroy {
           this.JsonState.pendingJsonChartData = normalized;
         }
         this.cdr.detectChanges();
+        this.loader.hide();
       },
       error: (err) => {
         console.error('[Chart] Failed to fetch json:', err);
@@ -270,7 +269,7 @@ export class NewChart implements OnInit, OnDestroy {
   //     this.toast.info(`You've drawn all ${this.JsonState.requiredLineCount} required lines.`);
   //     return;
   //   }
-    
+
   //   this.toolsUsecase.cancelDrawing();
   //   // if (tool !== 'measure') this.measureUsecase.clearMeasure(this.measureCanvas);
   //   this.JsonState.activeTool = tool;
@@ -281,7 +280,7 @@ export class NewChart implements OnInit, OnDestroy {
   //   this.toast.info(`Tool: ${tool}`);
   //   this.JsonToCandleUsecase.renderLines();
   // }
- setActiveTool(tool: ToolMode): void {
+  setActiveTool(tool: ToolMode): void {
     this.toolsUsecase.cancelDrawing();
     // if (tool !== 'measure') this.measureUsecase.clearMeasure(this.measureCanvas);
     this.JsonState.activeTool = tool;
@@ -293,76 +292,77 @@ export class NewChart implements OnInit, OnDestroy {
     this.JsonToCandleUsecase.renderLines();
   }
 
- async submitAnswers(): Promise<void> {
-  if (this.JsonState.pendingSaves > 0) {
-    this.toast.info('Still saving your last edit — try again in a moment.');
-    return;
+  async submitAnswers(): Promise<void> {
+    if (this.JsonState.pendingSaves > 0) {
+      this.toast.info('Still saving your last edit — try again in a moment.');
+      return;
+    }
+
+    this.loader.show();
+    try {
+      this.JsonState.hasSubmitted = true;
+
+      const adminLines = await this.localDatabaseService.getByChartAndTask(
+        this.JsonState.chartId,
+        this.JsonState.taskId,
+      );
+      const userLines = await this.localDatabaseService.getUserByChartAndTask(
+        this.JsonState.chartId,
+        this.JsonState.taskId,
+      );
+
+      const resultsById = this.JsonToCandleUsecase.validateLinesPixelBased(adminLines, userLines);
+
+      this.JsonState.userLineResults.clear();
+      const matchedByTag: Record<string, number> = {};
+      let matched = 0;
+
+      for (const line of this.JsonState.newDrawLine.filter((l) => !l.is_delete)) {
+        const isCorrect =
+          line.localDbId != null ? (resultsById.get(line.localDbId) ?? false) : false;
+
+        this.JsonState.userLineResults.set(String(line.id), isCorrect);
+
+        if (isCorrect) {
+          matched++;
+          const tag = (line.tag ?? '').trim() || 'Untagged';
+          matchedByTag[tag] = (matchedByTag[tag] ?? 0) + 1;
+          // this.toast.success('Line correct! ✓');
+        } else {
+          // this.toast.info('Line incorrect — start or end point does not match.');
+        }
+      } // ← THIS was the missing brace — closes the for loop
+
+      this.JsonState.matchedCount = matched;
+      this.JsonState.matchedCountByTag = matchedByTag;
+      this.JsonToCandleUsecase.renderLines();
+      this.toast.success(`${matched} / ${this.JsonState.requiredLineCount} correct`);
+    } finally {
+      this.loader.hide();
+    }
   }
-
-  this.loader.show();
-  try {
-    this.JsonState.hasSubmitted = true;
-
-    const adminLines = await this.localDatabaseService.getByChartAndTask(
-      this.JsonState.chartId,
-      this.JsonState.taskId,
-    );
-    const userLines = await this.localDatabaseService.getUserByChartAndTask(
-      this.JsonState.chartId,
-      this.JsonState.taskId,
-    );
-
-    const resultsById = this.JsonToCandleUsecase.validateLinesPixelBased(adminLines, userLines);
-
-    this.JsonState.userLineResults.clear();
-    const matchedByTag: Record<string, number> = {};
-    let matched = 0;
-
-    for (const line of this.JsonState.newDrawLine.filter((l) => !l.is_delete)) {
-      const isCorrect =
-        line.localDbId != null ? (resultsById.get(line.localDbId) ?? false) : false;
-
-      this.JsonState.userLineResults.set(String(line.id), isCorrect);
-
-      if (isCorrect) {
-        matched++;
-        const tag = (line.tag ?? '').trim() || 'Untagged';
-        matchedByTag[tag] = (matchedByTag[tag] ?? 0) + 1;
-        // this.toast.success('Line correct! ✓');
-      } else {
-        // this.toast.info('Line incorrect — start or end point does not match.');
-      }
-    } // ← THIS was the missing brace — closes the for loop
-
-    this.JsonState.matchedCount = matched;
-    this.JsonState.matchedCountByTag = matchedByTag;
-    this.JsonToCandleUsecase.renderLines();
-    this.toast.success(`${matched} / ${this.JsonState.requiredLineCount} correct`);
-  } finally {
-    this.loader.hide();
-  }
-}
   // ── NEW: retryDrawing() ──
   async retryDrawing(): Promise<void> {
     // Remove user-drawn lines from IndexedDB + memory
-    await this.localDatabaseService.deleteUserLinesByChartAndTask(
-      this.JsonState.chartId,
-      this.JsonState.taskId,
-    );
+    // await this.localDatabaseService.deleteUserLinesByChartAndTask(
+    //   this.JsonState.chartId,
+    //   this.JsonState.taskId,
+    // );
+    await this.localDatabaseService.clearAllStores();
     this.JsonState.newDrawLine = [];
 
     // Reset submit/result state (admin lines stay loaded in state,
     // but overlay only renders when hasSubmitted is true, so they'll hide)
     this.JsonState.hasSubmitted = false;
-this.JsonState.matchedCount = 0;
-this.JsonState.matchedCountByTag = {};
-this.JsonState.userLineResults.clear();
-this.JsonState.selectedLineId = null;
+    this.JsonState.matchedCount = 0;
+    this.JsonState.matchedCountByTag = {};
+    this.JsonState.userLineResults.clear();
+    this.JsonState.selectedLineId = null;
 
     this.clearHandles();
     this.JsonState.activeTool = 'trendline';
     this.JsonToCandleUsecase.renderLines();
-    this.toast.info('Try again — draw your lines.');
+    // this.toast.info('Try again — draw your lines.');
   }
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
@@ -374,29 +374,30 @@ this.JsonState.selectedLineId = null;
       this.toolsUsecase.undoLastChange();
       return;
     }
-      // new: delete the measurement graphic when measure tool is active
-if (event.key === 'Delete' || event.key === 'Backspace') {
-  if (this.JsonState.activeTool === 'select' && this.JsonState.selectedLineId) {
-    event.preventDefault();
-    this.deleteSelectedLine();
-    return;
-  }
-  if (this.JsonState.selectedMeasureIndex !== null) {
-    event.preventDefault();
-    const removed = this.measureUsecase.deleteSelectedMeasurement(
-      this.measureCanvas,
-      (t, p) => this.JsonToCandleUsecase.chartToScreenPoint(t, p),
-      (f, t) => this.JsonToCandleUsecase.countBarsInRange(f, t),
-    );
-    this.toast.info(removed ? 'Measurement removed.' : 'Nothing selected.');
-    return;
-  }}
+    // new: delete the measurement graphic when measure tool is active
+    if (event.key === 'Delete' || event.key === 'Backspace') {
+      if (this.JsonState.activeTool === 'select' && this.JsonState.selectedLineId) {
+        event.preventDefault();
+        this.deleteSelectedLine();
+        return;
+      }
+      if (this.JsonState.selectedMeasureIndex !== null) {
+        event.preventDefault();
+        const removed = this.measureUsecase.deleteSelectedMeasurement(
+          this.measureCanvas,
+          (t, p) => this.JsonToCandleUsecase.chartToScreenPoint(t, p),
+          (f, t) => this.JsonToCandleUsecase.countBarsInRange(f, t),
+        );
+        this.toast.info(removed ? 'Measurement removed.' : 'Nothing selected.');
+        return;
+      }
+    }
     if (event.key === 'Escape') {
       event.preventDefault();
       if (this.JsonState.editingLabelLineId) {
-      this.closeLabelEditor(false);
-      return;
-    }
+        this.closeLabelEditor(false);
+        return;
+      }
       if (this.JsonState.isMeasuring) this.measureUsecase.clearMeasure(this.measureCanvas);
       if (this.JsonState.isDrawing) this.toolsUsecase.cancelDrawing();
       this.setActiveTool('select');
@@ -480,7 +481,7 @@ if (event.key === 'Delete' || event.key === 'Backspace') {
     this.extendUsecase.extendLineManually();
   }
   resetAllLines(): void {}
-   // ==================== LABEL EDIT (click name above line to rename) ====================
+  // ==================== LABEL EDIT (click name above line to rename) ====================
 
   /** Opens the inline rename input positioned over the clicked label's screen coords. */
   openLabelEditor(line: any, sp: { x: number; y: number }): void {
@@ -501,10 +502,29 @@ if (event.key === 'Delete' || event.key === 'Backspace') {
       const line = this.JsonState.findLine(id);
       if (line) {
         line.tag = this.JsonState.editingLabelValue.trim();
+
         if (line.localDbId) {
-          await this.localDatabaseService.updateAnswer(line.localDbId, {
+          await this.localDatabaseService.updateUserAnswer(line.localDbId, {
             ...line,
           } as any);
+        } else {
+          const saved = await this.localDatabaseService.createUserAnswer({
+            answer_id: line.answer_id ?? null,
+            chart_id: this.JsonState.chartId,
+            task_id: this.JsonState.taskId,
+            start_price: line.start_price,
+            end_price: line.end_price,
+            start_time: line.start_time,
+            end_time: line.end_time,
+            start_x: 0,
+            end_x: 0,
+            start_y: 0,
+            end_y: 0,
+            is_edit: false,
+            is_delete: false,
+            tag: line.tag,
+          } as Answers);
+          line.localDbId = saved.id;
         }
       }
     }
@@ -523,7 +543,6 @@ if (event.key === 'Delete' || event.key === 'Backspace') {
       this.closeLabelEditor(false);
     }
   }
-
 
   async backToDashboard() {
     this.retryDrawing().then(() => {

@@ -120,7 +120,7 @@ export class DrawingUsecase {
     }
     const newLines: Answers = {
       id: uuidv4(),
-      task_id: this.chartState.testId,
+      task_id: this.chartState.taskId,
       chart_id: this.chartState.chartId,
       start_x: start.x,
       start_y: start.y,

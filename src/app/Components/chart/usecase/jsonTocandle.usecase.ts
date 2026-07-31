@@ -270,17 +270,12 @@ export class JsonToCandleUsecase {
     }
   }
 
-  public chartToScreenPoint(time: number, price: number): ScreenPoint | null {
-    try {
-      const x = this.chartstate.chart.timeScale().timeToCoordinate(time) as number | null;
-      const y = this.chartstate.candlestickSeries.priceToCoordinate(price) as number | null;
-      if (x == null || y == null || isNaN(x) || isNaN(y)) return null;
-      return { x, y };
-    } catch (err) {
-      console.debug('[Chart] chartToScreenPoint error:', err);
-      return null;
-    }
-  }
+ public chartToScreenPoint(time: number, price: number): ScreenPoint | null {
+  const x = this.chartstate.chart.timeScale().timeToCoordinate(time) as number | null;
+  const y = this.chartstate.candlestickSeries.priceToCoordinate(price) as number | null;
+  if (x == null || y == null || isNaN(x) || isNaN(y)) return null;
+  return { x, y };
+}
 
   public countBarsInRange(fromTime: number, toTime: number): number {
     return this.chartstate.chartData.filter((d: any) => d.time >= fromTime && d.time <= toTime)
@@ -669,9 +664,12 @@ public drawHandles(handleCanvas: any): void {
     .filter((l) => !l.is_delete)
     .forEach((l) => this.drawLineLabel(ctx, l));
 
-  if (this.chartstate.hasSubmitted) {
-    this.chartstate.adminLines.forEach((l) => this.drawLineLabel(ctx, l, true));
-  }
+ if (this.chartstate.hasSubmitted) {
+  this.chartstate.adminLines.forEach((l) => this.drawLineLabel(ctx, l, true));
+}
+this.chartstate.newDrawLine
+  .filter((l) => !l.is_delete)
+  .forEach((l) => this.drawLineLabel(ctx, l));
 
   if (!this.chartstate.selectedLineId) return;
   const line = this.chartstate.findLine(this.chartstate.selectedLineId);
@@ -941,49 +939,63 @@ public getLabelAtPoint(sp: ScreenPoint): Answers | null {
     }
   }
 
-  public validateLinesPixelBased(
+public validateLinesPixelBased(
   adminLines: Answers[],
   userLines: Answers[],
 ): Map<number, boolean> {
   const results = new Map<number, boolean>();
-  const PIXEL_TOLERANCE = 5; // px — tune this to taste
+
+  // Tolerance as a fraction of what's currently visible on screen.
+  const TIME_TOLERANCE_FRACTION = 0.02;  // 2% of visible time range
+  const PRICE_TOLERANCE_FRACTION = 0.02; // 2% of visible price range
+
+  const visibleRange = this.chartstate.chart?.timeScale().getVisibleRange();
+  const timeSpan = visibleRange ? (visibleRange.to as number) - (visibleRange.from as number) : 0;
+  const timeTolerance = timeSpan > 0 ? timeSpan * TIME_TOLERANCE_FRACTION : 5 * 86400; // fallback: 5 days
+
+  let priceTolerance = 0;
+  const height = 600; // matches the fixed chart height used in initChart
+  const topPrice = this.chartstate.candlestickSeries?.coordinateToPrice(0) as number | null;
+  const botPrice = this.chartstate.candlestickSeries?.coordinateToPrice(height) as number | null;
+  if (topPrice != null && botPrice != null && !isNaN(topPrice) && !isNaN(botPrice)) {
+    priceTolerance = Math.abs(topPrice - botPrice) * PRICE_TOLERANCE_FRACTION;
+  }
 
   for (const user of userLines) {
     let matched = false;
 
-    const userStartPx = this.chartToScreenPoint(user.start_time, user.start_price);
-    const userEndPx = this.chartToScreenPoint(user.end_time, user.end_price);
-    if (!userStartPx || !userEndPx) {
-      results.set(user.id!, false);
-      continue;
-    }
-
     for (const admin of adminLines) {
-      // Tag must match first — a perfectly-placed line drawn under the
-      // wrong tag should never count as correct.
-      if ((user.tag ?? '').trim() !== (admin.tag ?? '').trim()) continue;
+      if ((user.tag ?? '').trim().toLowerCase() !== (admin.tag ?? '').trim().toLowerCase()) continue;
 
-      const adminStartPx = this.chartToScreenPoint(admin.start_time, admin.start_price);
-      const adminEndPx = this.chartToScreenPoint(admin.end_time, admin.end_price);
-      if (!adminStartPx || !adminEndPx) continue;
+      const effectivePriceTolerance =
+        priceTolerance > 0
+          ? priceTolerance
+          : Math.abs(admin.end_price - admin.start_price) * PRICE_TOLERANCE_FRACTION || 0.001;
 
-      const startDist = Math.hypot(
-        userStartPx.x - adminStartPx.x,
-        userStartPx.y - adminStartPx.y,
-      );
-      const endDist = Math.hypot(userEndPx.x - adminEndPx.x, userEndPx.y - adminEndPx.y);
+      const startOk =
+        Math.abs(Number(user.start_time) - Number(admin.start_time)) <= timeTolerance &&
+        Math.abs(Number(user.start_price) - Number(admin.start_price)) <= effectivePriceTolerance;
 
-      if (startDist <= PIXEL_TOLERANCE && endDist <= PIXEL_TOLERANCE) {
+      const endOk =
+        Math.abs(Number(user.end_time) - Number(admin.end_time)) <= timeTolerance &&
+        Math.abs(Number(user.end_price) - Number(admin.end_price)) <= effectivePriceTolerance;
+
+      // Both endpoints must be within tolerance — small mismatch allowed,
+      // but not just one end matching while the other is way off.
+      if (startOk && endOk) {
         matched = true;
         break;
       }
     }
 
+
     results.set(user.id!, matched);
   }
 
+
   return results;
 }
+
   private removeLineSeries(id: string): void {
     const existing = this.chartstate.lineSeriesMap.get(id);
     if (existing) {
@@ -1086,7 +1098,7 @@ public getLabelAtPoint(sp: ScreenPoint): Answers | null {
       end_time: Number(server.end_time),
       end_price: Number(server.end_price),
       is_edit: false,
-      tag: server.tag || server.title,
+      tag: server.tag,
     }) as Answers,
 );
 
