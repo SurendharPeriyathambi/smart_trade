@@ -49,14 +49,26 @@
         </div>
 
         <div class="table-body">
-
-            @for(transaction of transactions;track transaction.id){
+@if (tradinghistory.length === 0) {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-graph-up"></i>
+            </div>
+            <h6>No Payment yet</h6>
+            <p>Start tracking your Payment performance by adding your first trade.</p>
+            <!-- <button class="add-trade-btn" (click)="openAddTrade($event)">
+                <i class="bi bi-plus-lg"></i>
+                <span>Add Trade</span>
+            </button> -->
+        </div>
+    }@else {
+          @for(transaction of tradinghistory;track transaction.id){
 
             <div class="table-row">
 
                 <div>
 
-                    {{transaction.date}}
+                    {{transaction.created_at | date:'dd MMM yyyy'}}
 
                 </div>
 
@@ -64,8 +76,8 @@
 
                     <span
                         class="transaction-type"
-                        [class.deposit]="transaction.action==='Deposit'"
-                        [class.withdraw]="transaction.action==='Withdraw'">
+                        [class.deposit]="transaction.action === 'DEPOSIT'"
+                        [class.withdraw]="transaction.action==='WITHDRAW'">
 
                         {{transaction.action}}
 
@@ -81,8 +93,8 @@
 
                 <div>
 
-                    ₹{{transaction.closingBalance | number}}
-
+                    ₹{{transaction.closing_balance | number}}
+                     
                 </div>
 
                 <!-- <div class="sticky-action">
@@ -98,6 +110,16 @@
             </div>
 
             }
+    }
+          
+            <!-- @empty {
+
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No payment history found.</p>
+        </div>
+
+    } -->
 
         </div>
 

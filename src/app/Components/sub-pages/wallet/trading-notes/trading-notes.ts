@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TradingPaymentUsecase } from './usecase/trading_payment.usecase';
+import { PaymentHistory } from '../models/wallet.model';
+import { TradingPaymentRepository } from './repository/trading_payment.repository';
+import { TradingPaymentRepositoryImpl } from './repository/trading_payment.repository.impl';
 
 export interface WalletTransaction {
 
@@ -21,8 +25,18 @@ export interface WalletTransaction {
   imports: [FormsModule,CommonModule],
   templateUrl: './trading-notes.html',
   styleUrl: './trading-notes.scss',
+    providers: [
+      TradingPaymentUsecase,
+    {
+      provide: TradingPaymentRepository,
+      useClass: TradingPaymentRepositoryImpl
+    }
+  ]
 })
-export class TradingNotes {
+export class TradingNotes implements OnInit {
+  ngOnInit(): void {
+    this.loadHistory()
+  }
  
  
   transactions: WalletTransaction[] = [
@@ -60,4 +74,23 @@ export class TradingNotes {
   }
 
 ];
+
+
+private usecase = inject(TradingPaymentUsecase);
+
+ tradinghistory: PaymentHistory []=[];
+
+loadHistory(){
+  this.usecase.getAll().subscribe({
+    next:(res)=>{
+      if (res) {
+        this.tradinghistory = res.data;
+        console.log(this.tradinghistory)
+      }
+    },error(err){
+      console.log(err.message)
+    }
+  }) 
+}
+
 }

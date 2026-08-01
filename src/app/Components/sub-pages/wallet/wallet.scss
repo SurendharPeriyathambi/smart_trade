@@ -1,4 +1,4 @@
-$primary: #2563EB;
+$primary: #143aa3;
 $success: #22C55E;
 $danger: #EF4444;
 
@@ -14,7 +14,38 @@ $background: #F8FAFC;
 $radius: 16px;
 
 .wallet-main{
-background: #F6FAFC;
+    background:#F6FAFC;
+    min-height:100vh;
+    padding:24px;
+}
+
+@media (max-width:991.98px){
+
+    .wallet-main{
+
+        padding:18px;
+
+        .row{
+            row-gap:20px;
+        }
+
+        .col-lg-5,
+        .col-lg-7{
+            width:100%;
+        }
+
+    }
+
+}
+
+@media(max-width:576px){
+
+    .wallet-main{
+
+        padding:12px;
+
+    }
+
 }
 
 /* ==========================================
@@ -182,8 +213,8 @@ background: #F6FAFC;
 .form-group {
 
     display: flex;
-
     flex-direction: column;
+    margin-bottom: 15px;
 
 }
 
@@ -268,8 +299,8 @@ textarea.form-control {
     min-width: 140px;
 
     height: 42px;
-
-    border-radius: 4px;
+    font-size: 15px;
+    border-radius: 24px;
 
     font-weight: 500;
 
@@ -319,54 +350,81 @@ textarea.form-control {
    Responsive
 ========================================== */
 
-@media (max-width: 768px) {
+/* ==========================================
+   Tablet & Large Mobile (481px - 768px)
+========================================== */
+
+@media (max-width:768px) and (min-width:481px) {
 
     .trade-modal {
-
-        padding: 16px;
-
+        padding: 18px;
     }
 
     .modal-dialog {
-
-        width: 100%;
-
+        width: min(650px, 100%);
         max-height: 95vh;
-
         border-radius: 16px;
-
     }
 
     .modal-form {
-
         grid-template-columns: 1fr;
-
     }
 
-    .modal-header {
-
+    .modal-header,
+    .modal-body,
+    .modal-footer {
         padding: 18px;
-
-    }
-
-    .modal-body {
-
-        padding: 18px;
-
     }
 
     .modal-footer {
-
-        padding: 18px;
-
-        flex-direction: column-reverse;
-
+        justify-content: flex-end;
+        flex-direction: row;
+        gap: 12px;
     }
 
     .modal-footer .btn {
+        width: auto;
+        font-size: 14px;
+        min-width: 140px;
+    }
 
+}
+
+/* ==========================================
+   Small Mobile (<=480px)
+========================================== */
+
+@media (max-width:480px) {
+
+    .trade-modal {
+        padding: 12px;
+    }
+
+    .modal-dialog {
         width: 100%;
+        max-height: 95vh;
+        border-radius: 14px;
+    }
 
+    .modal-form {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 16px;
+    }
+
+    .modal-footer {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+        min-width: unset;
+        font-size: 14px;
     }
 
 }
@@ -383,4 +441,55 @@ textarea.form-control {
             margin-top:1rem !important;
         }
     }
+}/* ==========================================
+   Create Wallet modal extras
+========================================== */
+
+.warning-box{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:14px 16px;
+    border-radius:12px;
+    background:#FFFBEB;
+    border:1px solid #FDE68A;
+    color:#92400E;
+    margin-bottom:20px;
+    font-size:14px;
+}
+
+.warning-box i{
+    font-size:18px;
+    margin-top:2px;
+}
+
+.warning-box p{
+    margin:0;
+}
+
+.checkbox-group{
+    margin-bottom:15px;
+}
+
+.checkbox-label{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+    font-weight:500;
+    color:#374151;
+    cursor:pointer;
+    margin:0;
+}
+
+.checkbox-label input[type="checkbox"]{
+    width:18px;
+    height:18px;
+    accent-color:#143aa3;
+    cursor:pointer;
+}
+.field-error{
+    color:#DC2626;
+    font-size:13px;
+    margin-top:6px;
 }

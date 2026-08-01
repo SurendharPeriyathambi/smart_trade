@@ -1,17 +1,19 @@
 <div class="container-fluid py-4 wallet-main">
     <div class="row g-4">
 
-       
-
         <div class="col-lg-5">
 
-           <app-wallet-summary (depositClick)="openDepositModal()"
-    (withdrawClick)="openWithdrawModal()" />
-       
+           <app-wallet-summary
+               [walletCreated]="walletCreated"
+               (createWalletClick)="openCreateWalletModal()"
+               (depositClick)="openDepositModal()"
+               (withdrawClick)="openWithdrawModal()" />
+
            <div class="mt-4"><app-trading-notes/></div>
-           
+
         </div>
- <div class="col-lg-7">
+
+        <div class="col-lg-7">
 
          <div> <app-trade-history /> </div>
 
@@ -89,7 +91,7 @@
                 class="btn btn-light"
                 (click)="closeDepositModal()">
 
-                Cancel
+                Reset
 
             </button>
 
@@ -117,8 +119,6 @@
         class="modal-dialog"
         (click)="$event.stopPropagation()">
 
-        <!-- Header -->
-
         <div class="modal-header">
 
             <h4>Withdraw Funds</h4>
@@ -133,8 +133,6 @@
             </button>
 
         </div>
-
-        <!-- Body -->
 
         <div class="modal-body">
 
@@ -204,8 +202,6 @@
 
         </div>
 
-        <!-- Footer -->
-
         <div class="modal-footer">
 
             <button
@@ -213,7 +209,7 @@
                 class="btn btn-light"
                 (click)="closeWithdrawModal()">
 
-                Cancel
+                Reset
 
             </button>
 
@@ -224,6 +220,107 @@
                 <i class="bi bi-arrow-up-right me-2"></i>
 
                 Withdraw
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+}
+
+@if(showCreateWalletModal){
+
+<div class="trade-modal"
+     (click)="closeCreateWalletModal()">
+
+    <div class="modal-dialog"
+         (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+
+            <h4>Create Wallet</h4>
+
+            <button
+                class="close-btn"
+                (click)="closeCreateWalletModal()">
+
+                <i class="bi bi-x-lg"></i>
+
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div class="warning-box">
+                <i class="bi bi-exclamation-triangle"></i>
+                <p>Are you sure you want to create a wallet? Choose a start date to continue.</p>
+            </div>
+
+            <div class="form-group">
+
+    <label>Wallet Start Date</label>
+
+    <input
+        type="date"
+        class="form-control"
+        [(ngModel)]="walletDate"
+        name="walletDate"
+        [max]="maxDate"
+        (ngModelChange)="onWalletDateChange()">
+
+    @if (dateError) {
+        <small class="field-error">{{ dateError }}</small>
+    }
+
+</div>
+
+            @if (walletDate) {
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" [(ngModel)]="depositNow" name="depositNow">
+                        <span>Deposit now</span>
+                    </label>
+                </div>
+
+                @if (depositNow) {
+
+                    <div class="form-group">
+                        <label>Deposit Amount</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            placeholder="Enter amount"
+                            [(ngModel)]="depositAmount"
+                            name="depositAmount">
+                    </div>
+
+                }
+
+            }
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                class="btn btn-light"
+                (click)="closeCreateWalletModal()">
+
+                Cancel
+
+            </button>
+
+            <button
+                class="btn btn-primary"
+                [disabled]="!walletDate"
+                (click)="createWallet()">
+
+                Create Wallet
 
             </button>
 

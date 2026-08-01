@@ -78,217 +78,309 @@
 }
 
 .quick-actions{
-
     margin-top:28px;
-
 }
 
 .quick-actions h6{
-
     margin-bottom:16px;
-
     font-size:15px;
-
     font-weight:600;
-
     color:#334155;
-
 }
 
 .action-row{
-
     display:grid;
-
     grid-template-columns:1fr 1fr;
-
     gap:14px;
-
     margin-bottom:14px;
-
 }
 
 .wallet-action{
-
     height:38px;
-
     border:none;
-
-    border-radius:4px;
+    border-radius:24px;
     font-size: 14px;
-
     display:flex;
-
     justify-content:center;
-
     align-items:center;
-
     gap:10px;
     padding: 15px;
-
     font-weight:500;
-
     transition:.25s;
-
+}
+.wallet-actions {
+    display: flex;
+    gap: 9px;
 }
 
 .wallet-action.deposit{
-
     background:#04d141;
-
     color:#ffff;
-
 }
 
 .wallet-action.deposit:hover{
-
     background:#02a533;
-
 }
 
 .wallet-action.withdraw{
-
     color:#fff;
-
     background:#DC2626;
-
 }
 
 .wallet-action.withdraw:hover{
-
     background:#b61212;
-
 }
 
 .add-btn{
-
-    width:55%;
-
+    width:61%;
     height:36px;
-
     border:none;
-
-    border-radius:4px;
-
+    border-radius:24px;
     background:#143aa3;
-
     color:#fff;
-
     font-weight:500;
-
     display:flex;
-
     justify-content:center;
-
     align-items:center;
-
     gap:10px;
-
     transition:.25s;
-
 }
 
 .add-btn:hover{
-
     background:#1D4ED8;
-
 }
+
+/* ==========================================
+   Empty wallet state (before creation)
+========================================== */
+
+.empty-wallet-state{
+    min-height:260px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    gap:14px;
+    padding:20px;
+}
+
+.empty-wallet-icon{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    background:#EEF2FF;
+    color:#143aa3;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+}
+
+.empty-wallet-text{
+    color:#6B7280;
+    font-size:14px;
+    max-width:280px;
+    margin:0;
+}
+
+.create-wallet-btn{
+    height:44px;
+    padding:0 24px;
+    border:none;
+    border-radius:24px;
+    background:#143aa3;
+    color:#fff;
+    font-weight:500;
+    font-size:15px;
+    display:flex;
+    justify-content: center;
+    align-items:center;
+    gap:8px;
+    transition:.25s;
+}
+
+.create-wallet-btn:hover{
+    background:#1D4ED8;
+}
+
+/* ==========================================
+   Create Wallet modal extras
+========================================== */
+
+.warning-box{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:14px 16px;
+    border-radius:12px;
+    background:#FFFBEB;
+    border:1px solid #FDE68A;
+    color:#92400E;
+    margin-bottom:20px;
+    font-size:14px;
+}
+
+.warning-box i{
+    font-size:18px;
+    margin-top:2px;
+}
+
+.warning-box p{
+    margin:0;
+}
+
+.checkbox-group{
+    margin-bottom:15px;
+}
+
+.checkbox-label{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+    font-weight:500;
+    color:#374151;
+    cursor:pointer;
+    margin:0;
+}
+
+.checkbox-label input[type="checkbox"]{
+    width:18px;
+    height:18px;
+    accent-color:#2563EB;
+    cursor:pointer;
+}
+
 /* ==========================================
    Responsive
 ========================================== */
 
-@media (max-width: 991.98px) {
+@media (max-width:991.98px){
 
-    .wallet-card {
-        padding: 20px;
+    .wallet-card{
+        padding:20px;
     }
 
-    .balance-section h2 {
-        font-size: 1.8rem;
+    .balance-section h2{
+        font-size:30px;
     }
 
-    .add-btn {
-        width: 100%;
+    .quick-actions{
+        margin-top:22px;
+    }
+
+    .action-row{
+        gap:12px;
+    }
+
+    .wallet-action{
+        font-size:14px;
+        padding:0 12px;
+    }
+
+    .add-btn{
+        width:50%;
+    }
+
+    .empty-wallet-state{
+        min-height:220px;
+    }
+}
+
+@media (max-width:767.98px){
+
+    .wallet-card{
+        padding:18px;
+        border-radius:14px;
+    }
+
+    .card-header{
+        margin-bottom:18px;
+    }
+
+    .balance-section{
+        margin-bottom:20px;
+    }
+
+    .balance-section h2{
+        font-size:28px;
+        line-height:1.2;
+    }
+
+    .quick-actions{
+        margin-top:20px;
+    }
+
+    .quick-actions h6{
+        margin-bottom:14px;
+    }
+
+    .action-row{
+        display:flex;
+        flex-direction:column;
+        gap:12px;
+    }
+
+    .wallet-actions{
+        display:flex;
+        flex-direction:column;
+        gap:12px;
+        width:100%;
+    }
+
+    .wallet-action{
+        width:100%;
+        height:46px;
+    }
+
+    .add-btn{
+        width:100%;
+        height:46px;
+    }
+
+    .empty-wallet-state{
+        min-height:200px;
+        padding:16px;
+    }
+
+    .create-wallet-btn{
+        width:100%;
+    }
+}
+
+@media (max-width:480px){
+
+    .wallet-card{
+        padding:16px;
+    }
+
+    .card-header h5{
+        font-size:18px;
+    }
+
+    .balance-section small{
+        font-size:13px;
+    }
+
+    .balance-section h2{
+        font-size:24px;
+    }
+
+    .wallet-action{
+        font-size:13px;
+    }
+
+    .add-btn{
+        font-size:13px;
+    }
+
+    .create-wallet-btn{
+        font-size:14px;
     }
 }
 
 @media (max-width: 767.98px) {
-
-    .wallet-card {
-        padding: 18px;
-        border-radius: 14px;
-    }
-
-    .card-header {
-        margin-bottom: 18px;
-    }
-
-    .balance-section {
-        margin-bottom: 20px;
-    }
-
-    .balance-section h2 {
-        font-size: 1.6rem;
-        word-break: break-word;
-    }
-
-    .quick-actions {
-        margin-top: 22px;
-    }
-
-    .action-row {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
-    .action-row > div {
-        width: 100%;
-    }
-
-    .action-row .d-flex {
-        flex-direction: column;
-        gap: 12px !important;
-    }
-
-    .add-btn,
-    .wallet-action {
-        width: 100%;
-        height: 44px;
-    }
-}
-
-@media (max-width: 480px) {
-
-    .wallet-card {
-        padding: 16px;
-    }
-
-    .card-header h5 {
-        font-size: 18px;
-    }
-
-    .balance-section small {
-        font-size: 13px;
-    }
-
-    .balance-section h2 {
-        font-size: 1.4rem;
-    }
-
-    .wallet-action {
-        font-size: 13px;
-    }
-
-    .add-btn {
-        font-size: 13px;
-    }
-}
-.wallet-actions {
-    display: flex;
-    gap: 12px;
-}
-
-@media (max-width: 767.98px) {
-
     .wallet-actions {
         flex-direction: column;
     }

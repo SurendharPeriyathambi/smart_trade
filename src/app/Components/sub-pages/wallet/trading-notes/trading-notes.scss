@@ -121,9 +121,51 @@
     overflow-x: auto;
 
     background: white;
+ overflow-x:auto;
+    overflow-y:hidden;
+
+    -webkit-overflow-scrolling:touch;
+
+    position:relative;
+}
+
+.table-container::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    right:0;
+
+    width:40px;
+    height:100%;
+
+    pointer-events:none;
+
+    // background:linear-gradient(to left,#fff,transparent);
 
 }
 
+.table-container::-webkit-scrollbar{
+
+    height:6px;
+
+}
+
+.table-container::-webkit-scrollbar-thumb{
+
+    background:#CBD5E1;
+
+    border-radius:50px;
+
+}
+
+.table-container::-webkit-scrollbar-track{
+
+    background:#F8FAFC;
+
+}
 .table-header,
 .table-row {
 
@@ -259,18 +301,6 @@
 
 }
 
-/* Responsive */
-
-@media (max-width:768px){
-
-    .toolbar{
-
-        grid-template-columns:1fr;
-
-    }
-
-}
-
 /* ==========================================
    Pagination
 ========================================== */
@@ -403,26 +433,119 @@
 
 /* Mobile */
 
-@media (max-width:768px) {
+@media (min-width:768px) and (max-width:991.98px){
 
-    .table-pagination {
+    .toolbar{
 
-        flex-direction: column;
+        display:flex;
 
-        align-items: flex-start;
+        justify-content:space-between;
 
-        gap: 16px;
+        align-items:center;
 
-    }
-
-    .pagination-controls {
-
-        width: 100%;
-
-        overflow-x: auto;
-
-        padding-bottom: 6px;
+        gap:16px;
 
     }
 
+    .payment-header{
+
+        flex:1;
+
+        margin-bottom:0;
+
+    }
+
+    .filter{
+
+        width:220px;
+
+        flex-shrink:0;
+
+    }
+
+}
+@media (max-width:767.98px){
+
+    .toolbar{
+
+        display:flex;
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:14px;
+
+    }
+
+    .payment-header{
+
+        margin-bottom:0;
+
+    }
+
+    .filter{
+
+        width:100%;
+
+    }
+
+
+.table-pagination{
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+.pagination-info{
+
+    text-align:center;
+
+}
+
+
+
+}
+.empty-state {
+    grid-column: 1 / -1;
+    min-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    gap: 10px;
+}
+
+.empty-icon {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #EFF6FF;
+    color: #2563EB;
+    font-size: 26px;
+    margin-bottom: 8px;
+}
+
+.empty-state h6 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.empty-state p {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: #64748B;
+    max-width: 320px;
+}
+
+.empty-state .add-trade-btn {
+    height: 42px;
 }

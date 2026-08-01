@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DepositCard } from "../deposit-card/deposit-card";
-import { WithdrawCard } from "../withdraw-card/withdraw-card";
 
 @Component({
   selector: 'app-wallet-summary',
-  imports: [CommonModule, ],
+  imports: [CommonModule],
   templateUrl: './wallet-summary.html',
   styleUrl: './wallet-summary.scss',
 })
 export class WalletSummary {
+
+  @Input() walletCreated = false;
 
   @Input() currentBalance = 12500;
   @Input() totalDeposit = 15000;
@@ -18,26 +18,19 @@ export class WalletSummary {
   @Input() totalTrades = 28;
   @Input() monthlyGrowth = 8.52;
 
-  showDepositModal = false;
-showWithdrawModal = false;
+  @Output() createWalletClick = new EventEmitter<void>();
+  @Output() depositClick = new EventEmitter<void>();
+  @Output() withdrawClick = new EventEmitter<void>();
 
-@Output() depositClick = new EventEmitter<void>();
+  openCreateWallet(): void {
+    this.createWalletClick.emit();
+  }
 
-@Output() withdrawClick = new EventEmitter<void>();
+  openDeposit(): void {
+    this.depositClick.emit();
+  }
 
-openDeposit() {
-  this.depositClick.emit();
-}
-
-openWithdraw() {
-  this.withdrawClick.emit();
-}
-
-openWithdrawModal() {
-  this.showWithdrawModal = true;
-}
-
-closeWithdrawModal() {
-  this.showWithdrawModal = false;
-}
+  openWithdraw(): void {
+    this.withdrawClick.emit();
+  }
 }

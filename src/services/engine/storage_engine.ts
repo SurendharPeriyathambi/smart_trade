@@ -7,6 +7,7 @@ export class StorageEngine {
   private user_name = 'user_name';
   private user_email = 'user_email';
   private device_id = 'device_id';
+  private wallet_id ='wallet_id'
   constructor(private cookieService: CookieService) {}
 
   getAccessToken(): string {
@@ -40,4 +41,15 @@ export class StorageEngine {
   getDeviceId(): string {
     return localStorage.getItem(this.device_id) ?? '';
   }
+   setWalletId(walletId: number): void {
+    localStorage.setItem(this.wallet_id, walletId.toString());
+  }
+
+  getWalletId(): number | null {
+    const id = localStorage.getItem(this.wallet_id);
+
+    return id ? Number(id) : null;
+  }
+
+
 }
