@@ -118,6 +118,11 @@ export class DrawingUsecase {
         [start, end] = [end, start];
       }
     }
+const requiredTags = Object.keys(this.chartState.requiredCountByTag ?? {});
+let autoTag = 'Select a name';
+if (requiredTags.length === 1) {
+  autoTag = requiredTags[0];
+}
     const newLines: Answers = {
       id: uuidv4(),
       task_id: this.chartState.taskId,
@@ -131,7 +136,7 @@ export class DrawingUsecase {
       end_time: end.time,
       end_price: end.price,
       is_edit: false,
-      tag:'Select a name'
+      tag: autoTag
     };
 
     this.ToolsUsecase.pushUndo();

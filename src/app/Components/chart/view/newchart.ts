@@ -137,12 +137,27 @@ export class NewChart implements OnInit, OnDestroy {
   @ViewChild('measureCanvas') measureCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('labelInput') labelInput?: ElementRef<HTMLInputElement>;
 
-  ngOnInit(): void {
-    this.JsonState.fetchTaskData = history.state.editData;
-    this.JsonState.chartId = this.JsonState.fetchTaskData?.chart_id ?? 0;
-    this.JsonState.taskId = this.JsonState.fetchTaskData?.id ?? 0;
-    this.jsonPathConverttoView(this.JsonState.fetchTaskData?.json_path);
+ngOnInit(): void {
+  this.JsonState.fetchTaskData = history.state.editData;
+  this.JsonState.chartId = this.JsonState.fetchTaskData?.chart_id ?? 0;
+  this.JsonState.taskId = this.JsonState.fetchTaskData?.id ?? 0;
+
+  let tags: string[] = [];
+  try {
+    const rawTags = this.JsonState.fetchTaskData?.tags;
+    tags = typeof rawTags === 'string' ? JSON.parse(rawTags) : (rawTags ?? []);
+  } catch (e) {
+    console.error('[Chart] Failed to parse tags:', e);
+    tags = [];
   }
+
+  this.JsonState.allowedTags = {
+    CHO: tags.length === 0 ? true : tags.includes('CHO'),
+    STR: tags.length === 0 ? true : tags.includes('STR'),
+  };
+
+  this.jsonPathConverttoView(this.JsonState.fetchTaskData?.json_path);
+}
 
   jsonPathConverttoView(data: any) {
     this.loader.show();
@@ -164,6 +179,8 @@ export class NewChart implements OnInit, OnDestroy {
         const normalized = this.JsonToCandleUsecase.normalizeChartData(rawArray);
         if (this.JsonState.chartReady) {
           this.applyJsonChartData(normalized);
+          this.loader.hide();
+
         } else {
           this.JsonState.pendingJsonChartData = normalized;
         }
@@ -484,14 +501,18 @@ export class NewChart implements OnInit, OnDestroy {
   // ==================== LABEL EDIT (click name above line to rename) ====================
 
   /** Opens the inline rename input positioned over the clicked label's screen coords. */
-  openLabelEditor(line: any, sp: { x: number; y: number }): void {
-    this.JsonState.editingLabelLineId = String(line.id);
-    this.JsonState.editingLabelValue = line.label ?? '';
-    this.JsonState.editingLabelScreenX = sp.x;
-    this.JsonState.editingLabelScreenY = sp.y;
-    this.JsonToCandleUsecase.renderLines(); // repaint so the canvas label hides while input is open
-    setTimeout(() => this.labelInput?.nativeElement?.focus(), 0);
-  }
+openLabelEditor(line: any, sp: { x: number; y: number }): void {
+  const requiredTags = Object.keys(this.JsonState.requiredCountByTag ?? {});
+
+  if (requiredTags.length <= 1) return;
+
+  this.JsonState.editingLabelLineId = String(line.id);
+  this.JsonState.editingLabelValue = line.tag ?? '';
+  this.JsonState.editingLabelScreenX = sp.x;
+  this.JsonState.editingLabelScreenY = sp.y;
+  this.JsonToCandleUsecase.renderLines();
+  setTimeout(() => this.labelInput?.nativeElement?.focus(), 0);
+}
 
   /** Commits (or discards) the edit and saves the new label to the local DB — never sent to the server. */
   async closeLabelEditor(save: boolean): Promise<void> {
@@ -551,7 +572,7 @@ export class NewChart implements OnInit, OnDestroy {
   }
 
   async loadLinesFromServer(): Promise<void> {
-    this.loader.show();
+    // this.loader.show();
 
     this.chartUseCase
       .getChart({
@@ -566,11 +587,11 @@ export class NewChart implements OnInit, OnDestroy {
             this.localDatabaseService,
           );
           this.JsonToCandleUsecase.renderLines();
-          this.loader.hide();
+          // this.loader.hide();
         },
         error: (err) => {
           console.error('[Chart] getChart failed:', err);
-          this.loader.hide();
+          // this.loader.hide();
         },
       });
   }

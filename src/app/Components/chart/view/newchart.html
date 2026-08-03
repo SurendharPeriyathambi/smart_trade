@@ -9,11 +9,12 @@
         {{ tf.label }}
       </button>
     </div>
-    <div class="line-counter ms-4 bg-secondary text-white" *ngIf="!JsonState.hasSubmitted">
+    <!-- <div class="line-counter ms-4 bg-secondary text-white" *ngIf="!JsonState.hasSubmitted">
       <span>Lines: {{ JsonState.requiredLineCount - JsonState.remainingLines }} / {{ JsonState.requiredLineCount
         }}</span>
-      <!-- <span *ngIf="JsonState.hasSubmitted" class="matched">✓ {{ JsonState.matchedCount }} correct</span> -->
-    </div>
+    </div> -->
+    <!-- <span *ngIf="JsonState.hasSubmitted" class="matched">✓ {{ JsonState.matchedCount }} correct</span> -->
+
 
 <div class="line-counter ms-1 bg-accent text-dark">
   <span *ngFor="let tag of JsonState.requiredCountByTag | keyvalue">
@@ -205,8 +206,8 @@
     [style.top.px]="JsonState.editingLabelScreenY - 30"
   >
     <!-- <option value="" disabled selected>Select</option> -->
-    <option value="CHO">CHO</option>
-    <option value="STR">STR</option>
+ <option value="CHO" *ngIf="JsonState.requiredCountByTag['CHO']">CHO</option>
+<option value="STR" *ngIf="JsonState.requiredCountByTag['STR']">STR</option>
   </select>
 
       <!-- ══════════════ BOTTOM-RIGHT SUBMIT / RESULTS CONTAINER ══════════════ -->

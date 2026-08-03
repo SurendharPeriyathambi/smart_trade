@@ -30,6 +30,7 @@ public matchedCountByTag: Record<string, number> = {};
   public chart: any = null;
   currentTheme: ThemeMode = 'dark';
   public _blockContextMenu!: (e: Event) => void;
+  public allowedTags: { CHO: boolean; STR: boolean } = { CHO: true, STR: true };
 
   selectedLineId: string | null | any = null;
 

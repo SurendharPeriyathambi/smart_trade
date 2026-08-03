@@ -566,15 +566,15 @@ export class JsonToCandleUsecase {
   }
 
   private async loadChartData(): Promise<void> {
-    if (isNaN(this.chartstate.testId) || this.chartstate.testId <= 0) {
-      this.chartstate.rawChartData = this.generateMockData();
-      this.chartstate.chartData = this.resampleData(
-        this.chartstate.rawChartData,
-        this.chartstate.activeTimeframe,
-      );
-      this.applyChartData();
-      return;
-    }
+    // if (isNaN(this.chartstate.testId) || this.chartstate.testId <= 0) {
+    //   this.chartstate.rawChartData = this.generateMockData();
+    //   this.chartstate.chartData = this.resampleData(
+    //     this.chartstate.rawChartData,
+    //     this.chartstate.activeTimeframe,
+    //   );
+    //   this.applyChartData();
+    //   return;
+    // }
   }
 
   public handleWheelZoom(event: WheelEvent, chartContainer: any): void {
@@ -938,23 +938,21 @@ public getLabelAtPoint(sp: ScreenPoint): Answers | null {
       console.error('[Chart] renderLine error:', e, line);
     }
   }
-
 public validateLinesPixelBased(
   adminLines: Answers[],
   userLines: Answers[],
 ): Map<number, boolean> {
   const results = new Map<number, boolean>();
 
-  // Tolerance as a fraction of what's currently visible on screen.
-  const TIME_TOLERANCE_FRACTION = 0.02;  // 2% of visible time range
-  const PRICE_TOLERANCE_FRACTION = 0.02; // 2% of visible price range
+  const TIME_TOLERANCE_FRACTION = 0.02;
+  const PRICE_TOLERANCE_FRACTION = 0.02;
 
   const visibleRange = this.chartstate.chart?.timeScale().getVisibleRange();
   const timeSpan = visibleRange ? (visibleRange.to as number) - (visibleRange.from as number) : 0;
-  const timeTolerance = timeSpan > 0 ? timeSpan * TIME_TOLERANCE_FRACTION : 5 * 86400; // fallback: 5 days
+  const timeTolerance = timeSpan > 0 ? timeSpan * TIME_TOLERANCE_FRACTION : 5 * 86400;
 
   let priceTolerance = 0;
-  const height = 600; // matches the fixed chart height used in initChart
+  const height = 600;
   const topPrice = this.chartstate.candlestickSeries?.coordinateToPrice(0) as number | null;
   const botPrice = this.chartstate.candlestickSeries?.coordinateToPrice(height) as number | null;
   if (topPrice != null && botPrice != null && !isNaN(topPrice) && !isNaN(botPrice)) {
@@ -972,26 +970,28 @@ public validateLinesPixelBased(
           ? priceTolerance
           : Math.abs(admin.end_price - admin.start_price) * PRICE_TOLERANCE_FRACTION || 0.001;
 
-      const startOk =
+      // Direct: user.start↔admin.start, user.end↔admin.end
+      const directOk =
         Math.abs(Number(user.start_time) - Number(admin.start_time)) <= timeTolerance &&
-        Math.abs(Number(user.start_price) - Number(admin.start_price)) <= effectivePriceTolerance;
-
-      const endOk =
+        Math.abs(Number(user.start_price) - Number(admin.start_price)) <= effectivePriceTolerance &&
         Math.abs(Number(user.end_time) - Number(admin.end_time)) <= timeTolerance &&
         Math.abs(Number(user.end_price) - Number(admin.end_price)) <= effectivePriceTolerance;
 
-      // Both endpoints must be within tolerance — small mismatch allowed,
-      // but not just one end matching while the other is way off.
-      if (startOk && endOk) {
+      // Reversed: user.start↔admin.end, user.end↔admin.start
+      const reversedOk =
+        Math.abs(Number(user.start_time) - Number(admin.end_time)) <= timeTolerance &&
+        Math.abs(Number(user.start_price) - Number(admin.end_price)) <= effectivePriceTolerance &&
+        Math.abs(Number(user.end_time) - Number(admin.start_time)) <= timeTolerance &&
+        Math.abs(Number(user.end_price) - Number(admin.start_price)) <= effectivePriceTolerance;
+
+      if (directOk || reversedOk) {
         matched = true;
         break;
       }
     }
 
-
     results.set(user.id!, matched);
   }
-
 
   return results;
 }
