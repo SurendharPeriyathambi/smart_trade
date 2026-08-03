@@ -133,13 +133,13 @@ export class JsonToCandleUsecase {
         if (data.length <= bars) {
           this.chartstate.chart.timeScale().fitContent();
         } else {
-          const lastBar = data[data.length - 1].time;
-          const firstBar = data[data.length - bars].time;
-          const padding = (lastBar - firstBar) * 0.05;
-          this.chartstate.chart.timeScale().setVisibleRange({
-            from: firstBar - padding,
-            to: lastBar + padding,
-          });
+        const firstBar = data[0].time;
+        const lastBar = data[Math.min(bars - 1, data.length - 1)].time;
+        const padding = (lastBar - firstBar) * 0.05;
+        this.chartstate.chart.timeScale().setVisibleRange({
+          from: firstBar - padding,
+          to: lastBar + padding,
+        });
         }
       }
 
