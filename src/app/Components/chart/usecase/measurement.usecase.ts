@@ -95,6 +95,7 @@ private drawSingleMeasurement(
   chartToScreenPoint: (time: number, price: number) => ScreenPoint | null,
   countBarsInRange: (fromTime: number, toTime: number) => number,
   isSelected: boolean = false,
+  pipSize: number = 0.0001, 
 ): void {
   const dpr = window.devicePixelRatio || 1;
 
@@ -144,6 +145,8 @@ private drawSingleMeasurement(
 
   const deltaPrice = end.price - start.price;
   const deltaPercent = start.price !== 0 ? (deltaPrice / start.price) * 100 : 0;
+  const deltaPips = deltaPrice / pipSize; // ✅ pip distance
+
   const deltaSec = Math.abs(end.time - start.time);
   const deltaHours = deltaSec / 3600;
   const deltaDays = Math.floor(deltaSec / 86400);
@@ -153,7 +156,9 @@ private drawSingleMeasurement(
   );
 
   const sign = deltaPrice >= 0 ? '+' : '';
-  const priceStr = `${sign}${deltaPrice.toFixed(2)} (${sign}${deltaPercent.toFixed(2)}%)`;
+  const pipSign = deltaPips >= 0 ? '+' : '';
+  const priceStr = `${sign}${deltaPrice.toFixed(2)} (${sign}${deltaPercent.toFixed(2)}%) - (${pipSign}${deltaPips.toFixed(1)} pips)`;
+  // const pipStr = `${pipSign}${deltaPips.toFixed(1)} pips`; 
   const timeStr =
     deltaDays > 0
       ? `${barCount} bars, ${deltaDays}d ${Math.round(deltaHours % 24)}h`
@@ -162,7 +167,7 @@ private drawSingleMeasurement(
   const padding = 8;
   const lineH = 18;
   const boxW = 210;
-  const boxH = lineH * 2 + padding * 2;
+  const boxH = lineH * 3 + padding * 2; 
 
   let tipX = left + width / 2 - boxW / 2;
   let tipY = top - boxH - 8;
@@ -184,7 +189,9 @@ private drawSingleMeasurement(
   ctx.font = 'bold 12px Arial';
   ctx.fillText(priceStr, tipX + boxW / 2, tipY + padding + lineH - 4);
   ctx.font = '11px Arial';
-  ctx.fillText(timeStr, tipX + boxW / 2, tipY + padding + lineH * 2 - 2);
+   // ctx.fillText(pipStr, tipX + boxW / 2, tipY + padding + lineH * 2 - 4); 
+  ctx.fillText(timeStr, tipX + boxW / 2, tipY + padding + lineH * 3 - 2);
+
 
   ctx.restore();
 }
