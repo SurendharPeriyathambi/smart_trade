@@ -14,14 +14,14 @@ export class TradeHistoryRepositoryImpl implements TradeHistoryRepository{
         return this.service.tradeCreation(payload)
     }
     
-     tradeList(page:number): Observable<TradeListResponse> {
-        return this.service.tradeList(page);
+     tradeList(id:number,page:number): Observable<TradeListResponse> {
+        return this.service.tradeList(id,page);
     }
      getWallet(id: number): Observable<WalletRes<WalletCreatation>> {
     return this.service.getWallet(id);
   }
-   tradeUpdate(id: number, trade: TradeUpdate): Observable<WalletRes<any>> {
-   return this.service.updateTrade(id,trade)   
+   tradeUpdate( trade: TradeUpdate): Observable<WalletRes<any>> {
+   return this.service.updateTrade(trade)   
   }
  
    deleteTreade(id: number): Observable<WalletRes<any>> {

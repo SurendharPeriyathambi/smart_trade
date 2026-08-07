@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TradeCreation, TradeHistoryList, TradeUpdate, WalletCreatation } from '../models/wallet.model';
 import { TradeHistoryUsecase } from './usecase/trade-history.usecase';
@@ -7,6 +7,8 @@ import { ToastService } from '../../../../../services/engine/toast.service';
 import { TradeHistoryRepository } from './repository/trade-history.Repository';
 import { TradeHistoryRepositoryImpl } from './repository/trade-history.Repository.impl';
 import { StorageEngine } from '../../../../../services/engine/storage_engine';
+import { finalize } from 'rxjs';
+import { LoaderService } from '../../../../../services/engine/loader.service';
 
 // Row shown in table = API model + local edit-state, nothing else
 export interface TradeRow extends TradeHistoryList {
@@ -24,12 +26,19 @@ export interface TradeRow extends TradeHistoryList {
     { provide: TradeHistoryRepository, useClass: TradeHistoryRepositoryImpl },
   ],
 })
-export class TradeHistory implements OnInit {
+export class TradeHistory implements OnInit,OnChanges{
+ 
+
+
+@Input() walletCreated = false;
+@Input() walletId: number | null = null;
+@Input() walletCreateDate: string | null = null;
+
   private usecase = inject(TradeHistoryUsecase);
   private toast = inject(ToastService);
-  private storage = inject(StorageEngine);
+  private loader=inject(LoaderService)
   private cdr = inject(ChangeDetectorRef)
-  wallet!: WalletCreatation;
+ 
 
   search = '';
   status = '';
@@ -40,30 +49,23 @@ totalPages = 0;
 currentPage = 1;
   trades: TradeRow[] = [];
   showTradeModal = false;
-
+isSavingTrade = false;
   newTrade: TradeCreation = this.emptyTrade();
 
   ngOnInit(): void {
-    this.loadWallet();
-    this.loadTrades();
+    // this.loadWallet();
+    // 
+  }
+   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['walletId'] && this.walletId != null) {
+    console.log('wallet id:', this.walletId);
+   this.loadTrades();
+  }
+    if (changes['walletCreateDate'] && this.walletCreateDate != null) {
+    console.log('wallet walletCreateDate:', this.walletCreateDate);
+  //  this.loadTrades();
   }
 
-  loadWallet(): void {
-    const walletId = this.storage.getWalletId();
-   console.log('walletId from storage:', walletId);
-    if (!walletId){
-      console.warn('No walletId found — aborting getWallet call')
-      return;
-    } 
-
-    this.usecase.getWallet(walletId).subscribe({
-      next: (res) => {
-        this.wallet = res.data;
-        this.wallet_Id = this.wallet.id!;
-        this.newTrade.wallet_id = this.wallet_Id; // keep form in sync
-      },
-      error: (err) => console.error(err),
-    });
   }
 
   // yyyy-MM-dd required by <input type="date">
@@ -77,28 +79,31 @@ currentPage = 1;
 
   // Bind this to [attr.min] on the date input
   get minTradeDate(): string {
-    return this.wallet?.wallet_create_date ? this.toDateInputValue(this.wallet.wallet_create_date) : '';
+    return this.walletCreateDate? this.toDateInputValue(this.walletCreateDate) : '';
   }
 
   openAddTrade(event: MouseEvent): void {
 
-    if (!this.wallet_Id) {
-    this.toast.error('Wallet is still loading, please wait a moment');
+  
+
+   if (!this.walletCreated  || this.walletId == null) {
+    this.toast.error('Please create a wallet first.');
     return;
   }
-
     event.stopPropagation();
-    this.newTrade.wallet_id = this.wallet_Id;
+    this.newTrade.wallet_id = this.walletId;
     this.showTradeModal = true;
   }
 
   saveTrade(): void {
-    if (!this.wallet_Id) {
+
+    if (!this.walletId) {
     this.toast.error('Wallet not loaded yet');
     return;
   }
 
-  this.newTrade.wallet_id = this.wallet_Id; 
+  this.newTrade.wallet_id = this.walletId; 
+ 
     if (!this.newTrade.date) {
       this.toast.error('Please select a trade date');
       return;
@@ -108,8 +113,9 @@ currentPage = 1;
       this.toast.error(`Trade date can't be before wallet creation date (${this.minTradeDate})`);
       return;
     }
-
-    this.usecase.tradeCreate(this.newTrade).subscribe({
+    this.isSavingTrade = true;
+    this.loader.show()
+    this.usecase.tradeCreate(this.newTrade).pipe( finalize(() =>{ this.loader.hide(); this.isSavingTrade = false;})).subscribe({
       next: (res) => {
         this.toast.show(res.message);
        
@@ -138,15 +144,21 @@ currentPage = 1;
 
 
 loadTrades(page: number=1): void {
-  this.usecase.getTradeLists(page).subscribe({
+  this.loader.show()
+   if (this.walletId == null) {
+    console.log("wallet id :",this.walletId)
+    return;
+  }
+  this.usecase.getTradeLists(this.walletId,page).pipe( finalize(() => this.loader.hide())).subscribe({
     next: (res) => {
-      this.trades = (res.data ?? []).map((t: TradeHistoryList) => ({
-        ...t,
-        isEditing: false,
-      }));
-       this.currentPage = res.currentPage;
-      this.totalPages = res.totalPages;
-      this.totalRecords = res.totalRecords;
+     this.trades = (res.data.data_list ?? []).map((t: TradeHistoryList) => ({
+  ...t,
+  isEditing: false,
+}));
+
+      this.currentPage = res.data.current_page;
+this.totalRecords = res.data.total_records;
+this.totalPages = Math.ceil(this.totalRecords / 5);
       this.cdr.detectChanges();
     },
     error: (err) => {
@@ -159,13 +171,19 @@ loadTrades(page: number=1): void {
     this.showTradeModal = false;
   }
   saveEdit(trade: TradeRow): void {
+
+    if (this.walletId == null) {
+  this.toast.error('Wallet not found.');
+  return;
+}
     const { isEditing, backup, ...rest } = trade;
  const payload: TradeUpdate = {
     ...rest,
-    wallet_id: this.wallet_Id,
-    lot_size: 1, // or trade.lot_size if you add it to TradeHistoryList later
+    wallet_id: this.walletId,
+   // or trade.lot_size if you add it to TradeHistoryList later
   };
-    this.usecase.updateTrade(trade.id, payload).subscribe({
+  this.loader.show()
+    this.usecase.updateTrade(payload).pipe( finalize(() => this.loader.hide())).subscribe({
       next: (res) => {
         this.toast.show(res.message);
         trade.isEditing = false;
@@ -190,7 +208,8 @@ loadTrades(page: number=1): void {
   }
 
   deleteTrade(trade: TradeRow): void {
-    this.usecase.deleteTrade(trade.id).subscribe({
+    this.loader.show()
+    this.usecase.deleteTrade(trade.id).pipe( finalize(() => this.loader.hide())).subscribe({
       next: (res) => {
         this.toast.success(res.message);
         this.trades = this.trades.filter(t => t.id !== trade.id);
@@ -204,15 +223,30 @@ loadTrades(page: number=1): void {
       },
     });
   }
-  calculateTrade(trade: TradeCreation): void {
+
+  // Generic so it works for both the Add-Trade form (TradeCreation)
+  // and an in-row edit (TradeRow). Direction check is case-insensitive
+  // since the modal uses 'Buy'/'Sell' and the table uses 'BUY'/'SELL'.
+  calculateTrade<T extends {
+    direction: string;
+    entry_price: number;
+    exit_price: number;
+    stop_loss: number;
+    take_profit: number;
+    points_captured: number;
+    risk_reward: number;
+  }>(trade: T): void {
     trade.points_captured = trade.exit_price - trade.entry_price;
 
     let ratio = 0;
-    if (trade.direction === 'Buy') {
+    const direction = trade.direction?.toUpperCase();
+
+    if (direction === 'BUY') {
       ratio = (trade.take_profit - trade.entry_price) / (trade.entry_price - trade.stop_loss);
     } else {
       ratio = (trade.entry_price - trade.take_profit) / (trade.stop_loss - trade.entry_price);
     }
+
     trade.risk_reward = ratio > 0 ? Number(ratio.toFixed(2)) : 0;
   }
 
@@ -222,7 +256,7 @@ loadTrades(page: number=1): void {
 
   private emptyTrade(): TradeCreation {
     return {
-      wallet_id: this.wallet_Id, date: '', pair: '', lot_size: 1, direction: 'Buy',
+    wallet_id: 0, date: '', pair: '', lot_size: 1, direction: 'Buy',
       entry_price: 0, stop_loss: 0, take_profit: 0, exit_price: 0,
       points_captured: 0, win_loss: 'Win', risk_reward: 0,
       profit: 0, loss: 0, reason: '', remark: '',
@@ -265,5 +299,14 @@ get pageNumbers(): (number | string)[] {
   pages.push(total);
 
   return pages;
+}
+
+
+// remove selectAll(), replace with:
+clearZero(event: FocusEvent): void {
+  const input = event.target as HTMLInputElement;
+  if (input.value === '0') {
+    input.value = '';
+  }
 }
 }

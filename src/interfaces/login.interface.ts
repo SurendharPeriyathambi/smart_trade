@@ -14,6 +14,7 @@ export interface UserDetails{
     email:string;
     password:string;
     login_ip:string;
+    id:number
 }
 
 export interface ForgotPassWordRequest{

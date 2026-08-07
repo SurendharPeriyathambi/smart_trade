@@ -12,16 +12,16 @@ export class TradeHistoryUsecase {
         return this.repo.tradeCreate(payload);
     }  
 
-    getTradeLists(page:number):Observable<TradeListResponse>{
-        return this.repo.tradeList(page);
+    getTradeLists(id:number,page:number):Observable<TradeListResponse>{
+        return this.repo.tradeList(id,page);
     }
 
      getWallet(id: number): Observable<WalletRes<WalletCreatation>> {
     return this.repo.getWallet(id);
   }
 
-  updateTrade(id:number,trade:TradeUpdate):Observable<WalletRes<any>>{
-    return this.repo.tradeUpdate(id,trade)
+  updateTrade(trade:TradeUpdate):Observable<WalletRes<any>>{
+    return this.repo.tradeUpdate(trade)
   }
   deleteTrade(id:number):Observable<WalletRes<any>>{
     return this.repo.deleteTreade(id)

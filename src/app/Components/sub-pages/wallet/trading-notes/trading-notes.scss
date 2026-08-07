@@ -549,3 +549,8 @@
 .empty-state .add-trade-btn {
     height: 42px;
 }
+.page-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+    pointer-events: none;
+}

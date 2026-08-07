@@ -54,4 +54,29 @@ getIp(): Observable<string> {
             }
         );
     }
+   patch<T>(url: string, body: any, isProtected: boolean = true): Observable<T> {
+  const isFormData = body instanceof FormData;
+
+  return this.http.patch<T>(
+    `${this.baseurl}${url}`,
+    body,
+    {
+      headers: isFormData
+        ? { 'x-protected': String(isProtected) }
+        : { 'x-protected': String(isProtected) },
+      withCredentials: true
+    }
+  );
+}
+    delete<T>(url: string, isProtected: boolean = true): Observable<T> {
+  return this.http.delete<T>(
+    `${this.baseurl}${url}`,
+    {
+      headers: {
+        'x-protected': String(isProtected)
+      },
+      withCredentials: true
+    }
+  );
+}
 }

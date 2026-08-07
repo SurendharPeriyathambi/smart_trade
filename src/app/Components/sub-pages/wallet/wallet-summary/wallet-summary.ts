@@ -11,7 +11,9 @@ export class WalletSummary {
 
   @Input() walletCreated = false;
 
-  @Input() currentBalance = 12500;
+  @Input() currentBalance : any;
+  @Input() walletDate : any;
+  date = new Date();
   @Input() totalDeposit = 15000;
   @Input() totalWithdraw = 2500;
   @Input() netProfit = 1000;

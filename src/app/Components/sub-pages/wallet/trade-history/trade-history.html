@@ -12,7 +12,7 @@
 
         <div class="header-right">
 
-            <button class="add-trade-btn" (click)="openAddTrade($event)">
+            <button class="add-trade-btn" (click)="openAddTrade($event)"   [disabled]="!walletCreated">
 
                 <i class="bi bi-plus-lg"></i>
 
@@ -21,48 +21,6 @@
             </button>
 
         </div>
-
-    </div>
-
-    <!-- Toolbar -->
-
-    <div class="toolbar">
-
-        <div class="search-box">
-
-            <i class="bi bi-search"></i>
-
-            <input type="text" placeholder="Search pair, notes...">
-
-        </div>
-
-        <div class="filter">
-
-            <select>
-
-                <option>All Pairs</option>
-
-            </select>
-
-        </div>
-
-        <div class="filter">
-
-            <select>
-
-                <option>All Status</option>
-
-            </select>
-
-        </div>
-
-        <button class="filter-btn">
-
-            <i class="bi bi-funnel"></i>
-
-            Filters
-
-        </button>
 
     </div>
 
@@ -85,6 +43,7 @@
             <div>Exit Price</div>
             <div>Points captured</div>
             <div>Risks/Reward</div>
+            <div>Lot Size</div>
             <div>Win / Loss</div>
             <div>Profit</div>
 
@@ -108,7 +67,7 @@
             </div>
             <h6>No trades yet</h6>
             <p>Start tracking your trading performance by adding your first trade.</p>
-            <button class="add-trade-btn" (click)="openAddTrade($event)">
+            <button class="add-trade-btn" (click)="openAddTrade($event)"  [disabled]="!walletCreated">
                 <i class="bi bi-plus-lg"></i>
                 <span>create Trade</span>
             </button>
@@ -137,7 +96,7 @@
                     </span>}
                     @else{
 
-                    <select class="table-select" [(ngModel)]="trade.direction">
+                    <select class="table-select" [(ngModel)]="trade.direction" (ngModelChange)="calculateTrade(trade)">
 
                         <option>BUY</option>
 
@@ -157,7 +116,7 @@
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.entry_price">
+                    <input type="number" class="table-input" [(ngModel)]="trade.entry_price" (ngModelChange)="calculateTrade(trade)">
 
                     }
 
@@ -172,7 +131,7 @@
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.stop_loss">
+                    <input type="number" class="table-input" [(ngModel)]="trade.stop_loss" (ngModelChange)="calculateTrade(trade)">
 
                     }
 
@@ -187,7 +146,7 @@
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.take_profit">
+                    <input type="number" class="table-input" [(ngModel)]="trade.take_profit" (ngModelChange)="calculateTrade(trade)">
 
                     }
 
@@ -201,42 +160,36 @@
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.exit_price">
+                    <input type="number" class="table-input" [(ngModel)]="trade.exit_price" (ngModelChange)="calculateTrade(trade)">
 
                     }
 
                 </div>
 
+                <!-- Points Captured: always auto-calculated, never directly editable -->
                 <div>
+                    {{ trade.points_captured }}
+                </div>
+
+                <!-- Risk / Reward: always auto-calculated, never directly editable -->
+                <div>
+                    {{ trade.risk_reward }}
+                </div>
+
+                 <div>
 
                     @if(!trade.isEditing){
 
-                    {{trade.points_captured}}
+                    {{trade.lot_size}}
 
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.points_captured">
+                    <input type="number" class="table-input" [(ngModel)]="trade.lot_size" (ngModelChange)="calculateTrade(trade)">
 
                     }
 
                 </div>
-
-                <div>
-
-                    @if(!trade.isEditing){
-
-                    {{trade.risk_reward}}
-
-                    }
-                    @else{
-
-                    <input type="number" class="table-input" [(ngModel)]="trade.risk_reward">
-
-                    }
-
-                </div>
-
                 <div>
 
                     @if(!trade.isEditing){
@@ -253,8 +206,8 @@
 
                     <select class="table-select" [(ngModel)]="trade.win_loss">
 
-                        <option value="Win">Win</option>
-                        <option value="Loss">Loss</option>
+                        <option value="WIN">Win</option>
+                        <option value="LOSS">Loss</option>
 
                     </select>
 
@@ -275,8 +228,9 @@
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.profit">
-
+<input type="number" class="table-input" [(ngModel)]="trade.profit"
+    [disabled]="trade.win_loss === 'LOSS'"
+    (focus)="clearZero($event)">
                     }
 
                 </div>
@@ -294,7 +248,9 @@
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.loss">
+                   <input type="number" class="table-input" [(ngModel)]="trade.loss"
+    [disabled]="trade.win_loss === 'WIN'"
+    (focus)="clearZero($event)">
 
                     }
 
@@ -358,11 +314,11 @@
 
                     </button>
 
-                    <button class="action-btn danger" (click)="cancelEdit(trade)">
+                    <!-- <button class="action-btn danger" (click)="cancelEdit(trade)">
 
                         <i class="bi bi-x-lg"></i>
 
-                    </button>
+                    </button> -->
 
                     }
 
@@ -485,7 +441,7 @@
                 <div class="form-group">
                     <label>Entry Price</label>
                     <input type="number" class="form-control" [(ngModel)]="newTrade.entry_price"
-                        (ngModelChange)="calculateTrade(newTrade)" name="entry_price">
+                        (ngModelChange)="calculateTrade(newTrade)" name="entry_price"  (focus)="clearZero($event)">
                 </div>
 
                 <!-- ========================= -->
@@ -503,19 +459,24 @@
                 <div class="form-group">
                     <label>Stop Loss</label>
                     <input type="number" class="form-control" [(ngModel)]="newTrade.stop_loss"
-                        (ngModelChange)="calculateTrade(newTrade)" name="stop_loss">
+                        (ngModelChange)="calculateTrade(newTrade)" name="stop_loss"  (focus)="clearZero($event)">
                 </div>
 
                 <div class="form-group">
                     <label>Take Profit</label>
                     <input type="number" class="form-control" [(ngModel)]="newTrade.take_profit"
-                        (ngModelChange)="calculateTrade(newTrade)" name="take_profit">
+                        (ngModelChange)="calculateTrade(newTrade)" name="take_profit"  (focus)="clearZero($event)" >
+                </div>
+                <div class="form-group">
+                    <label>Lot Size</label>
+                    <input type="number" class="form-control" [(ngModel)]="newTrade.lot_size"
+                         name="lot_size"  (focus)="clearZero($event)"> 
                 </div>
 
-                <div class="form-group full-width">
+                <div class="form-group ">
                     <label>Risk / Reward</label>
                     <input type="text" class="form-control" placeholder="1 : 2" [(ngModel)]="newTrade.risk_reward"
-                        readonly name="risk_reward">
+                        readonly name="risk_reward" >
                 </div>
 
                 <!-- ========================= -->
@@ -553,18 +514,22 @@
     </select>
 
 </div>
-                <div class="form-group">
-                    <label>Profit</label>
-                    <input type="number" class="form-control" [(ngModel)]="newTrade.profit" name="profit">
-                </div>
+               <div class="form-group">
+    <label>Profit</label>
+    <input type="number" class="form-control" [(ngModel)]="newTrade.profit" name="profit"
+        [disabled]="newTrade.win_loss === 'Loss'"
+        (focus)="clearZero($event)">
+</div>
 
-                <div class="form-group ">
-                    <label>Loss</label>
-                    <input type="number" class="form-control" [(ngModel)]="newTrade.loss" name="loss">
-                </div>
+<div class="form-group ">
+    <label>Loss</label>
+    <input type="number" class="form-control" [(ngModel)]="newTrade.loss" name="loss"
+        [disabled]="newTrade.win_loss === 'Win'"
+        (focus)="clearZero($event)">
+</div>
                 <div class="form-group ">
                     <label>Remarks</label>
-                    <input type="text" class="form-control" [(ngModel)]="newTrade.remark" name="loss">
+                    <input type="text" class="form-control" [(ngModel)]="newTrade.remark" name="remark">
                 </div>
 
                 <!-- ========================= -->
@@ -603,11 +568,14 @@
 
             </button>
 
-            <button type="button" class="btn-save" (click)="saveTrade()">
-
-                Save Trade
-
-            </button>
+            <button type="button" class="btn-save" [disabled]="isSavingTrade" (click)="saveTrade()">
+    @if (isSavingTrade) {
+        <span class="btn-spinner"></span>
+        <span>Saving...</span>
+    } @else {
+        <span>Save Trade</span>
+    }
+</button>
 
         </div>
 

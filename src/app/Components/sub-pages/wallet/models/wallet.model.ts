@@ -6,11 +6,23 @@ export interface WalletRes<T> {
 
 export interface WalletCreatation{
     user_id:number;
-    wallet_create_date:string;
+   date:string;
+    amount:number;
+    id?:number;
+}
+export interface WalletCreatationRes{
+    user_id:number;
+   create_date:string;
     amount:number;
     id?:number;
 }
 
+export interface WalletTransactionRequest {
+  // wallet_id: number;
+  action: 'deposite' | 'withdraw';
+  amount: string;
+  date?:string
+}
 export interface PaymentHistory {
   id: number;
   walletId: number;
@@ -18,9 +30,18 @@ export interface PaymentHistory {
   amount: number;
   action: PaymentAction;
   isDelete: boolean;
-  created_at: string;
+  created_date: string;
   updated_at: string;
-  closing_balance:number;
+  balance:number;
+}
+export interface PaymentListResponse {
+  status: boolean;
+  message: string;
+  data: {
+     current_page: number;
+     total_records: number;
+    data_list: PaymentHistory[];
+  };
 }
 
 export type PaymentAction =
@@ -29,11 +50,13 @@ export type PaymentAction =
   | 'TRADE ENTRY';
 
   export interface TradeCreation{
+    // user_id:number
      wallet_id :number,
      date : string,
      pair : string ,
      lot_size :number,
      direction : string ,
+      entry_price :number,
      stop_loss :number,
      take_profit :number,
      exit_price :number,
@@ -41,7 +64,6 @@ export type PaymentAction =
      win_loss :string,
      risk_reward : number ,
      reason : string ,
-     entry_price :number,
      profit :number,
      loss :number,
      remark : string 
@@ -58,6 +80,7 @@ export interface TradeHistoryList {
     points_captured: number;
     risk_reward: number;
     win_loss: string;
+    lot_size:number;
     profit: number;
     loss: number;
     reason: string;
@@ -66,13 +89,15 @@ export interface TradeHistoryList {
 export interface TradeListResponse {
   status: boolean;
   message: string;
-  currentPage: number;
-  totalRecords: number;
-  totalPages: number;
-  data: TradeHistoryList[]; // array, not single object
+  data: {
+     current_page: number;
+     total_records: number;
+    data_list: TradeHistoryList[];
+  };// array, not single object
 }
 export interface TradeUpdate {
   id: number;
+ 
   wallet_id: number;
   date: string;
   pair: string;

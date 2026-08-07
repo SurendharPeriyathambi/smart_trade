@@ -23,19 +23,24 @@
 
       <h5>Wallet Summary</h5>
 
-      <button class="icon-btn">
+      <!-- <button class="icon-btn">
         <i class="bi bi-eye"></i>
-      </button>
+      </button> -->
 
     </div>
 
-    <div class="balance-section">
-
-      <small>Current Balance</small>
+    <div class="balance-section d-md-flex justify-content-md-between">
+<div>
+   <small>Current Balance</small>
 
       <h2>
         ₹{{ currentBalance | number:'1.2-2' }}
       </h2>
+</div>
+     <div>
+      <small>Created Date:</small>
+      <h5>{{ walletDate | date:'dd MMM yyyy'}}</h5>
+     </div>
 
     </div>
 

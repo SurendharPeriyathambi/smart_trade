@@ -7,8 +7,8 @@ import { TradeCreation, TradeHistoryList, TradeListResponse, TradeUpdate, Wallet
 export abstract class TradeHistoryRepository{
     
     abstract tradeCreate(payload:TradeCreation):Observable<WalletRes<TradeCreation>>;
-    abstract tradeList(page:number):Observable<TradeListResponse>;
+    abstract tradeList(id:number,page:number):Observable<TradeListResponse>;
       abstract getWallet(id: number): Observable<WalletRes<WalletCreatation>>;
-    abstract tradeUpdate(id: number, trade: TradeUpdate): Observable<WalletRes<any>>;
+    abstract tradeUpdate(trade: TradeUpdate): Observable<WalletRes<any>>;
     abstract deleteTreade(id: number): Observable<WalletRes<any>>;
 }

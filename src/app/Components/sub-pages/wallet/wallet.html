@@ -5,17 +5,23 @@
 
            <app-wallet-summary
                [walletCreated]="walletCreated"
+                [currentBalance]="currentBalance"
+                [walletDate]="wallet.create_date"
                (createWalletClick)="openCreateWalletModal()"
                (depositClick)="openDepositModal()"
                (withdrawClick)="openWithdrawModal()" />
 
-           <div class="mt-4"><app-trading-notes/></div>
+           <div class="mt-4"><app-trading-notes #tradingNotes  [walletId]="wallet?.id ?? null"/></div>
 
         </div>
 
         <div class="col-lg-7">
 
-         <div> <app-trade-history /> </div>
+         <div> <app-trade-history
+    [walletCreated]="walletCreated"
+    [walletId]="wallet?.id ?? null"
+    [walletCreateDate]="wallet?.create_date ?? null">
+</app-trade-history>
 
         </div>
     </div>
@@ -47,7 +53,19 @@
         <div class="modal-body">
 
             <form class="deposit-form">
-
+<div class="form-group">
+    <label>Date</label>
+    <input
+        type="date"
+        class="form-control"
+        [(ngModel)]="depositTxnDate"
+        name="depositTxnDate"
+        [min]="minDepositDate"
+        [max]="maxDate">
+    @if (minDepositDate) {
+        <small class="text-muted">Deposits allowed from {{ minDepositDate }} onward</small>
+    }
+</div>
                 <div class="form-group">
 
                     <label>Amount</label>
@@ -55,29 +73,13 @@
                     <input
                         type="number"
                         class="form-control"
-                        placeholder="Enter amount">
+                        placeholder="Enter amount"
+                        [(ngModel)]="depositTxnAmount"
+                        name="depositTxnAmount">
 
-                </div>
-
-                <div class="form-group">
-
-                    <label>Date</label>
-
-                    <input
-                        type="date"
-                        class="form-control">
-
-                </div>
-
-                <div class="form-group full-width">
-
-                    <label>Notes</label>
-
-                    <textarea
-                        rows="4"
-                        class="form-control"
-                        placeholder="Optional notes">
-                    </textarea>
+                    @if (depositError) {
+                        <small class="field-error">{{ depositError }}</small>
+                    }
 
                 </div>
 
@@ -89,19 +91,24 @@
 
             <button
                 class="btn btn-light"
+                [disabled]="isDepositSubmitting"
                 (click)="closeDepositModal()">
 
                 Reset
 
             </button>
 
-            <button
-                class="btn btn-primary">
-
-                Save Deposit
-
-            </button>
-
+          <button
+    class="btn btn-primary"
+    [disabled]="isDepositSubmitting"
+    (click)="submitDeposit()">
+    @if (isDepositSubmitting) {
+        <span class="btn-spinner"></span>
+        <span>Saving...</span>
+    } @else {
+        <span>Save Deposit</span>
+    }
+</button>
         </div>
 
     </div>
@@ -136,7 +143,7 @@
 
         <div class="modal-body">
 
-            <form class="modal-form">
+            <form class="deposite-form">
 
                 <div class="form-group">
 
@@ -145,56 +152,13 @@
                     <input
                         type="number"
                         class="form-control"
-                        placeholder="Enter amount">
+                        placeholder="Enter amount"
+                        [(ngModel)]="withdrawTxnAmount"
+                        name="withdrawTxnAmount">
 
-                </div>
-
-                <div class="form-group">
-
-                    <label>Withdrawal Date</label>
-
-                    <input
-                        type="date"
-                        class="form-control">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>Payment Method</label>
-
-                    <select class="form-select">
-
-                        <option>Bank Account</option>
-
-                        <option>UPI</option>
-
-                        <option>Wallet</option>
-
-                    </select>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>Reference Number</label>
-
-                    <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Optional">
-
-                </div>
-
-                <div class="form-group full-width">
-
-                    <label>Notes</label>
-
-                    <textarea
-                        class="form-control"
-                        rows="4"
-                        placeholder="Reason for withdrawal...">
-                    </textarea>
+                    @if (withdrawError) {
+                        <small class="field-error">{{ withdrawError }}</small>
+                    }
 
                 </div>
 
@@ -207,6 +171,7 @@
             <button
                 type="button"
                 class="btn btn-light"
+                [disabled]="isWithdrawSubmitting"
                 (click)="closeWithdrawModal()">
 
                 Reset
@@ -214,14 +179,18 @@
             </button>
 
             <button
-                type="button"
-                class="btn btn-danger">
-
-                <i class="bi bi-arrow-up-right me-2"></i>
-
-                Withdraw
-
-            </button>
+    type="button"
+    class="btn btn-danger"
+    [disabled]="isWithdrawSubmitting"
+    (click)="submitWithdraw()">
+    @if (isWithdrawSubmitting) {
+        <span class="btn-spinner"></span>
+        <span>Withdrawing...</span>
+    } @else {
+        <i class="bi bi-arrow-up-right me-2"></i>
+        <span>Withdraw</span>
+    }
+</button>
 
         </div>
 
@@ -315,14 +284,17 @@
 
             </button>
 
-            <button
-                class="btn btn-primary"
-                [disabled]="!walletDate"
-                (click)="createWallet()">
-
-                Create Wallet
-
-            </button>
+           <button
+    class="btn btn-primary"
+    [disabled]="!walletDate || isSubmitting"
+    (click)="createWallet()">
+    @if (isSubmitting) {
+        <span class="btn-spinner"></span>
+        <span>Creating...</span>
+    } @else {
+        <span>Create Wallet</span>
+    }
+</button>
 
         </div>
 

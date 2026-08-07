@@ -62,13 +62,14 @@
             </button> -->
         </div>
     }@else {
+       
           @for(transaction of tradinghistory;track transaction.id){
 
             <div class="table-row">
 
                 <div>
 
-                    {{transaction.created_at | date:'dd MMM yyyy'}}
+                    {{transaction.created_date | date:'dd MMM yyyy'}}
 
                 </div>
 
@@ -78,7 +79,6 @@
                         class="transaction-type"
                         [class.deposit]="transaction.action === 'DEPOSIT'"
                         [class.withdraw]="transaction.action==='WITHDRAW'">
-
                         {{transaction.action}}
 
                     </span>
@@ -93,7 +93,7 @@
 
                 <div>
 
-                    ₹{{transaction.closing_balance | number}}
+                    ₹{{transaction.balance | number}}
                      
                 </div>
 
@@ -125,71 +125,39 @@
 
     </div>
 
-    <div class="table-pagination">
+  @if (tradinghistory.length > 0) {
+<div class="table-pagination">
 
     <div class="pagination-info">
-
         Showing
-
-        <strong>1-10</strong>
-
+        <strong>{{ tradinghistory.length }}</strong>
         of
-
-        <strong>45</strong>
-
-        transactions
-
+        <strong>{{ totalRecords }}</strong>
+        trades
     </div>
 
     <div class="pagination-controls">
 
-        <button class="page-btn">
-
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">
             <i class="bi bi-chevron-left"></i>
-
-            
-
         </button>
 
-        <button class="page-number active">
+        @for (p of pageNumbers; track $index) {
+            @if (p === '...') {
+                <span class="dots">...</span>
+            } @else {
+                <button class="page-number" [class.active]="p === currentPage" (click)="goToPage(+p)">
+                    {{ p }}
+                </button>
+            }
+        }
 
-            1
-
-        </button>
-
-        <button class="page-number">
-
-            2
-
-        </button>
-
-        <button class="page-number">
-
-            3
-
-        </button>
-
-        <span class="dots">
-
-            ...
-
-        </span>
-
-        <button class="page-number">
-
-            10
-
-        </button>
-
-        <button class="page-btn">
-
-            
-
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
             <i class="bi bi-chevron-right"></i>
-
         </button>
 
     </div>
 
 </div>
+}
 </section>

@@ -79,7 +79,9 @@ export class AuthStateService {
          this.loader.hide();
          this.storage.setAccessToken(res.data.access_token ?? '');
          this.storage.setRefreshToken(res.data.refresh_token ?? '');
-         this.storage.setEmail(email)
+         this.storage.setEmail(email);
+         this.storage.setId(res.data.user_details.id);
+         console.log('id:', this.storage.setId(res.data.user_details.id))
          localStorage.setItem('cached_ip', res.data.user_details.login_ip);
          this.toast.success(res.message || "Loggin Successfull !..")
           setTimeout(() => this.router.navigate(['/subscriptions'], { replaceUrl: true }), 2000);
