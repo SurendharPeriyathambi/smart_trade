@@ -10,6 +10,7 @@ import { AboutUs } from './Components/main-pages/about-us/about-us';
 import { WeeklyReport } from './Components/sub-pages/weekly-report/weekly-report';
 import { ChartList } from './Components/chartList/chartlist';
 import { NewChart } from './Components/chart/view/newchart';
+import { Errorpage } from './errorpage/errorpage';
 
 
 
@@ -32,6 +33,11 @@ const routes: Routes = [
     resolve: {
       banners: bannerResolver   
     }
+  },
+   // MUST BE LAST
+  {
+    path: '**',
+    component: Errorpage
   }
 ];export default routes;
 
