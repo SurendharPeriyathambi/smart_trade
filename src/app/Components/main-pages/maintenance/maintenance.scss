@@ -1,0 +1,151 @@
+:host {
+  --bg-outer: #e4e6fb;
+  --card-bg: #ffffff;
+  --ink: #17182b;
+  --sub: #6b6f8d;
+  --brand: #5b57e8;
+  --brand-dark: #4741d6;
+  --lav-1: #eceafd;
+  --lav-2: #d9d7fb;
+  --lav-3: #c7c4f7;
+  --accent-yellow: #f5c26b;
+  --accent-coral: #f2a7a0;
+  --shadow: 0 30px 60px -20px rgba(60, 55, 130, 0.25);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: var(--bg-outer);
+  font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+
+:host * {
+  box-sizing: border-box;
+}
+
+.card {
+  width: 100%;
+  max-width: 680px;
+  background: var(--card-bg);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  padding: 56px 48px 44px;
+  text-align: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.brand-mark {
+  width: 200px;
+  height: 60px;
+  border-radius: 9px;
+//   background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+h1 {
+  font-size: clamp(28px, 4.5vw, 38px);
+  font-weight: 800;
+  margin: 0 0 14px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: var(--sub);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0 auto 12px;
+}
+
+.illustration-wrap {
+  margin: 28px auto 8px;
+  max-width: 420px;
+}
+
+.illustration-wrap svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.footer-note {
+  color: var(--sub);
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin-top: 20px;
+}
+
+.footer-note a {
+  color: var(--brand);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-note a:hover {
+  text-decoration: underline;
+}
+
+.gear {
+  transform-origin: center;
+  animation: spin 8s linear infinite;
+}
+.gear.reverse {
+  animation: spin-rev 6s linear infinite;
+}
+.gear.slow {
+  animation-duration: 14s;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes spin-rev {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+.float {
+  animation: float 3.5s ease-in-out infinite;
+}
+.float.delay {
+  animation-delay: 1.2s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gear, .float { animation: none; }
+}
+
+@media (max-width: 520px) {
+  .card { padding: 40px 24px 32px; border-radius: 20px; }
+}
