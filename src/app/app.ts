@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, signal } from '@angular/core';
 import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Router, RouterOutlet } from '@angular/router';
 import { ToastComponent } from "../services/engine/toast.component";
 import { Loader } from "./Components/sub-pages/loader/loader";
@@ -18,7 +18,7 @@ const CLOSE_THRESHOLD_MS = 5000;
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
 
   protected readonly title = signal('smart-trade-academy');
   loading$: any;
@@ -58,8 +58,23 @@ export class App {
       }
     });
   }
+  ngOnInit() {
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey &&
+          ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
+        (e.ctrlKey && e.key.toUpperCase() === 'U')
+      ) {
+        e.preventDefault();
+      }
+    });
+  }
 
-private _handleSessionOnLoad(): void {
+  private _handleSessionOnLoad(): void {
     const raw = localStorage.getItem('pending_logout');
     if (!raw) return;
 
