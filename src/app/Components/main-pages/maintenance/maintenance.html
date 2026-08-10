@@ -1,0 +1,123 @@
+<div class="card">
+
+  <div class="brand">
+    <div class="brand-mark">
+     <img src="./assets/images/Smart Trade Logo Redesign 2-2.png" alt="logo">
+    </div>
+    <!-- <span class="brand-name">{{ brandName }}</span> -->
+  </div>
+
+  <h1>{{ title }}</h1>
+  <p class="subtitle">{{ subtitle }}</p>
+
+  <div class="illustration-wrap">
+    <svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- ===== background ===== -->
+      <ellipse cx="240" cy="195" rx="175" ry="140" fill="#EEECFD"/>
+      <circle cx="150" cy="92" r="28" fill="#E1DEFA"/>
+      <circle cx="352" cy="255" r="46" fill="#E1DEFA" opacity="0.7"/>
+
+      <!-- ground shadow -->
+      <ellipse cx="255" cy="312" rx="150" ry="11" fill="#DAD7F7" opacity="0.6"/>
+
+      <!-- floating triangle accents -->
+      <g class="float">
+        <path d="M398 62L416 90H380L398 62Z" fill="var(--accent-coral)"/>
+        <circle cx="420" cy="98" r="4" fill="var(--ink)"/>
+      </g>
+      <g class="float delay">
+        <path d="M52 168L70 196H34L52 168Z" fill="var(--accent-yellow)"/>
+        <circle cx="50" cy="206" r="4" fill="var(--ink)"/>
+      </g>
+
+      <!-- ===== laptop ===== -->
+      <!-- keyboard deck (open base, perspective trapezoid) -->
+      <path d="M118 285 L362 285 L382 305 L98 305 Z" fill="#DAD7F7"/>
+      <rect x="98" y="303" width="284" height="9" rx="4.5" fill="#C6C2F3"/>
+
+      <!-- screen frame -->
+      <rect x="150" y="108" width="180" height="180" rx="14" fill="#DAD7F7"/>
+      <!-- hinge notch where frame meets base -->
+      <rect x="222" y="280" width="36" height="10" rx="3" fill="#C6C2F3"/>
+      <!-- inner screen -->
+      <rect x="164" y="122" width="152" height="140" rx="6" fill="#FFFFFF"/>
+
+      <!-- screen content: document -->
+      <rect x="178" y="138" width="56" height="9" rx="4.5" fill="#C6C2F3"/>
+      <rect x="178" y="158" width="104" height="6" rx="3" fill="#EDEBFC"/>
+      <rect x="178" y="171" width="94" height="6" rx="3" fill="#EDEBFC"/>
+      <rect x="178" y="184" width="104" height="6" rx="3" fill="#EDEBFC"/>
+      <rect x="178" y="197" width="70" height="6" rx="3" fill="#EDEBFC"/>
+      <rect x="178" y="220" width="80" height="20" rx="6" fill="#F1EFFD"/>
+
+      <!-- gear on screen, bottom-right, spinning -->
+      <g class="gear" transform="translate(272,222)">
+        <circle r="20" fill="var(--brand)"/>
+        <circle r="8" fill="#FFFFFF"/>
+        <g fill="var(--brand)">
+          <rect x="-3" y="-27" width="6" height="10" rx="2"/>
+          <rect x="-3" y="17" width="6" height="10" rx="2"/>
+          <rect x="-27" y="-3" width="10" height="6" rx="2"/>
+          <rect x="17" y="-3" width="10" height="6" rx="2"/>
+        </g>
+      </g>
+
+      <!-- large floating gear beside the laptop -->
+      <g class="gear reverse slow" transform="translate(388,150)">
+        <circle r="26" fill="#B9B5F2"/>
+        <circle r="10" fill="#FFFFFF"/>
+        <g fill="#B9B5F2">
+          <rect x="-3.5" y="-35" width="7" height="11" rx="2.5"/>
+          <rect x="-3.5" y="24" width="7" height="11" rx="2.5"/>
+          <rect x="-35" y="-3.5" width="11" height="7" rx="2.5"/>
+          <rect x="24" y="-3.5" width="11" height="7" rx="2.5"/>
+          <rect x="-3.5" y="-35" width="7" height="11" rx="2.5" transform="rotate(45)"/>
+          <rect x="-3.5" y="24" width="7" height="11" rx="2.5" transform="rotate(45)"/>
+          <rect x="-35" y="-3.5" width="11" height="7" rx="2.5" transform="rotate(45)"/>
+          <rect x="24" y="-3.5" width="11" height="7" rx="2.5" transform="rotate(45)"/>
+        </g>
+      </g>
+
+      <!-- ===== person (standing right of laptop, reaching to the gear) ===== -->
+      <g>
+        <!-- back leg -->
+        <rect x="326" y="248" width="16" height="46" rx="8" fill="var(--brand-dark)"/>
+        <!-- front leg -->
+        <rect x="356" y="248" width="16" height="46" rx="8" fill="var(--brand)"/>
+        <!-- shoes -->
+        <ellipse cx="334" cy="297" rx="12" ry="6" fill="#2c2a55"/>
+        <ellipse cx="364" cy="297" rx="12" ry="6" fill="#2c2a55"/>
+
+        <!-- lowered arm -->
+        <rect x="308" y="208" width="14" height="42" rx="7" fill="#f0c19a" transform="rotate(10 308 208)"/>
+
+        <!-- torso / overalls -->
+        <path d="M320 196 Q350 182 378 196 L384 252 Q350 264 316 252 Z" fill="var(--brand)"/>
+        <!-- overall straps -->
+        <rect x="330" y="182" width="10" height="20" rx="4" fill="var(--brand)"/>
+        <rect x="360" y="182" width="10" height="20" rx="4" fill="var(--brand)"/>
+        <!-- pocket detail -->
+        <rect x="332" y="222" width="26" height="18" rx="4" fill="var(--brand-dark)" opacity="0.5"/>
+
+        <!-- raised arm reaching toward the gear -->
+        <rect x="366" y="176" width="14" height="42" rx="7" fill="#f0c19a" transform="rotate(-34 366 176)"/>
+
+        <!-- neck -->
+        <rect x="343" y="176" width="12" height="12" fill="#f0c19a"/>
+
+        <!-- head -->
+        <circle cx="349" cy="162" r="19" fill="#f0c19a"/>
+        <!-- hair -->
+        <path d="M330 160 Q328 140 349 138 Q370 140 368 160 Q362 148 349 148 Q336 148 330 160Z" fill="#3a2a1a"/>
+      </g>
+
+    </svg>
+  </div>
+
+  <!-- <p class="footer-note">
+    {{ footerText }}
+    <a [href]="blogUrl">the blog →</a>
+  </p> -->
+
+</div>
