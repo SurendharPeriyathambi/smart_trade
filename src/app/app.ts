@@ -6,6 +6,7 @@ import { LoaderService } from '../services/engine/loader.service';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { AuthServices } from './Components/main-pages/login/auth.service';
 import { StorageEngine } from '../services/engine/storage_engine';
+import { Maintenance } from "./Components/main-pages/maintenance/maintenance";
 
 // Refresh reloads in < 1 second. Tab close = no reload follows.
 // On next launch after a close, the gap will be many seconds/minutes.
@@ -14,7 +15,7 @@ const CLOSE_THRESHOLD_MS = 5000;
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ToastComponent, Loader, AsyncPipe, CommonModule],
+  imports: [RouterOutlet, ToastComponent, Loader, AsyncPipe, CommonModule, Maintenance],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
