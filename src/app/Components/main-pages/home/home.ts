@@ -9,10 +9,11 @@ import { HowIts } from "../../sub-pages/how-its/how-its";
 import { ActivatedRoute } from '@angular/router';
 import { HomeService } from './home_service';
 import { Callus } from '../../sub-pages/callus/callus';
+import { Gallery } from '../../../gallery/gallery';
 
 @Component({
   selector: 'app-home',
-  imports: [Header, Hero, ChooseUs, Footer, PopularCourse, DemoVideos, HowIts,Callus],
+  imports: [Header, Hero, ChooseUs, Footer, PopularCourse, DemoVideos, HowIts,Callus,Gallery],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })

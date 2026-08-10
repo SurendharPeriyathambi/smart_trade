@@ -1,0 +1,33 @@
+<div class="gallery">
+  <div
+    class="tile"
+    *ngFor="let img of images"
+    [style.grid-area]="img.area"
+    (click)="open(img)"
+    tabindex="0"
+    role="button"
+    [attr.aria-label]="'Open image by ' + img.author"
+  >
+    <img [src]="img.src" [alt]="img.author" loading="lazy" />
+    <div class="overlay"></div>
+    <div class="caption">
+      <span class="author">{{ img.author }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" *ngIf="activeImage" (click)="close()">
+  <button class="close-btn" type="button" (click)="close()" aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <div class="lightbox-content" (click)="$event.stopPropagation()">
+    <img [src]="activeImage.src" [alt]="activeImage.author" />
+    <div class="lightbox-caption">
+      <span class="author">{{ activeImage.author }}</span>
+    </div>
+  </div>
+</div>

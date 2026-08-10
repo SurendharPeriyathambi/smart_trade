@@ -11,6 +11,7 @@ import { WeeklyReport } from './Components/sub-pages/weekly-report/weekly-report
 import { ChartList } from './Components/chartList/chartlist';
 import { NewChart } from './Components/chart/view/newchart';
 import { Errorpage } from './errorpage/errorpage';
+import { Gallery } from './gallery/gallery';
 
 
 
@@ -26,6 +27,7 @@ const routes: Routes = [
 {path:'chart',component:ChartList},
 {path:'newchart',component:NewChart},
 {path:'week',component:WeeklyReport},
+{path:'gallery',component:Gallery},
 {
     path: '',
     loadComponent: () =>
