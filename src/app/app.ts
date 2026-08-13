@@ -60,19 +60,19 @@ export class App implements OnInit {
     });
   }
   ngOnInit() {
-    document.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-    });
-    document.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey &&
-          ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
-        (e.ctrlKey && e.key.toUpperCase() === 'U')
-      ) {
-        e.preventDefault();
-      }
-    });
+    // document.addEventListener('contextmenu', (e) => {
+    //   e.preventDefault();
+    // });
+    // document.addEventListener('keydown', (e: KeyboardEvent) => {
+    //   if (
+    //     e.key === 'F12' ||
+    //     (e.ctrlKey && e.shiftKey &&
+    //       ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
+    //     (e.ctrlKey && e.key.toUpperCase() === 'U')
+    //   ) {
+    //     e.preventDefault();
+    //   }
+    // });
   }
 
   private _handleSessionOnLoad(): void {

@@ -3,6 +3,7 @@ import { Component, inject, PLATFORM_ID, signal, effect, HostListener, OnDestroy
 import { HomeService } from '../../main-pages/home/home_service';
 import { LoaderService } from '../../../../services/engine/loader.service';
 import { ImageCacheService } from '../../../../services/engine/image_cache.service';
+import { environment } from '../../../environment';
 
 @Component({
   selector: 'app-hero',
@@ -19,36 +20,75 @@ export class Hero implements OnDestroy {
   // Background banner state
   protected bgReady = signal(false);
   protected bgBannerSrc = signal<string | null>(null);
-  protected bgAspectRatio = signal<string>('10 / 6');
+  protected bgAspectRatio = signal<string>('10 / 5');
   protected isMobile = signal(false);
 
   private lastBgPath = '';
   private resizeTimer: any;
   private currentBgImg: HTMLImageElement | null = null;
 
+
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.isMobile.set(window.innerWidth < 768);
     }
 
-    effect(() => {
-      const banners = this.homeService.banner();
-      if (!banners?.length) return;
+//     effect(() => {
+//       const banners = this.homeService.banner();
+//       if (!banners?.length) return;
 
-      const selected = this.isMobile() ? (banners[1] ?? banners[0]) : banners[0];
-      const path = selected?.path;
+//       const selected = this.isMobile() ? (banners[1] ?? banners[0]) : banners[0];
+//       const path = selected?.path;
 
-      if (!path || path === this.lastBgPath) return;
+//       // if (!path || path === this.lastBgPath) return;
+// if (!path) return;
 
-      this.lastBgPath = path;
-      this.bgReady.set(false);     
-      this.bgBannerSrc.set(null);  
-      if (isPlatformBrowser(this.platformId)) {
-        this.preloadBgImage(path);
-      }
-    });
+// const fullUrl = this.getFullImageUrl(path);
+
+// if (fullUrl === this.lastBgPath) return;
+      
+//       this.lastBgPath = fullUrl;
+//       this.bgReady.set(false);     
+//       this.bgBannerSrc.set(null); 
+
+//       if (isPlatformBrowser(this.platformId)) {
+//         this.preloadBgImage(fullUrl);
+//       }
+//     });
+ 
+effect(() => {
+  const banners = this.homeService.banner();
+
+  if (!banners?.length) {
+    return;
   }
 
+  const selected = this.isMobile()
+    ? (banners[1] ?? banners[0])
+    : banners[0];
+
+  const path = selected?.path;
+
+  if (!path) return;
+
+  const fullUrl = this.getFullImageUrl(path);
+
+  console.log('FULL URL:', fullUrl);
+
+  this.bgBannerSrc.set(fullUrl);
+  this.bgReady.set(true);
+   console.log('SIGNAL AFTER SET:', this.bgBannerSrc());
+});
+
+}
+protected get heroBackground(): string | null {
+  const url = this.bgBannerSrc();
+  return url ? `url("${url}")` : null;
+}
+
+  private getFullImageUrl(path: string): string {
+  return `${environment.apiUrl.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+}
   private async preloadBgImage(url: string): Promise<void> {
     const src = await this.imageCacheService.getImage(url);
 

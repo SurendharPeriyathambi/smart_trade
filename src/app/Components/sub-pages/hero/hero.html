@@ -1,15 +1,21 @@
 <section class="hero">
   <div class="hero-wrapper"  [style.aspect-ratio]="bgAspectRatio()">  
 
-     @if (!bgReady()) {
+     <!-- @if (!bgReady()) {
       <div class="hero-skeleton"></div>
-    }
+    } -->
 
-      <div
-      class="hero-bg-img"
-      [class.visible]="bgReady()"
-      [style.background-image]="bgBannerSrc() ? 'url(' + bgBannerSrc() + ')' : null"
-    ></div>
-
+     <div
+  class="hero-bg-img"
+ 
+  [style.background-image]="heroBackground"
+></div>
+  <!-- <div
+    class="hero-bg-img">
+  <img 
+  [src]=" bgBannerSrc()"
+  alt="wallpaper"
+/>
+  </div> -->
   </div>
 </section>
