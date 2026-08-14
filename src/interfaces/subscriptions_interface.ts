@@ -81,6 +81,7 @@ export interface CourseVideo {
     is_watch: boolean;
     last_time_stamp: string;
     is_finshed: boolean;
+    created_at?:string
 }
 
 export interface CourseLesson {

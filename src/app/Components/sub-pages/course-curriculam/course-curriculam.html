@@ -1,7 +1,7 @@
 <div class="div-box"></div>
 
-   <!-- LEFT -->
-  
+<!-- LEFT -->
+
 <div class="curriculum-container">
   <h2 class="fw-bold">{{course()?.title}}</h2>
   <div class="details-container">
@@ -15,7 +15,7 @@
       <div class="right-section">
         <div class="info-item">
           <span class="icon"><i class="bi bi-calendar4"></i></span>
-          <span>Last Updated Dec 25, 2025</span>
+          <span>Last Updated {{ getLatestCreatedDate(course()?.lesson) }}</span>
         </div>
         <div class="divider"></div>
         <div class="info-item">
@@ -34,6 +34,7 @@
           <i class="bi bi-chevron-down"></i>
         </span>
         <span class="section-title">{{ lessonSection.title }}</span>
+        <span class="badge badge-success" *ngIf="sectionHasNewVideo(lessonSection?.videos)">New</span>
       </div>
       <div class="right">
         <span>Lessons: {{ lessonSection.videos.length }}</span>
@@ -41,121 +42,53 @@
       </div>
     </div>
 
-    <!-- <div class="lesson-list" [class.open]="expandedLessonId === lessonSection.id">
-      <div
-        class="lesson"
-        (click)="$event.stopPropagation()"
-        *ngFor="let video of lessonSection.videos; let vi = index">
+    <!--
+      YouTube-style horizontal video card list.
+      New (unwatched + created today) videos are sorted to the front
+      via getSortedVideos(); the NEW badge itself disappears per-video
+      once that video is unlocked (see isNewVideo()).
+    -->
+    <div class="lesson-list" [class.open]="expandedLessonId === lessonSection.id">
 
-        <div class="lesson-left">
-          <span class="doc-icon"><img src="assets/images/file.png" width="20" alt=""></span>
-          <span class="lesson-title">{{ video.title || 'Lesson ' + (vi + 1) }}</span>
-        </div>
+      <div class="video-scroll-track">
+        <div class="video-card" *ngFor="let video of lessonSection.videos; let vi = index"
+          (click)="$event.stopPropagation()">
 
-        <div class="lesson-right">
+          <div class="thumb-wrap" (click)="onThumbClick(video)">
+            <img [src]="getThumbnail(video)" alt="" class="thumb-img" loading="lazy">
 
-          
-          <ng-container *ngIf="!isUnlocked(video.id)">
+            <span class="new-badge" *ngIf="isNewVideo(video)">NEW</span>
 
-           
-            <span
-              *ngIf="!canUnlock(lessonSection, vi)"
-              class="lock-icon disabled"
-              [title]="'Complete the previous lesson first'">
-              <img src="assets/images/lock.png" width="22" alt="locked" style="opacity:0.4;">
-            </span>
+            <span class="duration-badge">{{ formatDuration(video.durations) }}</span>
 
-           
-            <span
-              *ngIf="canUnlock(lessonSection, vi)"
-              class="lock-icon"
-              (click)="onLockClick(lessonSection, video, vi)"
-              [title]="isUnlocking(video.id) ? 'Unlocking...' : 'Click to unlock'">
-              <span
-                *ngIf="isUnlocking(video.id)"
-                class="spinner-border spinner-border-sm"
-                role="status">
+            <div class="play-overlay">
+              <span *ngIf="unlockLoading() === video.id" class="spinner-border spinner-border-sm" role="status">
               </span>
-              <img
-                *ngIf="!isUnlocking(video.id)"
-                src="assets/images/lock.png"
-                width="22"
-                alt="locked">
+              <i *ngIf="unlockLoading() !== video.id" class="bi"
+                [ngClass]="video.is_watch ? 'bi-eye-fill' : 'bi-play-fill'">
+              </i>
+            </div>
+          </div>
+
+          <div class="video-meta">
+            <span class="video-title" [title]="video.title || 'Lesson ' + (vi + 1)">
+              {{ video.title || 'Lesson ' + (vi + 1) }}
             </span>
+            <!-- <span class="video-sub">{{ course()?.expert }}</span> -->
+          </div>
 
-          </ng-container>
-
-          
-          <ng-container *ngIf="isUnlocked(video.id)">
-            <button
-              class="preview-btn"
-              (click)="openPreview(video); $event.stopPropagation()">
-              Preview
-            </button>
-          </ng-container>
-
-          <span class="time">{{ formatDuration(video.durations) }}</span>
         </div>
       </div>
 
-    </div> -->
-  
-<div class="lesson-list" [class.open]="expandedLessonId === lessonSection.id">
-
-  <div
-    class="lesson"
-    *ngFor="let video of lessonSection.videos; let vi = index"
-    (click)="$event.stopPropagation()">
-
-    <div class="lesson-left">
-      <img src="assets/images/file.png" class="doc-icon" alt="">
-      <span class="lesson-title">{{ video.title || 'Lesson ' + (vi + 1) }}</span>
     </div>
-
-<div class="lesson-right">
-
-  <!-- Button div — fixed width -->
-<div class="btn-cell">
-
-  <!-- is_watch: true → Preview -->
-  <span
-    *ngIf="video.is_watch"
-    class="preview-btn"
-    (click)="openPreview(video); $event.stopPropagation()"
-    title="Preview">
-    <i class="bi bi-play-fill"></i> Preview
-  </span>
-
-  <!-- is_watch: false → Play (single click → unlock API → play) -->
-  <span
-  *ngIf="!video.is_watch"
-  class="play-icon-btn"
-  (click)="onPlayClick(video); $event.stopPropagation()"
-  title="Play">
-  <span *ngIf="unlockLoading() === video.id" class="spinner-border spinner-border-sm" role="status"></span>
-  <i *ngIf="unlockLoading() !== video.id" class="bi bi-play-fill"></i>
-</span>
-
-</div>
-
-  <!-- Duration div — fixed width -->
-  <div class="time-cell">
-    <span class="time">{{ formatDuration(video.durations) }}</span>
-  </div>
-
-</div>
-
-  </div>
-
-</div>
   </div>
 </div>
 
 
- <!-- RIGHT -->
-  <div class="curriculum-rigt">
-   <app-weekly-report></app-weekly-report>
-   <app-list-chart></app-list-chart>
+<!-- RIGHT -->
+<div class="curriculum-rigt">
+  <app-weekly-report></app-weekly-report>
+  <app-list-chart></app-list-chart>
 </div>
 <!-- ─── Preview Modal ──────────────────────────────────────────────────── -->
 <ng-container *ngIf="previewVideo">
@@ -165,10 +98,7 @@
 
         <!-- Thumbnail click → play -->
         <div class="video-thumb" (click)="playVideo(previewVideo!)">
-          <img
-            [src]="getThumbnail(previewVideo)"
-            alt="thumbnail"
-            style="width:100%;border-radius:8px;">
+          <img [src]="getThumbnail(previewVideo)" alt="thumbnail" style="width:100%;border-radius:8px;">
           <span class="play-btn" style="cursor:pointer;">▶</span>
         </div>
 
@@ -185,10 +115,7 @@
           </div>
         </div>
 
-        <button
-          class="buy-btn"
-          (click)="playVideo(previewVideo!)"
-          [disabled]="videoLoading()">
+        <button class="buy-btn" (click)="playVideo(previewVideo!)" [disabled]="videoLoading()">
           {{ videoLoading() ? 'Loading...' : 'Play Now' }}
           <i class="bi bi-play-circle ms-2"></i>
         </button>
@@ -199,45 +126,26 @@
 </ng-container>
 
 <!-- ─── Video Player Modal ─────────────────────────────────────────────── -->
-<ng-container *ngIf="videoPlayerOpen">
-  <div class="video-player-backdrop" (click)="closeVideo()">
-    <div class="video-player-modal" (click)="$event.stopPropagation()">
+<!-- <ng-container *ngIf="videoPlayerOpen">
+   <app-video-player
+  *ngIf="videoPlayerOpen"
+  [videoDetails]="{ videoId: selectedVideo()?.video, title: course()?.title, watermarkText: profile()?.email }"
+  (closed)="closeVideo()"
+  (paused)="onVideoPaused($event)"
+  (ended)="onVideoEnded($event)"
+  (closedWithStatus)="onVideoClosed($event)">
+</app-video-player> 
+<app-custom-player videoUrl="https://kinescope.io/embed/7xTspSyFY6eM1GU2Yxy6sK" [showPlayer]="videoPlayerOpen"/>
+</ng-container>  -->
 
-      <!-- Close button -->
-      <button class="close-btn" (click)="closeVideo()">
-        <i class="bi bi-x-lg"></i>
-      </button>
+<!-- Video Overlay -->
+<div *ngIf="videoPlayerOpen" class="video-overlay">
+  <!-- <div class="video-modal"> -->
 
-     <div #videoContainer class="video-container">
+    <app-custom-player videoUrl="https://kinescope.io/embed/7xTspSyFY6eM1GU2Yxy6sK" [startTime]="startTime"  watermarkLabel="profile()?.email"
+      (videoPaused)="onVideoPaused($event)" (videoClosed)="onVideoClosed($event)">
+    </app-custom-player>
 
-  <span
-    *ngIf="watermarkVisible"
-    class="floating-watermark"
-    [ngClass]="animationClass"
-    [ngStyle]="watermarkStyle">
-
-    {{ profile()?.name }}
-    • {{ profile()?.email }}
-    • {{ profile()?.mobile }}
-    • {{ loginIp() }}
-  </span>
-
-  <button
-  class="fullscreen-btn"
-  (click)="toggleFullscreen(); $event.stopPropagation()"
-  [title]="isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'">
-  <i class="bi bi-fullscreen"></i>
-</button>
-
-  <video #videoPlayer controls autoplay></video>
+  <!-- </div> -->
 
 </div>
-
-      <div class="video-info">
-        <p class="video-description">{{ course()?.title }}</p>
-      </div>
-
-    </div>
-  </div>
-</ng-container>
-

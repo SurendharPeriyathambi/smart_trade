@@ -17,7 +17,7 @@ export class StorageEngine {
     return this.cookieService.get('refresh_token');
   }
   setAccessToken(token: string) {
-    this.cookieService.set('access_token', token, 0.5, '/', undefined, false, 'Lax');
+    this.cookieService.set('access_token', token, 1800000, '/', undefined, false, 'Lax');
   }
   setRefreshToken(token: string) {
     this.cookieService.set('refresh_token', token, 0.520833, '/', undefined, false, 'Lax');
