@@ -90,61 +90,14 @@
   <app-weekly-report></app-weekly-report>
   <app-list-chart></app-list-chart>
 </div>
-<!-- ─── Preview Modal ──────────────────────────────────────────────────── -->
-<ng-container *ngIf="previewVideo">
-  <div class="preview-backdrop" (click)="closePreview()">
-    <div class="preview-modal right-popup" (click)="$event.stopPropagation()">
-      <div class="preview-card">
-
-        <!-- Thumbnail click → play -->
-        <div class="video-thumb" (click)="playVideo(previewVideo!)">
-          <img [src]="getThumbnail(previewVideo)" alt="thumbnail" style="width:100%;border-radius:8px;">
-          <span class="play-btn" style="cursor:pointer;">▶</span>
-        </div>
-
-        <h3 class="card-title">{{ previewVideo.title || 'Lesson Preview' }}</h3>
-
-        <div class="info">
-          <div class="rows">
-            <span><i class="bi bi-person"></i> Instructor</span>
-            <span>{{ course()?.expert }}</span>
-          </div>
-          <div class="rows">
-            <span><i class="bi bi-clock"></i> Duration</span>
-            <span>{{ formatDuration(previewVideo.durations) }}</span>
-          </div>
-        </div>
-
-        <button class="buy-btn" (click)="playVideo(previewVideo!)" [disabled]="videoLoading()">
-          {{ videoLoading() ? 'Loading...' : 'Play Now' }}
-          <i class="bi bi-play-circle ms-2"></i>
-        </button>
-
-      </div>
-    </div>
-  </div>
-</ng-container>
-
-<!-- ─── Video Player Modal ─────────────────────────────────────────────── -->
-<!-- <ng-container *ngIf="videoPlayerOpen">
-   <app-video-player
-  *ngIf="videoPlayerOpen"
-  [videoDetails]="{ videoId: selectedVideo()?.video, title: course()?.title, watermarkText: profile()?.email }"
-  (closed)="closeVideo()"
-  (paused)="onVideoPaused($event)"
-  (ended)="onVideoEnded($event)"
-  (closedWithStatus)="onVideoClosed($event)">
-</app-video-player> 
-<app-custom-player videoUrl="https://kinescope.io/embed/7xTspSyFY6eM1GU2Yxy6sK" [showPlayer]="videoPlayerOpen"/>
-</ng-container>  -->
-
 <!-- Video Overlay -->
+ @if(videoPlayerOpen && videoUrl){
 <div *ngIf="videoPlayerOpen" class="video-overlay">
   <!-- <div class="video-modal"> -->
-
-    <!-- <app-custom-player videoUrl="https://kinescope.io/embed/7xTspSyFY6eM1GU2Yxy6sK" [startTime]="startTime"  watermarkLabel="Mukilan">
-    </app-custom-player> -->
-
+      <app-custom-player [videoUrl]="videoUrl" [startTime]="startTime()"  watermarkLabel="{{ profile()?.name }} • {{ loginIp() }}"
+        (videoPaused)="onVideoPaused($event)" (videoClosed)="onVideoClosed($event)">
+      </app-custom-player>
   <!-- </div> -->
 
 </div>
+ }

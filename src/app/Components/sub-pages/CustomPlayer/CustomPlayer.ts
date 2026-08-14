@@ -12,6 +12,7 @@ import {
 import {
     load
 } from '@kinescope/player-iframe-api-loader';
+import { log } from 'node:console';
 
 export interface VideoPlayerData {
     currentTime: number;
@@ -47,7 +48,7 @@ export class CustomPlayer
     // --------------------------------------------------
 
     @Input({ required: true })
-    videoUrl!: string;
+    videoUrl: any| null = null;
 
     @Input()
     watermarkLabel = '';
@@ -105,6 +106,8 @@ export class CustomPlayer
     // --------------------------------------------------
 
     async ngAfterViewInit(): Promise<void> {
+        console.log("Url geted", this.videoUrl);
+        
         await this.initializePlayer();
     }
 
