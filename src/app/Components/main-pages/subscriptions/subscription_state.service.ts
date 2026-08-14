@@ -13,6 +13,7 @@ import {
 import { ToastService } from '../../../../services/engine/toast.service';
 import { LoaderService } from '../../../../services/engine/loader.service';
 import { sign } from 'crypto';
+import { finalize, map, Observable, of, switchMap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SubscriptionState {
@@ -202,26 +203,39 @@ export class SubscriptionState {
   //         }
   //     });
   // }
-  unlockAndOpenVideo(video: CourseVideo, subscriptionId: number) {
-    // ← ADD THIS: prevent duplicate calls
-    if (this._unlockLoading() !== null) return;
+  unlockAndOpenVideo(
+  video: CourseVideo,
+  subscriptionId: number
+): Observable<string | null> {
 
-    this._unlockLoading.set(video.id);
-    this._isOpeningVideo = false; // ← reset BEFORE the call, not inside
-
-    this.subscriptionService.unlockVideo(video.id, subscriptionId).subscribe({
-      next: (res: any) => {
-        this._unlockLoading.set(null);
-        if (res.status) {
-          this.openCourseVideo(video.video, video);
-        }
-      },
-      error: () => {
-        this._unlockLoading.set(null);
-        this._isOpeningVideo = false;
-      },
-    });
+  if (this._unlockLoading() !== null) {
+    return of(null);
   }
+
+  this._unlockLoading.set(video.id);
+  this.loader.show();
+
+  return this.subscriptionService
+    .unlockVideo(video.id, subscriptionId)
+    .pipe(
+      switchMap((res: any) => {
+
+        if (!res.status) {
+          return of(null);
+        }
+
+        return this.openCourseVideo(
+          video.video,
+          video
+        );
+      }),
+
+      finalize(() => {
+        this._unlockLoading.set(null);
+        this.loader.hide();
+      })
+    );
+}
 
   fetchThumbnailForPreview(videoId: number, imagePath: string) {
     // Already cached — skip
@@ -245,32 +259,45 @@ export class SubscriptionState {
   // Video player
   // ─────────────────────────────────────────────────────────────────────────
 
-  openCourseVideo(videoPath: string, videoData: CourseVideo) {
-    this._isOpeningVideo = true;
-    const freshVideo = this._getFreshVideoData(videoData.id) ?? videoData;
-    this._selectedVideo.set(freshVideo);
-    this._videoLoading.set(true);
+ openCourseVideo(
+  videoPath: string,
+  videoData: CourseVideo
+): Observable<string | null> {
 
-    this.subscriptionService.getCourseVideoUrl(videoPath).subscribe({
-      next: (res: any) => {
+  this._isOpeningVideo = true;
+
+  const freshVideo =
+    this._getFreshVideoData(videoData.id) ?? videoData;
+  this.loader.show();
+  this._selectedVideo.set(freshVideo);
+  this._videoLoading.set(true);
+
+  return this.subscriptionService
+    .getCourseVideoUrl(videoPath)
+    .pipe(
+      map((res: any) => {
+
         this._isOpeningVideo = false;
-        if (res.status) {
-          this._activeVideoUrl.set(res.data);
-          // this._isVideoModalOpen.set(true);
+        this._videoLoading.set(false);
 
-          // Mark unlocked immediately so the NEW badge clears right away
-          const current = new Set(this._unlockedVideoIds());
-          current.add(videoData.id);
-          this._unlockedVideoIds.set(current);
+        if (!res.status) {
+          return null;
         }
-        this._videoLoading.set(false);
-      },
-      error: () => {
-        this._isOpeningVideo = false;
-        this._videoLoading.set(false);
-      },
-    });
-  }
+
+        this._activeVideoUrl.set(res.data);
+
+        const current =
+          new Set(this._unlockedVideoIds());
+
+        current.add(videoData.id);
+
+        this._unlockedVideoIds.set(current);
+
+        this.loader.hide();
+        return res.data;
+      })
+    );
+}
 
   private _getFreshVideoData(videoId: number): CourseVideo | null {
     const course = this._course();
@@ -375,7 +402,6 @@ export class SubscriptionState {
             rawSub.status = rawSub.status.toLowerCase();
           }
           this._subscription.set(rawSub);
-          this.loadCourseDetails();
           if (
             data?.subscription?.status === 'active' ||
             data?.subscription?.status === 'approved'
