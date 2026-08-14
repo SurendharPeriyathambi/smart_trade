@@ -6,6 +6,7 @@ import { WeeklyVideos } from '../../../../interfaces/subscriptions_interface';
 import { SubscriptionState } from '../../main-pages/subscriptions/subscription_state.service';
 import { ChartList } from '../../chartList/chartlist';
 import { environment } from '../../../environment';
+import { CustomPlayer } from "../CustomPlayer/CustomPlayer";
 
 
 
@@ -18,7 +19,7 @@ import { environment } from '../../../environment';
 
 @Component({
   selector: 'app-weekly-report',
-  imports: [CommonModule,ChartList],
+  imports: [CommonModule, ChartList, CustomPlayer],
   templateUrl: './weekly-report.html',
   styleUrl: './weekly-report.scss',
 })

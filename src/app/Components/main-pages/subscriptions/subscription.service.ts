@@ -74,8 +74,8 @@ export class SubscriptionService {
     getWeekly():Observable <SubResponse<WeeklyMeetingResponse>>{
         return this.http.get<SubResponse<WeeklyMeetingResponse>>(this.weekUrl)
     }
-    getWeeklyUrl(videoId:string):Observable <SubResponse<WeeklkyVideoUrlResponce>>{
-        return this.http.get(`api/get_video_url?path=${videoId}`)
+    getWeeklyUrl(videoId:string):Observable <SubResponse<string>>{
+        return this.http.get(`api/admin/v1/common/get_video?path=${videoId}`)
     }
 
     getOrder(payload:OrderRequest):Observable<SubResponse<OrderResponse>>{

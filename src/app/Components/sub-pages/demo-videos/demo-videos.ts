@@ -1,17 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, effect, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { DemoVideos as DemoVideo } from '../../../../interfaces/banner_interface';
 import Hls from 'hls.js';
 import { HomeService } from '../../main-pages/home/home_service';
 import { StorageEngine } from '../../../../services/engine/storage_engine';
 import { Router } from '@angular/router';
 import { environment } from '../../../environment';
+import { CustomPlayer } from "../CustomPlayer/CustomPlayer";
 
 
 
 @Component({
   selector: 'app-demo-videos',
-  imports: [CommonModule],
+  imports: [CommonModule, CustomPlayer],
   templateUrl: './demo-videos.html',
   styleUrl: './demo-videos.scss',
 })
@@ -25,7 +26,7 @@ export class DemoVideos {
 
   videos: DemoVideo[] = [];
   activeVideoUrl: string | null = null;
-
+@Input() videoUrl: string | null = null;
   isloading = false;
   private hls: Hls | null = null;
 
@@ -40,6 +41,7 @@ export class DemoVideos {
 
   }
 
+  
   constructor(
     private router: Router,
   private storage: StorageEngine
@@ -50,20 +52,35 @@ export class DemoVideos {
     })
   }
 
-  openVideo(video: DemoVideo, index: number) {
+openVideo(video: DemoVideo, index: number) {
+
+  console.log('Selected video:', video);
+
   if (index < 3) {
     this.homeService.openVideo(video.video_id);
+
+    console.log(
+      'Active URL:',
+      this.homeService.activeVideoUrls()
+    );
+
     return;
   }
+
   const isLoggedIn = !!this.storage.getAccessToken();
 
   if (isLoggedIn) {
     this.homeService.openVideo(video.video_id);
+
+    console.log(
+      'Active URL:',
+      this.homeService.activeVideoUrls()
+    );
+
   } else {
     this.router.navigate(['/login']);
   }
 }
-
   closeVideo() {
     this.destroyPlayer();
     this.homeService.closeVideo();

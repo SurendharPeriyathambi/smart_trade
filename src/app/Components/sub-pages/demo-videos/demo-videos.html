@@ -32,20 +32,12 @@
 
 
 <!-- VIDEO MODAL -->
-@if (homeService.isModalOpen()) {
-  <div class="video-modal" >
-  <div class="overlay" (click)="closeVideo()"></div>
+@if (homeService.isModalOpen() && homeService.activeVideoUrls(); as videoUrl) {
+ <div class="video-overlay">
+ <app-custom-player
+    [videoUrl]="videoUrl"  (videoClosed)="closeVideo()">
+  </app-custom-player>
 
-  <div class="modal-content">
-    <button class="close-btn" (click)="closeVideo()">✕</button>
-
-    <video
-     
-      controls
-      autoplay
-      #videoPlayer
-    ></video>
   </div>
-</div>
+ 
 }
-

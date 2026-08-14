@@ -133,41 +133,73 @@ z-index: 99;
     grid-template-columns: 1fr;
   }
 }
-/* Video Modal Styles */
+// /* Video Modal Styles */
+// .video-modal {
+//   position: fixed;
+//   inset: 0;
+//   z-index: 1050;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
+// .video-modal .overlay {
+//   position: absolute;
+//   inset: 0;
+//   background: rgba(0, 0, 0, 0.7);
+// }
+// .video-modal .modal-content {
+//   position: relative;
+//   z-index: 1;
+//   background: #000;
+//   border-radius: 12px;
+//   max-width: 800px;
+//   width: 90%;
+//   padding: 10px;
+// }
+// .video-modal video {
+//   width: 100%;
+//   height: auto;
+//   border-radius: 8px;
+// }
+// .close-btn {
+//   position: absolute;
+//   top: -40px;
+//   right: 0;
+//   background: none;
+//   border: none;
+//   color: #fff;
+//   font-size: 24px;
+//   cursor: pointer;
+// }
+.video-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background:   rgba(0, 0, 0, 0.5) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+}
+
 .video-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1050;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: min(1200px, 95vw);
+    max-height: 90vh;
+
+    position: relative;
+
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
-.video-modal .overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-}
-.video-modal .modal-content {
+.video-overlay app-custom-player {
   position: relative;
-  z-index: 1;
-  background: #000;
-  border-radius: 12px;
-  max-width: 800px;
-  width: 90%;
-  padding: 10px;
-}
-.video-modal video {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-.close-btn {
-  position: absolute;
-  top: -40px;
-  right: 0;
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 24px;
-  cursor: pointer;
+  display: block;
+background-color: #000;
+  width: min(1200px, 95vw);
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }

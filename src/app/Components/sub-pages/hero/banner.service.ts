@@ -9,7 +9,7 @@ import { ApiResponce, HomeData, VideoUrlResponce } from "../../../../interfaces/
 export class BannerService{
 
     private apiUrl = "api/initial_data";
-    private videoUrlApi = "api/get_video_url";
+    private videoUrlApi = "api/admin/v1/common/get_video";
 
     constructor(private http : HttpEngine){
 
@@ -19,8 +19,8 @@ export class BannerService{
         return this.http.get<ApiResponce<HomeData>>(this.apiUrl);
     }
 
-getVideoUrl(videoId:string):Observable<ApiResponce<VideoUrlResponce>>{
-    return this.http.get<ApiResponce<VideoUrlResponce>>(`${this.videoUrlApi}?path=${videoId}`);
+getVideoUrl(videoId:string):Observable<ApiResponce<string>>{
+    return this.http.get<ApiResponce<string>>(`${this.videoUrlApi}?path=${videoId}`);
 }
     
 }

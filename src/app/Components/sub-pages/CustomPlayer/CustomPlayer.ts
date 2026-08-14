@@ -31,7 +31,7 @@ export class CustomPlayer
 
     implements AfterViewInit, OnDestroy {
 
-        
+
     @ViewChild('playerContainer', {
         static: true
     })
@@ -149,7 +149,7 @@ export class CustomPlayer
                         },
 
                         behavior: {
-                            autoPlay: false,
+                            autoPlay: true,
                             muted: false,
                             loop: false,
                             keyboard: true,
@@ -307,15 +307,41 @@ export class CustomPlayer
             this.player.Events.Ended,
             async () => {
 
-                console.log(
-                    '========== VIDEO ENDED =========='
-                );
+                //         console.log(
+                //             '========== VIDEO ENDED =========='
+                //         );
 
-                await this.updatePlayerPosition();
+                //         await this.updatePlayerPosition();
 
-                this.videoEnded.emit(
-                    this.getPlayerData()
-                );
+                //         this.videoEnded.emit(
+                //             this.getPlayerData()
+                //         );
+                //         /**
+                //  * Destroy Kinescope player.
+                //  */
+                //         try {
+
+                //             if (
+                //                 typeof this.player.destroy ===
+                //                 'function'
+                //             ) {
+
+                //                 await this.player.destroy();
+                //             }
+
+                //         } catch (error) {
+
+                //             console.error(
+                //                 'Player destroy error:',
+                //                 error
+                //             );
+                //         }
+
+                //         this.player = null;
+
+                //         this.playerInitialized =
+                //             false;
+                this.close();
             }
         );
 
@@ -797,7 +823,7 @@ export class CustomPlayer
 
         this.player = null;
     }
-   
+
 
 
 

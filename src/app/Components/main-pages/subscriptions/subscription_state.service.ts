@@ -126,14 +126,16 @@ export class SubscriptionState {
     if (this.videoLoading()) return;
 
     this.weekvideoLoading.set(true);
-
+    this.loader.show()
     this.subscriptionService.getWeeklyUrl(video_id).subscribe({
       next: (res) => {
         if (res.status) {
-          this.weekactiveVideoUrl.set(res.data.cdn_url);
+          this.weekactiveVideoUrl.set(res.data);
           this.isModalOpen.set(true);
+           this.loader.hide()
         }
         this.weekvideoLoading.set(false);
+         this.loader.hide()
       },
       error: () => this.weekvideoLoading.set(false),
     });
