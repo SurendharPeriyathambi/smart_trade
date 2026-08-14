@@ -33,9 +33,9 @@ export class App implements OnInit {
   ) {
     this.loading$ = this.loaderService.loading$;
 
-    if (typeof window !== 'undefined') {
-      this._handleSessionOnLoad();
-    }
+    // if (typeof window !== 'undefined') {
+    //   this._handleSessionOnLoad();
+    // }
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -91,32 +91,28 @@ export class App implements OnInit {
     // ✅ Real tab close detected — call full logout API now
     this.loaderService.show();
 
-    this.authService.logoutFromPreviousSession().subscribe({
-      next: () => {
-        this.storage.clear();
-        this.loaderService.hide();
-        this.router.navigate(['/login']);
-      },
-      error: () => {
-        // Even if API fails, clear local session
-        localStorage.removeItem('pending_logout');
-        this.storage.clear();
-        this.loaderService.hide();
-        this.router.navigate(['/login']);
-      }
-    });
+    // this.authService.logoutFromPreviousSession().subscribe({
+    //   next: () => {
+    //     this.storage.clear();
+    //     this.loaderService.hide();
+    //     this.router.navigate(['/login']);
+    //   },
+    //   error: () => {
+    //     // Even if API fails, clear local session
+    //     localStorage.removeItem('pending_logout');
+    //     this.storage.clear();
+    //     this.loaderService.hide();
+    //     this.router.navigate(['/login']);
+    //   }
+    // });
   }
 
   // ✅ ONLY stamps the time. NEVER calls logout here.
   // Logout decision is made on the NEXT load based on the time gap.
-  @HostListener('window:beforeunload')
+  // @HostListener('window:beforeunload')
+
+  // @HostListener('window:beforeunload')
   // onTabClose(): void {
-  //   const token = this.storage.getAccessToken();
-  //   if (!token) return;
-  //   localStorage.setItem('unload_time', Date.now().toString());
+  //   this.authService.storeLogoutData(); // stores token+email+ip+timestamp
   // }
-  @HostListener('window:beforeunload')
-  onTabClose(): void {
-    this.authService.storeLogoutData(); // stores token+email+ip+timestamp
-  }
 }

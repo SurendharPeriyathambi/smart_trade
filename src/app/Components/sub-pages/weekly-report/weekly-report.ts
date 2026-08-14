@@ -5,6 +5,7 @@ import { SubscriptionService } from '../../main-pages/subscriptions/subscription
 import { WeeklyVideos } from '../../../../interfaces/subscriptions_interface';
 import { SubscriptionState } from '../../main-pages/subscriptions/subscription_state.service';
 import { ChartList } from '../../chartList/chartlist';
+import { environment } from '../../../environment';
 
 
 
@@ -27,6 +28,7 @@ protected subService = inject(SubscriptionState);
   selectedVideoUrl: string | null = null;
   private videoElement!: HTMLVideoElement;
   private hls: Hls | null = null;
+   url = environment.apiUrl.replace(/\/$/, '/');
   constructor() {
   effect(() => {
   const url = this.subService.activeVideoUrls(); // ✅ correct

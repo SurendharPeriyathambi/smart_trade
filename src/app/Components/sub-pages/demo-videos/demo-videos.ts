@@ -5,6 +5,7 @@ import Hls from 'hls.js';
 import { HomeService } from '../../main-pages/home/home_service';
 import { StorageEngine } from '../../../../services/engine/storage_engine';
 import { Router } from '@angular/router';
+import { environment } from '../../../environment';
 
 
 
@@ -20,7 +21,7 @@ export class DemoVideos {
   protected homeService = inject(HomeService);
   private pendingUrl: string | null = null;
   private videoElement!: HTMLVideoElement;
-
+  url = environment.apiUrl.replace(/\/$/, '/')
 
   videos: DemoVideo[] = [];
   activeVideoUrl: string | null = null;
