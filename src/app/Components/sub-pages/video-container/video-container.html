@@ -1,0 +1,67 @@
+<div class="video-player-backdrop" (click)="close()">
+    <div class="video-player-modal" (click)="$event.stopPropagation()">
+
+        <button class="close-btn" (click)="close()">
+            <i class="bi bi-x-lg"></i>
+        </button>
+
+        <div #videoContainer style="position: relative; padding-top: 56.25%; width: 100%">
+            <iframe #kinescopeIframe id="kinescope-player" src="https://kinescope.io/embed/7xTspSyFY6eM1GU2Yxy6sK"
+                allow="autoplay; encrypted-media; gyroscope; accelerometer; clipboard-write; screen-wake-lock;"
+                frameborder="0" style="
+      position:absolute;
+      width:100%;
+      height:100%;
+      top:0;
+      left:0;
+      border:0;
+        display: block;
+
+    ">
+            </iframe>
+            <button
+  type="button"
+  class="fullscreen-btn"
+  (click)="fullscreen()"
+  [attr.aria-label]="isFullscreen() ? 'Exit fullscreen' : 'Enter fullscreen'">
+
+  <i
+    class="bi"
+    [class.bi-fullscreen]="!isFullscreen()"
+    [class.bi-fullscreen-exit]="isFullscreen()">
+  </i>
+
+</button>
+
+            <div class="fullscreen-cover" aria-hidden="true"></div>
+
+            <div style="
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 9999;
+      color: rgba(255,255,255,0.6);
+      font-size: 10px;
+      font-weight: 600;
+      pointer-events: none;
+      user-select: none;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);" [style.top.%]="watermarkTop()" [style.left.%]="watermarkLeft()">
+                • {{ videoDetails?.watermarkText }}
+            </div>
+        </div>
+
+        <div class="debug">
+            <div class="debug-row"><strong>Current Time:</strong><span>{{ currentTime().toFixed(2) }} sec</span></div>
+            <div class="debug-row"><strong>Duration:</strong><span>{{ duration().toFixed(2) }} sec</span></div>
+            <div class="debug-row"><strong>Pause Time:</strong><span>{{ pauseTime().toFixed(2) }} sec</span></div>
+            <div class="debug-row"><strong>Progress:</strong><span>{{ progress().toFixed(2) }}%</span></div>
+            <div class="debug-row"><strong>Last Event:</strong><span>{{ lastEvent() }}</span></div>
+            <div class="debug-row"><strong>Fullscreen:</strong><span>{{ isFullscreen() ? 'YES' : 'NO' }}</span></div>
+        </div>
+
+        <div class="video-info">
+            <p class="video-title">{{ videoDetails?.title }}</p>
+        </div>
+
+    </div>
+</div>

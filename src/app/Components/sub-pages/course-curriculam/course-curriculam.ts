@@ -1,98 +1,105 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild, ElementRef, inject, effect, signal, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  inject,
+  effect,
+  ChangeDetectorRef,
+  signal,
+  OnInit,
+  OnDestroy,
+  computed,
+  AfterViewInit,
+} from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SubscriptionState } from '../../main-pages/subscriptions/subscription_state.service';
-import Hls from 'hls.js';
 import { CourseLesson, CourseVideo } from '../../../../interfaces/subscriptions_interface';
 import { WeeklyReport } from '../weekly-report/weekly-report';
 import { AuthStateService } from '../../main-pages/login/auth-state.service';
 import { ChartList } from '../../chartList/chartlist';
+import { environment } from '../../../environment';
+import * as iframeApiLoader from '@kinescope/player-iframe-api-loader';
+import { VideoPlayerComponent, VideoStatus } from '../video-container/video-container';
+import { CustomPlayer, VideoPlayerData } from '../CustomPlayer/CustomPlayer';
+import { log } from 'console';
 
 @Component({
   selector: 'app-course-curriculam',
-  imports: [CommonModule, WeeklyReport,ChartList],
+  imports: [CommonModule, WeeklyReport, ChartList,VideoPlayerComponent,CustomPlayer],
   templateUrl: './course-curriculam.html',
   styleUrl: './course-curriculam.scss',
 })
-export class CourseCurriculam {
-isFullscreen = false;
+export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
+  startTime=0;
+  watermarkTop = signal(20);
+  watermarkLeft = signal(20);
+  @ViewChild('videoContainer')
+  videoContainer!: ElementRef<HTMLElement>;
+   @ViewChild('kinescopeIframe')
+  kinescopeIframe!: ElementRef<HTMLIFrameElement>;
+  protected readonly title = signal('angular-application');
+  private watermarkInterval?: ReturnType<typeof setInterval>;
+  // in your component
+  private player: any = null;
+  public env = environment.apiUrl;
+  lastUpdated = 'Dec 25, 2025';
+
+
   private subState = inject(SubscriptionState);
   private authState = inject(AuthStateService);
-  private cdr = inject(ChangeDetectorRef); // ← ADD THIS
-  @ViewChild('videoContainer')
-videoContainer!: ElementRef<HTMLDivElement>;
+  private cdr = inject(ChangeDetectorRef);
+  private sanitizer = inject(DomSanitizer);
 
-watermarkVisible = true;
+  watermarkVisible = true;
 
-  course           = this.subState.course;
-  courseLoading    = this.subState.courseLoading;
-  activeVideoUrl   = this.subState.activeVideoUrl;
-  videoLoading     = this.subState.videoLoading;
-  selectedVideo    = this.subState.selectedVideo;
-  subscription     = this.subState.subscription;
-  loginIp          = this.authState.ip;
+  course = this.subState.course;
+  courseLoading = this.subState.courseLoading;
+  activeVideoUrl = this.subState.activeVideoUrl;
+  videoLoading = this.subState.videoLoading;
+  selectedVideo = this.subState.selectedVideo;
+  subscription = this.subState.subscription;
+  loginIp = this.authState.ip;
   unlockedVideoIds = this.subState.unlockedVideoIds;
-  videoThumbnails  = this.subState.videoThumbnails;
-  unlockLoading    = this.subState.unlockLoading;
-  pendingOpenIds   = this.subState.pendingOpenIds;
-  profile          = this.subState.profile;
-
-  showSeekForward  = false;
-  showSeekBackward = false;
-  private lastTapTime = 0;
-  private lastTapSide: 'left' | 'right' | null = null;
-  private seekFeedbackTimer: any = null;
+  videoThumbnails = this.subState.videoThumbnails;
+  unlockLoading = this.subState.unlockLoading;
+  pendingOpenIds = this.subState.pendingOpenIds;
+  profile = this.subState.profile;
 
   expandedLessonId: number | null = null;
   previewVideo: CourseVideo | null = null;
   videoPlayerOpen = false;
+  showPlayer=false;
 
-  private hls: Hls | null = null;
-  private videoElement!: HTMLVideoElement;
-  private pendingUrl: string | null = null;
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // ViewChild — fires AFTER *ngIf renders the element
-  // ─────────────────────────────────────────────────────────────────────────
-  @ViewChild('videoPlayer') set videoSetter(el: ElementRef<HTMLVideoElement> | undefined) {
-    if (el && el.nativeElement !== this.videoElement) {
-      this.videoElement = el.nativeElement;
-      this.videoElement.removeEventListener('ended', this.onVideoEndedBound);
-      this.videoElement.addEventListener('ended', this.onVideoEndedBound);
-
-      // ✅ pendingUrl is ready — DOM just appeared — play immediately
-      if (this.pendingUrl) {
-        const url = this.pendingUrl;
-        this.pendingUrl = null;
-        this.initPlayer(url);
-      }
-    }
+  // Cache the sanitized embed URL so we don't re-sanitize on every change
+  // detection cycle (Angular treats a new SafeResourceUrl instance as a
+  // change even if the underlying string is identical).
+  private _safeVideoUrl: SafeResourceUrl | null = null;
+  private _lastRawUrl: string | null = null;
+  moveWatermark(): void {
+    const top = Math.floor(Math.random() * 75) + 10;
+    const left = Math.floor(Math.random() * 75) + 10;
+    this.watermarkTop.set(top);
+    this.watermarkLeft.set(left);
   }
+  // async fullscreen(): Promise<void> {
+  //   await this.videoContainer.nativeElement.requestFullscreen();
+  // }
 
-  private onVideoEndedBound = () => this.onVideoEnded();
-
+ 
   constructor() {
     effect(() => {
       const url = this.subState.activeVideoUrl();
       if (url) {
         this.previewVideo = null;
-        this.pendingUrl = url;       // ← 1. store URL
-        this.videoPlayerOpen = true; // ← 2. show modal
+        this.videoPlayerOpen = true;
 
-       
         this.cdr.detectChanges();
-
-       
-        if (this.pendingUrl && this.videoElement) {
-          const u = this.pendingUrl;
-          this.pendingUrl = null;
-          this.initPlayer(u);
-        }
-
       } else {
-        this.pendingUrl = null;
-        this.destroyPlayer();
         this.videoPlayerOpen = false;
-        this.cdr.detectChanges(); // ← keep in sync on close too
+        this._safeVideoUrl = null;
+        this._lastRawUrl = null;
+        this.cdr.detectChanges();
       }
     });
 
@@ -102,12 +109,69 @@ watermarkVisible = true;
         this.expandedLessonId = course.lesson[0].id;
       }
     });
-      // Listen for fullscreen change (e.g. user presses Escape)
-  document.addEventListener('fullscreenchange', () => {
-    this.isFullscreen = !!document.fullscreenElement;
-    this.cdr.detectChanges();
-  });
+
+    // // Listen for fullscreen change (e.g. user presses Escape)
+    // document.addEventListener('fullscreenchange', () => {
+    //   this.isFullscreen = !!document.fullscreenElement;
+    //   this.cdr.detectChanges();
+    // });
   }
+  // private kinescopeId = signal('7xTspSyFY6eM1GU2Yxy6sK');
+  // videoUrl = computed<SafeResourceUrl>(() => {
+  //   const params = new URLSearchParams({
+  //     'ui[fullscreen]': 'false',
+  //     'ui[pip]': 'false',
+  //     'ui[controls][fullscreen]': 'false',
+  //     'ui[controls][pip]': 'false',
+  //   });
+  //   const url = `https://kinescope.io/embed/${this.kinescopeId()}?${params.toString()}`;
+  //   return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  // });
+
+   fullscreen(): void {
+
+    const element =
+      this.videoContainer?.nativeElement;
+
+    if (!element) {
+
+      console.error(
+        'Video container not found'
+      );
+
+      return;
+    }
+
+    // Already fullscreen
+    if (document.fullscreenElement) {
+
+      document
+        .exitFullscreen()
+        .catch((error) => {
+
+          console.error(
+            'Exit fullscreen failed:',
+            error
+          );
+
+        });
+
+      return;
+    }
+
+    // Enter fullscreen
+    element
+      .requestFullscreen()
+      .catch((error) => {
+
+        console.error(
+          'Fullscreen failed:',
+          error
+        );
+
+      });
+  }
+
 
   // ─────────────────────────────────────────────────────────────────────────
   // Play click
@@ -118,8 +182,11 @@ watermarkVisible = true;
 
     const subscriptionId = this.subscription()?.id;
     if (!subscriptionId) return;
+    
 
-    this.subState.unlockAndOpenVideo(video, subscriptionId);
+    // this.subState.unlockAndOpenVideo(video, subscriptionId);
+    this.videoPlayerOpen = true;
+    this.cdr.detectChanges();
   }
 
   openPreview(video: CourseVideo) {
@@ -127,15 +194,18 @@ watermarkVisible = true;
     this.subState.fetchThumbnailForPreview(video.id, video.image);
   }
 
-  closePreview() { this.previewVideo = null; }
+  closePreview() {
+    this.previewVideo = null;
+  }
 
   getThumbnail(video: CourseVideo): string {
-    return this.videoThumbnails()[video.id] || video.image;
+    return `${this.env}${video.image}`;
   }
 
   playVideo(video: CourseVideo) {
-    this.previewVideo = null;
+    this.videoPlayerOpen = true;
     this.subState.openCourseVideo(video.video, video);
+    
   }
 
   toggleLesson(id: number) {
@@ -156,106 +226,30 @@ watermarkVisible = true;
   }
 
   // ─────────────────────────────────────────────────────────────────────────
+  // Embed URL — sanitized for the iframe [src] binding
+  // ─────────────────────────────────────────────────────────────────────────
+  safeVideoUrl(): SafeResourceUrl | null {
+    const url = this.activeVideoUrl();
+    if (!url) return null;
+
+    if (url !== this._lastRawUrl) {
+      this._lastRawUrl = url;
+      this._safeVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    }
+
+    return this._safeVideoUrl;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
   // Close video
   // ─────────────────────────────────────────────────────────────────────────
   closeVideo() {
-    if (this.videoElement) {
-      this.videoElement.pause();
-      const stoppedAt      = Math.floor(this.videoElement.currentTime);
-      const videoData      = this.selectedVideo();
-      const subscriptionId = this.subscription()?.id;
-      if (videoData?.id && subscriptionId && stoppedAt > 0) {
-        this.subState.saveVideoStatus(videoData.id, subscriptionId, stoppedAt, false);
-      }
-    }
-    this.destroyPlayer();
+    // NOTE: with an iframe embed we no longer have direct access to
+    // currentTime/duration unless Kinescope's postMessage API is wired up.
+    // Resume-position tracking (saveVideoStatus) is skipped here — add it
+    // back once/if that integration exists.
     this.subState.closeCourseVideo();
     this.videoPlayerOpen = false;
-  }
-
-  private onVideoEnded() {
-    const videoData      = this.selectedVideo();
-    const subscriptionId = this.subscription()?.id;
-    if (videoData?.id && subscriptionId) {
-      this.subState.saveVideoStatus(videoData.id, subscriptionId, 0, true);
-    }
-    this.destroyPlayer();
-    this.subState.closeCourseVideo();
-    this.videoPlayerOpen = false;
-  }
-
-  seekForward() {
-    if (!this.videoElement) return;
-    this.videoElement.currentTime = Math.min(this.videoElement.currentTime + 10, this.videoElement.duration || 0);
-    this.flashSeek('forward');
-  }
-
-  seekBackward() {
-    if (!this.videoElement) return;
-    this.videoElement.currentTime = Math.max(this.videoElement.currentTime - 10, 0);
-    this.flashSeek('backward');
-  }
-
-  onTouchStart(event: TouchEvent, side: 'left' | 'right') {
-    event.preventDefault();
-    const now = Date.now();
-    if (this.lastTapSide === side && now - this.lastTapTime < 300) {
-      side === 'right' ? this.seekForward() : this.seekBackward();
-      this.lastTapTime = 0;
-      this.lastTapSide = null;
-    } else {
-      this.lastTapTime = now;
-      this.lastTapSide = side;
-    }
-  }
-
-  private flashSeek(direction: 'forward' | 'backward') {
-    if (this.seekFeedbackTimer) clearTimeout(this.seekFeedbackTimer);
-    this.showSeekForward  = direction === 'forward';
-    this.showSeekBackward = direction === 'backward';
-    this.seekFeedbackTimer = setTimeout(() => {
-      this.showSeekForward  = false;
-      this.showSeekBackward = false;
-    }, 700);
-  }
-
-  private initPlayer(url: string) {
-    const video = this.videoElement;
-    if (!video) return;
-
-    if (this.hls) { this.hls.destroy(); this.hls = null; }
-
-    const resumeAt = Number(this.subState.selectedVideo()?.last_time_stamp ?? 0);
-
-    if (Hls.isSupported()) {
-      this.hls = new Hls();
-      this.hls.loadSource(url);
-      this.hls.attachMedia(video);
-      this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        if (resumeAt > 0) video.currentTime = resumeAt;
-        video.play();
-      });
-      this.hls.on(Hls.Events.ERROR, (_, data) => {
-        if (data.fatal) this.closeVideo();
-      });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = url;
-      if (resumeAt > 0) {
-        video.addEventListener('loadedmetadata', () => {
-          video.currentTime = resumeAt;
-        }, { once: true });
-      }
-      video.play();
-    }
-  }
-
-  private destroyPlayer() {
-    this.hls?.destroy();
-    this.hls = null;
-    if (this.videoElement) {
-      this.videoElement.pause();
-      this.videoElement.src = '';
-    }
   }
 
   formatDuration(seconds: string | number): string {
@@ -263,7 +257,7 @@ watermarkVisible = true;
     if (isNaN(secs) || secs <= 0) return '0s';
     if (secs < 60) return `${secs}s`;
     const mins = Math.floor(secs / 60);
-    const rem  = Math.floor(secs % 60);
+    const rem = Math.floor(secs % 60);
     return rem > 0 ? `${mins}m ${rem}s` : `${mins}m`;
   }
 
@@ -272,7 +266,7 @@ watermarkVisible = true;
     if (totalSecs <= 0) return '0s';
     if (totalSecs < 60) return `${totalSecs}s`;
     const mins = Math.floor(totalSecs / 60);
-    const rem  = Math.floor(totalSecs % 60);
+    const rem = Math.floor(totalSecs % 60);
     return rem > 0 ? `${mins}m ${rem}s` : `${mins}m`;
   }
 
@@ -284,40 +278,654 @@ watermarkVisible = true;
     const setRandom = () => {
       this.animationClass = animations[Math.floor(Math.random() * animations.length)];
       this.watermarkStyle = {
-        top:  Math.floor(Math.random() * 70) + '%',
-        left: Math.floor(Math.random() * 70) + '%'
+        top: Math.floor(Math.random() * 70) + '%',
+        left: Math.floor(Math.random() * 70) + '%',
       };
     };
     setRandom();
     setInterval(setRandom, 6000);
+    this.moveWatermark();
+
+    this.watermarkInterval = setInterval(() => {
+      this.moveWatermark();
+    }, 5000);
+    // Listen for browser fullscreen changes
+    document.addEventListener(
+      'fullscreenchange',
+      this.handleFullscreenChange
+    );
   }
-toggleFullscreen() {
-  const container = this.videoContainer?.nativeElement;
-  if (!container) return;
+  async ngAfterViewInit(): Promise<void> {
 
-  if (!document.fullscreenElement) {
-    // Try container first, fallback to video element
-    const el = container as any;
-    const requestFS =
-      el.requestFullscreen ||
-      el.webkitRequestFullscreen ||
-      el.mozRequestFullScreen ||
-      el.msRequestFullscreen;
+  }
 
-    if (requestFS) {
-      requestFS.call(el).catch((err: any) => {
-        console.error('Fullscreen error:', err);
-      });
+  toggleFullscreen() {
+    const container = this.videoContainer?.nativeElement;
+    if (!container) return;
+
+    if (!document.fullscreenElement) {
+      const el = container as any;
+      const requestFS =
+        el.requestFullscreen ||
+        el.webkitRequestFullscreen ||
+        el.mozRequestFullScreen ||
+        el.msRequestFullscreen;
+
+      if (requestFS) {
+        requestFS.call(el).catch((err: any) => {
+          console.error('Fullscreen error:', err);
+        });
+      }
+    } else {
+      const doc = document as any;
+      const exitFS =
+        doc.exitFullscreen ||
+        doc.webkitExitFullscreen ||
+        doc.mozCancelFullScreen ||
+        doc.msExitFullscreen;
+
+      if (exitFS) exitFS.call(doc);
     }
-  } else {
-    const doc = document as any;
-    const exitFS =
-      doc.exitFullscreen ||
-      doc.webkitExitFullscreen ||
-      doc.mozCancelFullScreen ||
-      doc.msExitFullscreen;
-
-    if (exitFS) exitFS.call(doc);
   }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // "NEW" badge logic
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /**
+   * A video counts as "new" only if it was created today AND the user
+   * hasn't unlocked it yet. Once unlocked, the badge disappears even if
+   * it was created today.
+   */
+  isNewVideo(video: CourseVideo | any): boolean {
+    if (!video?.created_at) return false;
+    if (this.isUnlocked(video.id)) return false;
+
+    const created = new Date(video.created_at);
+    const now = new Date();
+    return (
+      created.getFullYear() === now.getFullYear() &&
+      created.getMonth() === now.getMonth() &&
+      created.getDate() === now.getDate()
+    );
+  }
+
+  /** Used for the section-header "New" badge — true if any video in this lesson is still new. */
+  sectionHasNewVideo(videos: CourseVideo[] | undefined): boolean {
+    if (!videos?.length) return false;
+    return videos.some((v) => this.isNewVideo(v));
+  }
+
+  /**
+   * Returns the lesson's videos with any "new" (unwatched + created today)
+   * videos moved to the front. Sort is stable, so relative order is
+   * preserved both within the new group and within the rest.
+   */
+  getSortedVideos(videos: CourseVideo[] | undefined): CourseVideo[] {
+    if (!videos?.length) return [];
+    return [...videos].sort((a, b) => {
+      const aNew = this.isNewVideo(a) ? 1 : 0;
+      const bNew = this.isNewVideo(b) ? 1 : 0;
+      return bNew - aNew;
+    });
+  }
+
+  getLatestCreatedDate(lessons: CourseLesson[] | undefined): string {
+    if (!lessons?.length) {
+      return '';
+    }
+
+    const videos = lessons.flatMap((lesson) => lesson.videos ?? []);
+
+    if (!videos.length) {
+      return '';
+    }
+
+    let latestDate: Date | null = null;
+
+    for (const video of videos) {
+      if (!video.created_at) {
+        continue;
+      }
+
+      const currentDate = new Date(video.created_at);
+
+      if (!latestDate || currentDate > latestDate) {
+        latestDate = currentDate;
+      }
+    }
+
+    if (!latestDate) {
+      return '';
+    }
+
+    return latestDate.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
+
+  onThumbClick(video: any): void {
+    if (video.is_watch) {
+      this.openPreview(video);
+    } else {
+      this.onPlayClick(video);
+    }
+  }
+  //video details
+    currentTime = signal(0);
+
+  duration = signal(0);
+
+  pauseTime = signal(0);
+
+  progress = signal(0);
+
+  lastEvent = signal('');
+  isFullscreen = signal(false);
+  private handleFullscreenChange = (): void => {
+
+    const container =
+      this.videoContainer?.nativeElement;
+
+    this.isFullscreen.set(
+      document.fullscreenElement === container
+    );
+  };
+
+  // =========================================================
+  // PLAYER EVENTS
+  // =========================================================
+
+  setupPlayerEvents(): void {
+
+    if (!this.player) {
+
+      console.error(
+        'Kinescope player not available'
+      );
+
+      return;
+    }
+
+    // =======================================================
+    // PLAY
+    // =======================================================
+
+    this.player.on(
+      this.player.Events.Play,
+      () => {
+
+        this.lastEvent.set('play');
+
+        console.log(
+          'Video play'
+        );
+      }
+    );
+
+    // =======================================================
+    // PLAYING
+    // =======================================================
+
+    if (this.player.Events.Playing) {
+
+      this.player.on(
+        this.player.Events.Playing,
+        () => {
+
+          this.lastEvent.set('playing');
+
+        }
+      );
+    }
+
+    // =======================================================
+    // TIME UPDATE
+    // =======================================================
+
+    this.player.on(
+      this.player.Events.TimeUpdate,
+      (event: any) => {
+
+        const currentTime =
+          event?.data?.currentTime;
+
+        const percent =
+          event?.data?.percent;
+
+        // Current time
+        if (
+          typeof currentTime === 'number'
+        ) {
+
+          this.currentTime.set(
+            currentTime
+          );
+        }
+
+        // Progress
+        if (
+          typeof percent === 'number'
+        ) {
+
+          this.progress.set(
+            percent
+          );
+
+        } else {
+
+          this.updateProgress();
+
+        }
+
+        this.lastEvent.set(
+          'timeupdate'
+        );
+      }
+    );
+
+    // =======================================================
+    // PAUSE
+    // =======================================================
+
+    this.player.on(
+      this.player.Events.Pause,
+      async () => {
+
+        try {
+
+          const currentTime =
+            await this.player.getCurrentTime();
+
+          const time =
+            Number(currentTime) || 0;
+
+          // Update current time
+          this.currentTime.set(
+            time
+          );
+
+          // Save pause time
+          this.pauseTime.set(
+            time
+          );
+
+          // Update progress
+          this.updateProgress();
+
+          // Last event
+          this.lastEvent.set(
+            'pause'
+          );
+
+          console.log(
+            'Video paused at:',
+            time,
+            'seconds'
+          );
+
+          /*
+           * Save to backend here:
+           *
+           * this.saveVideoStatus(
+           *   this.videoId,
+           *   time
+           * );
+           */
+
+        } catch (error) {
+
+          console.error(
+            'Pause time error:',
+            error
+          );
+        }
+      }
+    );
+
+    // =======================================================
+    // ENDED
+    // =======================================================
+
+    this.player.on(
+      this.player.Events.Ended,
+      async () => {
+
+        try {
+
+          const duration =
+            await this.player.getDuration();
+
+          const total =
+            Number(duration) || 0;
+
+          this.duration.set(
+            total
+          );
+
+          this.currentTime.set(
+            total
+          );
+
+          this.pauseTime.set(
+            total
+          );
+
+          this.progress.set(
+            100
+          );
+
+          this.lastEvent.set(
+            'ended'
+          );
+
+          console.log(
+            'Video ended'
+          );
+
+        } catch (error) {
+
+          console.error(
+            'Ended error:',
+            error
+          );
+
+          this.progress.set(
+            100
+          );
+
+          this.lastEvent.set(
+            'ended'
+          );
+        }
+      }
+    );
+
+    // =======================================================
+    // ERROR
+    // =======================================================
+
+    if (this.player.Events.Error) {
+
+      this.player.on(
+        this.player.Events.Error,
+        (event: any) => {
+
+          console.error(
+            'KINESCOPE ERROR:',
+            event
+          );
+
+          this.lastEvent.set(
+            'error'
+          );
+        }
+      );
+    }
+  }
+
+  // =========================================================
+  // INITIAL VALUES
+  // =========================================================
+
+  async loadInitialValues(): Promise<void> {
+
+    if (!this.player) {
+
+      return;
+    }
+
+    try {
+
+      // Get duration
+      const duration =
+        await this.player.getDuration();
+
+      // Get current time
+      const currentTime =
+        await this.player.getCurrentTime();
+
+      // Set duration
+      this.duration.set(
+        Number(duration) || 0
+      );
+
+      // Set current time
+      this.currentTime.set(
+        Number(currentTime) || 0
+      );
+
+      // Calculate progress
+      this.updateProgress();
+
+      this.lastEvent.set(
+        'ready'
+      );
+
+    } catch (error) {
+
+      console.error(
+        'Initial values error:',
+        error
+      );
+    }
+  }
+
+  // =========================================================
+  // UPDATE PROGRESS
+  // =========================================================
+
+  updateProgress(): void {
+
+    const total =
+      this.duration();
+
+    const current =
+      this.currentTime();
+
+    if (total <= 0) {
+
+      this.progress.set(0);
+
+      return;
+    }
+
+    const percentage =
+      (current / total) * 100;
+
+    this.progress.set(
+      Math.min(
+        100,
+        Math.max(
+          0,
+          percentage
+        )
+      )
+    );
+  }
+
+  // =========================================================
+  // DESTROY
+  // =========================================================
+
+  async ngOnDestroy(): Promise<void> {
+
+    // Remove fullscreen listener
+    document.removeEventListener(
+      'fullscreenchange',
+      this.handleFullscreenChange
+    );
+
+    // Stop watermark timer
+    if (this.watermarkInterval) {
+
+      clearInterval(
+        this.watermarkInterval
+      );
+    }
+
+    // =======================================================
+    // GET LAST VIDEO POSITION
+    // =======================================================
+
+    try {
+
+      if (
+        this.player &&
+        typeof this.player.getCurrentTime ===
+          'function'
+      ) {
+
+        const currentTime =
+          await this.player.getCurrentTime();
+
+        const time =
+          Number(currentTime) || 0;
+
+        this.currentTime.set(
+          time
+        );
+
+        this.pauseTime.set(
+          time
+        );
+
+        console.log(
+          'Final video position:',
+          time
+        );
+
+        /*
+         * Save to backend here:
+         *
+         * this.saveVideoStatus(
+         *   this.videoId,
+         *   time
+         * );
+         */
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Destroy time capture error:',
+        error
+      );
+    }
+
+    // =======================================================
+    // DESTROY KINESCOPE PLAYER
+    // =======================================================
+
+    try {
+
+      if (
+        this.player &&
+        typeof this.player.destroy ===
+          'function'
+      ) {
+
+        this.player.destroy();
+
+        this.player = null;
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Destroy player error:',
+        error
+      );
+    }
+  }
+  onVideoPauseds(status: VideoStatus) {
+  // e.g. save resume position
+  // this.subState.saveVideoStatus(status.videoId, status.currentTime);
 }
+
+onVideoEnded(status: VideoStatus) {
+  // this.subState.saveVideoStatus(status.videoId, status.duration, true);
+}
+
+onVideoCloseds(status: VideoStatus) {
+  // called on destroy — last known position before component unmounts
+  // this.subState.saveVideoStatus(status.videoId, status.currentTime);
+}
+
+ onVideoClosed(
+    data: VideoPlayerData
+  ): void {
+
+    console.log(
+      '========== VIDEO CLOSED =========='
+    );
+
+    console.log(
+      'Current Time:',
+      data.currentTime
+    );
+
+    console.log(
+      'Duration:',
+      data.duration
+    );
+
+    console.log(
+      'Percentage:',
+      data.percent
+    );
+
+    console.log(
+      'Watermark:',
+      data.watermarkLabel
+    );
+
+    console.log(
+      'Video URL:',
+      data.videoUrl
+    );
+
+    this.videoPlayerOpen = false;
+  }
+  onVideoPaused(
+    data: VideoPlayerData
+  ): void {
+
+    console.log(
+      '========== VIDEO PAUSED =========='
+    );
+
+    console.log(
+      'Current Time:',
+      data.currentTime
+    );
+
+    console.log(
+      'Duration:',
+      data.duration
+    );
+
+    console.log(
+      'Percentage:',
+      data.percent
+    );
+
+    console.log(
+      'Watermark:',
+      data.watermarkLabel
+    );
+
+    console.log(
+      'Video URL:',
+      data.videoUrl
+    );
+
+
+    /**
+     * Send pause information
+     * to your Lumen API.
+     */
+  }
 }

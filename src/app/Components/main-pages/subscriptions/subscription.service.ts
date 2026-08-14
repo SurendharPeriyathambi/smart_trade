@@ -49,7 +49,7 @@ export class SubscriptionService {
     }
 
     getCourseVideoUrl(videoPath: string): Observable<ApiResponce<VideoUrlResponce>> {
-        return this.http.get<ApiResponce<VideoUrlResponce>>(`api/get_video_url?path=${videoPath}`);
+        return this.http.get<ApiResponce<VideoUrlResponce>>(`api/admin/v1/common/get_video?path=${videoPath}`);
     }
 
     unlockVideo(videoId: number, subscriptionId: number): Observable<any> {
