@@ -828,7 +828,14 @@
   }
 }
 
+.video-overlay app-custom-player {
+  position: relative;
+  display: block;
+  background-color: #000000;
+  width: min(1200px, 95vw);
 
+  // box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
 .video-overlay {
     position: fixed;
     inset: 0;
