@@ -23,20 +23,24 @@ import * as iframeApiLoader from '@kinescope/player-iframe-api-loader';
 import { VideoPlayerComponent, VideoStatus } from '../video-container/video-container';
 import { CustomPlayer, VideoPlayerData } from '../CustomPlayer/CustomPlayer';
 import { log } from 'console';
+import { LoaderService } from '../../../../services/engine/loader.service';
 
 @Component({
   selector: 'app-course-curriculam',
-  imports: [CommonModule, WeeklyReport, ChartList,VideoPlayerComponent,CustomPlayer],
+  imports: [CommonModule, WeeklyReport, ChartList, VideoPlayerComponent, CustomPlayer],
   templateUrl: './course-curriculam.html',
   styleUrl: './course-curriculam.scss',
 })
-export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
-  startTime=0;
+export class CourseCurriculam implements OnInit, AfterViewInit {
+  videoId = signal(0);
+  private loaderService = inject(LoaderService);
+  videoUrl: string | null = null;
+  startTime=signal(0);
   watermarkTop = signal(20);
   watermarkLeft = signal(20);
   @ViewChild('videoContainer')
   videoContainer!: ElementRef<HTMLElement>;
-   @ViewChild('kinescopeIframe')
+  @ViewChild('kinescopeIframe')
   kinescopeIframe!: ElementRef<HTMLIFrameElement>;
   protected readonly title = signal('angular-application');
   private watermarkInterval?: ReturnType<typeof setInterval>;
@@ -44,7 +48,6 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
   private player: any = null;
   public env = environment.apiUrl;
   lastUpdated = 'Dec 25, 2025';
-
 
   private subState = inject(SubscriptionState);
   private authState = inject(AuthStateService);
@@ -69,7 +72,7 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
   expandedLessonId: number | null = null;
   previewVideo: CourseVideo | null = null;
   videoPlayerOpen = false;
-  showPlayer=false;
+  showPlayer = false;
 
   // Cache the sanitized embed URL so we don't re-sanitize on every change
   // detection cycle (Angular treats a new SafeResourceUrl instance as a
@@ -86,15 +89,14 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
   //   await this.videoContainer.nativeElement.requestFullscreen();
   // }
 
- 
   constructor() {
+    
     effect(() => {
       const url = this.subState.activeVideoUrl();
       if (url) {
-        this.previewVideo = null;
-        this.videoPlayerOpen = true;
-
-        this.cdr.detectChanges();
+        // this.previewVideo = null;
+        // this.videoPlayerOpen = true;
+        // this.cdr.detectChanges();
       } else {
         this.videoPlayerOpen = false;
         this._safeVideoUrl = null;
@@ -116,78 +118,30 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
     //   this.cdr.detectChanges();
     // });
   }
-  // private kinescopeId = signal('7xTspSyFY6eM1GU2Yxy6sK');
-  // videoUrl = computed<SafeResourceUrl>(() => {
-  //   const params = new URLSearchParams({
-  //     'ui[fullscreen]': 'false',
-  //     'ui[pip]': 'false',
-  //     'ui[controls][fullscreen]': 'false',
-  //     'ui[controls][pip]': 'false',
-  //   });
-  //   const url = `https://kinescope.io/embed/${this.kinescopeId()}?${params.toString()}`;
-  //   return this.sanitizer.bypassSecurityTrustResourceUrl(url);
-  // });
-
-   fullscreen(): void {
-
-    const element =
-      this.videoContainer?.nativeElement;
+  fullscreen(): void {
+    const element = this.videoContainer?.nativeElement;
 
     if (!element) {
-
-      console.error(
-        'Video container not found'
-      );
+      console.error('Video container not found');
 
       return;
     }
 
     // Already fullscreen
     if (document.fullscreenElement) {
-
-      document
-        .exitFullscreen()
-        .catch((error) => {
-
-          console.error(
-            'Exit fullscreen failed:',
-            error
-          );
-
-        });
+      document.exitFullscreen().catch((error) => {
+        console.error('Exit fullscreen failed:', error);
+      });
 
       return;
     }
 
     // Enter fullscreen
-    element
-      .requestFullscreen()
-      .catch((error) => {
-
-        console.error(
-          'Fullscreen failed:',
-          error
-        );
-
-      });
+    element.requestFullscreen().catch((error) => {
+      console.error('Fullscreen failed:', error);
+    });
   }
 
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // Play click
-  // ─────────────────────────────────────────────────────────────────────────
-  onPlayClick(video: CourseVideo) {
-    if (this.unlockLoading() !== null) return;
-    if (this.videoLoading()) return;
-
-    const subscriptionId = this.subscription()?.id;
-    if (!subscriptionId) return;
-    
-
-    // this.subState.unlockAndOpenVideo(video, subscriptionId);
-    this.videoPlayerOpen = true;
-    this.cdr.detectChanges();
-  }
 
   openPreview(video: CourseVideo) {
     this.previewVideo = video;
@@ -195,6 +149,9 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
   }
 
   closePreview() {
+    this.videoUrl = null;
+    this.subState.closeCourseVideo();
+    this.videoPlayerOpen = false;
     this.previewVideo = null;
   }
 
@@ -203,9 +160,10 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
   }
 
   playVideo(video: CourseVideo) {
-    this.videoPlayerOpen = true;
+    console.log('Video clicked');
+    // this.videoPlayerOpen = true;
+    this.cdr.detectChanges();
     this.subState.openCourseVideo(video.video, video);
-    
   }
 
   toggleLesson(id: number) {
@@ -228,16 +186,18 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────
   // Embed URL — sanitized for the iframe [src] binding
   // ─────────────────────────────────────────────────────────────────────────
-  safeVideoUrl(): SafeResourceUrl | null {
+  safeVideoUrl() {
     const url = this.activeVideoUrl();
-    if (!url) return null;
+    // this.cdr.detectChanges();
+    // if (!url) return null;
 
     if (url !== this._lastRawUrl) {
       this._lastRawUrl = url;
-      this._safeVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+      this.cdr.detectChanges();
+      // this._safeVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     }
-
-    return this._safeVideoUrl;
+    console.log(this._lastRawUrl);
+    return this._lastRawUrl;
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -248,6 +208,7 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
     // currentTime/duration unless Kinescope's postMessage API is wired up.
     // Resume-position tracking (saveVideoStatus) is skipped here — add it
     // back once/if that integration exists.
+    this.videoUrl = null;
     this.subState.closeCourseVideo();
     this.videoPlayerOpen = false;
   }
@@ -290,14 +251,9 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
       this.moveWatermark();
     }, 5000);
     // Listen for browser fullscreen changes
-    document.addEventListener(
-      'fullscreenchange',
-      this.handleFullscreenChange
-    );
+    document.addEventListener('fullscreenchange', this.handleFullscreenChange);
   }
-  async ngAfterViewInit(): Promise<void> {
-
-  }
+  async ngAfterViewInit(): Promise<void> {}
 
   toggleFullscreen() {
     const container = this.videoContainer?.nativeElement;
@@ -346,7 +302,9 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
     return (
       created.getFullYear() === now.getFullYear() &&
       created.getMonth() === now.getMonth() &&
-      created.getDate() === now.getDate()
+      created.getDate() === now.getDate() &&
+      video?.is_watch===false
+
     );
   }
 
@@ -362,13 +320,12 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
    * preserved both within the new group and within the rest.
    */
   getSortedVideos(videos: CourseVideo[] | undefined): CourseVideo[] {
-    if (!videos?.length) return [];
-    return [...videos].sort((a, b) => {
-      const aNew = this.isNewVideo(a) ? 1 : 0;
-      const bNew = this.isNewVideo(b) ? 1 : 0;
-      return bNew - aNew;
-    });
-  }
+  if (!videos?.length) return [];
+
+  return [...videos].sort((a, b) => {
+    return a?.order_sort - b?.order_sort;
+  });
+}
 
   getLatestCreatedDate(lessons: CourseLesson[] | undefined): string {
     if (!lessons?.length) {
@@ -408,13 +365,39 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
 
   onThumbClick(video: any): void {
     if (video.is_watch) {
-      this.openPreview(video);
+      this.subState.openCourseVideo(video.video, video).subscribe((url) => {
+        if (!url) {
+          return;
+        }
+        console.log('Opening player with:', url);
+        this.videoId.set(video?.id);
+        this.videoUrl = url;
+        this.videoPlayerOpen = true;
+        this.startTime.set(video?.last_time_stamp)
+      });
     } else {
-      this.onPlayClick(video);
+      const subscriptionId = this.subscription()?.id;
+
+      if (!subscriptionId) {
+        return;
+      }
+      this.videoId.set(video?.id);
+
+      this.subState.unlockAndOpenVideo(video, subscriptionId).subscribe((url:any)=>{
+         if (!url) {
+          return;
+        }
+        console.log('Opening player with:', url);
+        this.videoId.set(video?.id);
+        this.videoUrl = url;
+        this.videoPlayerOpen = true;
+        this.startTime.set(0);
+      })
+      
     }
   }
   //video details
-    currentTime = signal(0);
+  currentTime = signal(0);
 
   duration = signal(0);
 
@@ -425,13 +408,9 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
   lastEvent = signal('');
   isFullscreen = signal(false);
   private handleFullscreenChange = (): void => {
+    const container = this.videoContainer?.nativeElement;
 
-    const container =
-      this.videoContainer?.nativeElement;
-
-    this.isFullscreen.set(
-      document.fullscreenElement === container
-    );
+    this.isFullscreen.set(document.fullscreenElement === container);
   };
 
   // =========================================================
@@ -439,12 +418,8 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
   // =========================================================
 
   setupPlayerEvents(): void {
-
     if (!this.player) {
-
-      console.error(
-        'Kinescope player not available'
-      );
+      console.error('Kinescope player not available');
 
       return;
     }
@@ -453,349 +428,69 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
     // PLAY
     // =======================================================
 
-    this.player.on(
-      this.player.Events.Play,
-      () => {
+    this.player.on(this.player.Events.Play, () => {
+      this.lastEvent.set('play');
 
-        this.lastEvent.set('play');
-
-        console.log(
-          'Video play'
-        );
-      }
-    );
+      console.log('Video play');
+    });
 
     // =======================================================
     // PLAYING
     // =======================================================
 
     if (this.player.Events.Playing) {
-
-      this.player.on(
-        this.player.Events.Playing,
-        () => {
-
-          this.lastEvent.set('playing');
-
-        }
-      );
+      this.player.on(this.player.Events.Playing, () => {
+        this.lastEvent.set('playing');
+      });
     }
 
     // =======================================================
     // TIME UPDATE
     // =======================================================
 
-    this.player.on(
-      this.player.Events.TimeUpdate,
-      (event: any) => {
+    this.player.on(this.player.Events.TimeUpdate, (event: any) => {
+      const currentTime = event?.data?.currentTime;
 
-        const currentTime =
-          event?.data?.currentTime;
+      const percent = event?.data?.percent;
 
-        const percent =
-          event?.data?.percent;
-
-        // Current time
-        if (
-          typeof currentTime === 'number'
-        ) {
-
-          this.currentTime.set(
-            currentTime
-          );
-        }
-
-        // Progress
-        if (
-          typeof percent === 'number'
-        ) {
-
-          this.progress.set(
-            percent
-          );
-
-        } else {
-
-          this.updateProgress();
-
-        }
-
-        this.lastEvent.set(
-          'timeupdate'
-        );
+      // Current time
+      if (typeof currentTime === 'number') {
+        this.currentTime.set(currentTime);
       }
-    );
+
+      // Progress
+      if (typeof percent === 'number') {
+        this.progress.set(percent);
+      } else {
+        this.updateProgress();
+      }
+
+      this.lastEvent.set('timeupdate');
+    });
 
     // =======================================================
     // PAUSE
     // =======================================================
 
-    this.player.on(
-      this.player.Events.Pause,
-      async () => {
+    this.player.on(this.player.Events.Pause, async () => {
+      try {
+        const currentTime = await this.player.getCurrentTime();
 
-        try {
+        const time = Number(currentTime) || 0;
 
-          const currentTime =
-            await this.player.getCurrentTime();
+        // Update current time
+        this.currentTime.set(time);
 
-          const time =
-            Number(currentTime) || 0;
+        // Save pause time
+        this.pauseTime.set(time);
 
-          // Update current time
-          this.currentTime.set(
-            time
-          );
+        // Update progress
+        this.updateProgress();
 
-          // Save pause time
-          this.pauseTime.set(
-            time
-          );
+        // Last event
+        this.lastEvent.set('pause');
 
-          // Update progress
-          this.updateProgress();
-
-          // Last event
-          this.lastEvent.set(
-            'pause'
-          );
-
-          console.log(
-            'Video paused at:',
-            time,
-            'seconds'
-          );
-
-          /*
-           * Save to backend here:
-           *
-           * this.saveVideoStatus(
-           *   this.videoId,
-           *   time
-           * );
-           */
-
-        } catch (error) {
-
-          console.error(
-            'Pause time error:',
-            error
-          );
-        }
-      }
-    );
-
-    // =======================================================
-    // ENDED
-    // =======================================================
-
-    this.player.on(
-      this.player.Events.Ended,
-      async () => {
-
-        try {
-
-          const duration =
-            await this.player.getDuration();
-
-          const total =
-            Number(duration) || 0;
-
-          this.duration.set(
-            total
-          );
-
-          this.currentTime.set(
-            total
-          );
-
-          this.pauseTime.set(
-            total
-          );
-
-          this.progress.set(
-            100
-          );
-
-          this.lastEvent.set(
-            'ended'
-          );
-
-          console.log(
-            'Video ended'
-          );
-
-        } catch (error) {
-
-          console.error(
-            'Ended error:',
-            error
-          );
-
-          this.progress.set(
-            100
-          );
-
-          this.lastEvent.set(
-            'ended'
-          );
-        }
-      }
-    );
-
-    // =======================================================
-    // ERROR
-    // =======================================================
-
-    if (this.player.Events.Error) {
-
-      this.player.on(
-        this.player.Events.Error,
-        (event: any) => {
-
-          console.error(
-            'KINESCOPE ERROR:',
-            event
-          );
-
-          this.lastEvent.set(
-            'error'
-          );
-        }
-      );
-    }
-  }
-
-  // =========================================================
-  // INITIAL VALUES
-  // =========================================================
-
-  async loadInitialValues(): Promise<void> {
-
-    if (!this.player) {
-
-      return;
-    }
-
-    try {
-
-      // Get duration
-      const duration =
-        await this.player.getDuration();
-
-      // Get current time
-      const currentTime =
-        await this.player.getCurrentTime();
-
-      // Set duration
-      this.duration.set(
-        Number(duration) || 0
-      );
-
-      // Set current time
-      this.currentTime.set(
-        Number(currentTime) || 0
-      );
-
-      // Calculate progress
-      this.updateProgress();
-
-      this.lastEvent.set(
-        'ready'
-      );
-
-    } catch (error) {
-
-      console.error(
-        'Initial values error:',
-        error
-      );
-    }
-  }
-
-  // =========================================================
-  // UPDATE PROGRESS
-  // =========================================================
-
-  updateProgress(): void {
-
-    const total =
-      this.duration();
-
-    const current =
-      this.currentTime();
-
-    if (total <= 0) {
-
-      this.progress.set(0);
-
-      return;
-    }
-
-    const percentage =
-      (current / total) * 100;
-
-    this.progress.set(
-      Math.min(
-        100,
-        Math.max(
-          0,
-          percentage
-        )
-      )
-    );
-  }
-
-  // =========================================================
-  // DESTROY
-  // =========================================================
-
-  async ngOnDestroy(): Promise<void> {
-
-    // Remove fullscreen listener
-    document.removeEventListener(
-      'fullscreenchange',
-      this.handleFullscreenChange
-    );
-
-    // Stop watermark timer
-    if (this.watermarkInterval) {
-
-      clearInterval(
-        this.watermarkInterval
-      );
-    }
-
-    // =======================================================
-    // GET LAST VIDEO POSITION
-    // =======================================================
-
-    try {
-
-      if (
-        this.player &&
-        typeof this.player.getCurrentTime ===
-          'function'
-      ) {
-
-        const currentTime =
-          await this.player.getCurrentTime();
-
-        const time =
-          Number(currentTime) || 0;
-
-        this.currentTime.set(
-          time
-        );
-
-        this.pauseTime.set(
-          time
-        );
-
-        console.log(
-          'Final video position:',
-          time
-        );
+        console.log('Video paused at:', time, 'seconds');
 
         /*
          * Save to backend here:
@@ -805,124 +500,148 @@ export class CourseCurriculam implements  OnInit, AfterViewInit, OnDestroy {
          *   time
          * );
          */
+      } catch (error) {
+        console.error('Pause time error:', error);
       }
+    });
 
-    } catch (error) {
+    // =======================================================
+    // ENDED
+    // =======================================================
 
-      console.error(
-        'Destroy time capture error:',
-        error
-      );
+    this.player.on(this.player.Events.Ended, async () => {
+      try {
+        const duration = await this.player.getDuration();
+
+        const total = Number(duration) || 0;
+
+        this.duration.set(total);
+
+        this.currentTime.set(total);
+
+        this.pauseTime.set(total);
+
+        this.progress.set(100);
+
+        this.lastEvent.set('ended');
+
+        console.log('Video ended');
+      } catch (error) {
+        console.error('Ended error:', error);
+
+        this.progress.set(100);
+
+        this.lastEvent.set('ended');
+      }
+    });
+
+    // =======================================================
+    // ERROR
+    // =======================================================
+
+    if (this.player.Events.Error) {
+      this.player.on(this.player.Events.Error, (event: any) => {
+        console.error('KINESCOPE ERROR:', event);
+
+        this.lastEvent.set('error');
+      });
     }
+  }
 
-    // =======================================================
-    // DESTROY KINESCOPE PLAYER
-    // =======================================================
+  // =========================================================
+  // INITIAL VALUES
+  // =========================================================
+
+  async loadInitialValues(): Promise<void> {
+    if (!this.player) {
+      return;
+    }
 
     try {
+      // Get duration
+      const duration = await this.player.getDuration();
 
-      if (
-        this.player &&
-        typeof this.player.destroy ===
-          'function'
-      ) {
+      // Get current time
+      const currentTime = await this.player.getCurrentTime();
 
-        this.player.destroy();
+      // Set duration
+      this.duration.set(Number(duration) || 0);
 
-        this.player = null;
-      }
+      // Set current time
+      this.currentTime.set(Number(currentTime) || 0);
 
+      // Calculate progress
+      this.updateProgress();
+
+      this.lastEvent.set('ready');
     } catch (error) {
-
-      console.error(
-        'Destroy player error:',
-        error
-      );
+      console.error('Initial values error:', error);
     }
   }
-  onVideoPauseds(status: VideoStatus) {
-  // e.g. save resume position
-  // this.subState.saveVideoStatus(status.videoId, status.currentTime);
-}
 
-onVideoEnded(status: VideoStatus) {
-  // this.subState.saveVideoStatus(status.videoId, status.duration, true);
-}
+  // =========================================================
+  // UPDATE PROGRESS
+  // =========================================================
 
-onVideoCloseds(status: VideoStatus) {
-  // called on destroy — last known position before component unmounts
-  // this.subState.saveVideoStatus(status.videoId, status.currentTime);
-}
+  updateProgress(): void {
+    const total = this.duration();
 
- onVideoClosed(
-    data: VideoPlayerData
-  ): void {
+    const current = this.currentTime();
 
-    console.log(
-      '========== VIDEO CLOSED =========='
-    );
+    if (total <= 0) {
+      this.progress.set(0);
 
-    console.log(
-      'Current Time:',
-      data.currentTime
-    );
+      return;
+    }
 
-    console.log(
-      'Duration:',
-      data.duration
-    );
+    const percentage = (current / total) * 100;
 
-    console.log(
-      'Percentage:',
-      data.percent
-    );
+    this.progress.set(Math.min(100, Math.max(0, percentage)));
+  }
 
-    console.log(
-      'Watermark:',
-      data.watermarkLabel
-    );
+  // =========================================================
+  // DESTROY
+  // =========================================================
 
-    console.log(
-      'Video URL:',
-      data.videoUrl
-    );
+  onVideoClosed(data: VideoPlayerData): void {
+    console.log('========== VIDEO CLOSED ==========');
+
+    console.log('Current Time:', data.currentTime);
+
+    console.log('Duration:', data.duration);
+
+    console.log('Percentage:', data.percent);
+
+    console.log('Watermark:', data.watermarkLabel);
+
+    console.log('Video URL:', data.videoUrl);
 
     this.videoPlayerOpen = false;
+    const subscriptionId = this.subscription()?.id;
+    if (!subscriptionId) return;
+    const seconds = Math.floor(data.currentTime);
+
+    console.log(seconds);
+    this.subState.saveVideoStatus(this.videoId(), subscriptionId, seconds, true);
   }
-  onVideoPaused(
-    data: VideoPlayerData
-  ): void {
+  onVideoPaused(data: VideoPlayerData): void {
+    console.log('========== VIDEO PAUSED ==========');
 
-    console.log(
-      '========== VIDEO PAUSED =========='
-    );
+    console.log('Current Time:', data.currentTime);
 
-    console.log(
-      'Current Time:',
-      data.currentTime
-    );
+    console.log('Duration:', data.duration);
 
-    console.log(
-      'Duration:',
-      data.duration
-    );
+    console.log('Percentage:', data.percent);
 
-    console.log(
-      'Percentage:',
-      data.percent
-    );
+    console.log('Watermark:', data.watermarkLabel);
 
-    console.log(
-      'Watermark:',
-      data.watermarkLabel
-    );
+    console.log('Video URL:', data.videoUrl);
+    const subscriptionId = this.subscription()?.id;
+    if (!subscriptionId) return;
+    const seconds = Math.floor(data.currentTime);
 
-    console.log(
-      'Video URL:',
-      data.videoUrl
-    );
-
-
+    console.log(seconds);
+    this.subState.saveVideoStatus(this.videoId(), subscriptionId, seconds, true);
     /**
      * Send pause information
      * to your Lumen API.
