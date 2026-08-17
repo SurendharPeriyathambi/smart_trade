@@ -51,8 +51,9 @@
     <div class="lesson-list" [class.open]="expandedLessonId === lessonSection.id">
 
       <div class="video-scroll-track">
-        <div class="video-card" *ngFor="let video of lessonSection.videos; let vi = index"
-          (click)="$event.stopPropagation()">
+      <div class="video-card"
+     *ngFor="let video of getSortedVideos(lessonSection.videos); let vi = index"
+     (click)="$event.stopPropagation()">
 
           <div class="thumb-wrap" (click)="onThumbClick(video)">
             <img [src]="getThumbnail(video)" alt="" class="thumb-img" loading="lazy">

@@ -78,6 +78,7 @@ export interface CourseVideo {
     image: string;
     video: string;
     durations: string;
+    order_sort:number;
     is_watch: boolean;
     last_time_stamp: string;
     is_finshed: boolean;
