@@ -320,13 +320,12 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
    * preserved both within the new group and within the rest.
    */
   getSortedVideos(videos: CourseVideo[] | undefined): CourseVideo[] {
-    if (!videos?.length) return [];
-    return [...videos].sort((a, b) => {
-      const aNew = this.isNewVideo(a) ? 1 : 0;
-      const bNew = this.isNewVideo(b) ? 1 : 0;
-      return bNew - aNew;
-    });
-  }
+  if (!videos?.length) return [];
+
+  return [...videos].sort((a, b) => {
+    return a?.order_sort - b?.order_sort;
+  });
+}
 
   getLatestCreatedDate(lessons: CourseLesson[] | undefined): string {
     if (!lessons?.length) {

@@ -92,12 +92,14 @@ export class SubscriptionState {
   // Course loading
   // ─────────────────────────────────────────────────────────────────────────
 
+
   loadCourseDetails() {
     this.loader.show();
 
     this.subscriptionService.getCourseDetails().subscribe({
       next: (res: CourseResponse) => {
         if (res.status) {
+         
           this._course.set(res.data);
           //   Pre-populate unlocked set from is_watch on every load
           this._seedUnlockedFromCourse(res.data);
