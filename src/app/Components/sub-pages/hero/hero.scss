@@ -7,7 +7,7 @@
   background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
   overflow: hidden;
   position: relative;
-
+ width: 100%;
   @media (max-width: 768px) {
     padding: 0;
   }
@@ -17,12 +17,20 @@
 .hero-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 10 / 6;          // matches your existing .hero-content ratio
+  line-height: 0;
+  overflow: hidden;
 
-  @media (max-width: 767px) {
-    aspect-ratio: 9 / 16;        // mobile portrait ratio
+  // Only reserve height while we don't know the image size yet.
+  // Once loaded, height comes naturally from the img itself.
+  &.loading {
+    min-height: 400px;
+
+    @media (max-width: 767px) {
+      min-height: 280px;
+    }
   }
 }
+
 
 // ✅ NEW — skeleton shimmer while image decodes
 .hero-skeleton {
@@ -55,18 +63,16 @@
 // }
 
 .hero-bg-img {
-  position: absolute;
-  inset: 0;
-  // background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  // opacity: 0;
-  transition: opacity 0.4s ease;
-  z-index: 0;
+  display: block;
+  width: 100%;
+  height: auto;        // natural ratio preserved, no cropping
+  max-width: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 
-  // &.visible {
-  //   opacity: 1;
-  // }
+  &.visible {
+    opacity: 1;
+  }
 }
 
 
