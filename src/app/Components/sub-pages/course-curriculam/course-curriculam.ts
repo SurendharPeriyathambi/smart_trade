@@ -35,7 +35,7 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
   videoId = signal(0);
   private loaderService = inject(LoaderService);
   videoUrl: string | null = null;
-  startTime=signal(0);
+  startTime = signal(0);
   watermarkTop = signal(20);
   watermarkLeft = signal(20);
   @ViewChild('videoContainer')
@@ -90,7 +90,7 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
   // }
 
   constructor() {
-    
+
     effect(() => {
       const url = this.subState.activeVideoUrl();
       if (url) {
@@ -253,7 +253,7 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
     // Listen for browser fullscreen changes
     document.addEventListener('fullscreenchange', this.handleFullscreenChange);
   }
-  async ngAfterViewInit(): Promise<void> {}
+  async ngAfterViewInit(): Promise<void> { }
 
   toggleFullscreen() {
     const container = this.videoContainer?.nativeElement;
@@ -303,7 +303,7 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
       created.getFullYear() === now.getFullYear() &&
       created.getMonth() === now.getMonth() &&
       created.getDate() === now.getDate() &&
-      video?.is_watch===false
+      video?.is_watch === false
 
     );
   }
@@ -320,12 +320,12 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
    * preserved both within the new group and within the rest.
    */
   getSortedVideos(videos: CourseVideo[] | undefined): CourseVideo[] {
-  if (!videos?.length) return [];
+    if (!videos?.length) return [];
 
-  return [...videos].sort((a, b) => {
-    return a?.order_sort - b?.order_sort;
-  });
-}
+    return [...videos].sort((a, b) => {
+      return a?.order_sort - b?.order_sort;
+    });
+  }
 
   getLatestCreatedDate(lessons: CourseLesson[] | undefined): string {
     if (!lessons?.length) {
@@ -373,7 +373,7 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
         this.videoId.set(video?.id);
         this.videoUrl = url;
         this.videoPlayerOpen = true;
-        this.startTime.set(video?.last_time_stamp)
+        this.startTime.set(video.is_finshed ? 0 : video?.last_time_stamp)
       });
     } else {
       const subscriptionId = this.subscription()?.id;
@@ -383,8 +383,8 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
       }
       this.videoId.set(video?.id);
 
-      this.subState.unlockAndOpenVideo(video, subscriptionId).subscribe((url:any)=>{
-         if (!url) {
+      this.subState.unlockAndOpenVideo(video, subscriptionId).subscribe((url: any) => {
+        if (!url) {
           return;
         }
         console.log('Opening player with:', url);
@@ -393,7 +393,7 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
         this.videoPlayerOpen = true;
         this.startTime.set(0);
       })
-      
+
     }
   }
   //video details
