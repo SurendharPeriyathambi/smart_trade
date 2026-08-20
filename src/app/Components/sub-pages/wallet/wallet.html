@@ -1,253 +1,214 @@
+<app-header></app-header>
 <div class="container-fluid py-4 wallet-main">
     <div class="row g-4">
 
         <div class="col-lg-5">
 
-           <app-wallet-summary
-               [walletCreated]="walletCreated"
-                [currentBalance]="currentBalance"
-                [walletDate]="wallet.create_date"
-               (createWalletClick)="openCreateWalletModal()"
-               (depositClick)="openDepositModal()"
-               (withdrawClick)="openWithdrawModal()" />
+            <app-wallet-summary [walletCreated]="walletCreated" [currentBalance]="currentBalance"
+                [walletDate]="wallet?.create_date" (createWalletClick)="openCreateWalletModal()"
+                (depositClick)="openDepositModal()" (withdrawClick)="openWithdrawModal()" />
 
-           <div class="mt-4"><app-trading-notes #tradingNotes  [walletId]="wallet?.id ?? null"/></div>
+            <!-- (journalClick)="openJournalModal()" -->
+
+            <div class="mt-4"><app-trading-notes #tradingNotes [walletId]="wallet?.id ?? null" /></div>
 
         </div>
 
         <div class="col-lg-7">
 
-         <div> <app-trade-history
-    [walletCreated]="walletCreated"
-    [walletId]="wallet?.id ?? null"
-    [walletCreateDate]="wallet?.create_date ?? null">
-</app-trade-history>
+            <div> <app-trade-history [walletCreated]="walletCreated" [walletId]="wallet?.id ?? null"
+                    [walletCreateDate]="wallet?.create_date ?? null">
+                </app-trade-history>
 
+            </div>
         </div>
     </div>
-</div>
 
 
-@if(showDepositModal){
+    @if(showDepositModal){
 
-<div class="trade-modal"
-     (click)="closeDepositModal()">
+    <div class="trade-modal" (click)="closeDepositModal()">
 
-    <div class="modal-dialog"
-         (click)="$event.stopPropagation()">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h4>Add Deposit</h4>
+                <h4>Add Deposit</h4>
 
-            <button
-                class="close-btn"
-                (click)="closeDepositModal()">
+                <button class="close-btn" (click)="closeDepositModal()">
 
-                <i class="bi bi-x-lg"></i>
+                    <i class="bi bi-x-lg"></i>
 
-            </button>
+                </button>
 
-        </div>
-
-        <div class="modal-body">
-
-            <form class="deposit-form">
-<div class="form-group">
-    <label>Date</label>
-    <input
-        type="date"
-        class="form-control"
-        [(ngModel)]="depositTxnDate"
-        name="depositTxnDate"
-        [min]="minDepositDate"
-        [max]="maxDate">
-    @if (minDepositDate) {
-        <small class="text-muted">Deposits allowed from {{ minDepositDate }} onward</small>
-    }
-</div>
-                <div class="form-group">
-
-                    <label>Amount</label>
-
-                    <input
-                        type="number"
-                        class="form-control"
-                        placeholder="Enter amount"
-                        [(ngModel)]="depositTxnAmount"
-                        name="depositTxnAmount">
-
-                    @if (depositError) {
-                        <small class="field-error">{{ depositError }}</small>
-                    }
-
-                </div>
-
-            </form>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                class="btn btn-light"
-                [disabled]="isDepositSubmitting"
-                (click)="closeDepositModal()">
-
-                Reset
-
-            </button>
-
-          <button
-    class="btn btn-primary"
-    [disabled]="isDepositSubmitting"
-    (click)="submitDeposit()">
-    @if (isDepositSubmitting) {
-        <span class="btn-spinner"></span>
-        <span>Saving...</span>
-    } @else {
-        <span>Save Deposit</span>
-    }
-</button>
-        </div>
-
-    </div>
-
-</div>
-
-}
-@if(showWithdrawModal){
-
-<div
-    class="trade-modal"
-    (click)="closeWithdrawModal()">
-
-    <div
-        class="modal-dialog"
-        (click)="$event.stopPropagation()">
-
-        <div class="modal-header">
-
-            <h4>Withdraw Funds</h4>
-
-            <button
-                type="button"
-                class="close-btn"
-                (click)="closeWithdrawModal()">
-
-                <i class="bi bi-x-lg"></i>
-
-            </button>
-
-        </div>
-
-        <div class="modal-body">
-
-            <form class="deposite-form">
-
-                <div class="form-group">
-
-                    <label>Withdraw Amount</label>
-
-                    <input
-                        type="number"
-                        class="form-control"
-                        placeholder="Enter amount"
-                        [(ngModel)]="withdrawTxnAmount"
-                        name="withdrawTxnAmount">
-
-                    @if (withdrawError) {
-                        <small class="field-error">{{ withdrawError }}</small>
-                    }
-
-                </div>
-
-            </form>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                type="button"
-                class="btn btn-light"
-                [disabled]="isWithdrawSubmitting"
-                (click)="closeWithdrawModal()">
-
-                Reset
-
-            </button>
-
-            <button
-    type="button"
-    class="btn btn-danger"
-    [disabled]="isWithdrawSubmitting"
-    (click)="submitWithdraw()">
-    @if (isWithdrawSubmitting) {
-        <span class="btn-spinner"></span>
-        <span>Withdrawing...</span>
-    } @else {
-        <i class="bi bi-arrow-up-right me-2"></i>
-        <span>Withdraw</span>
-    }
-</button>
-
-        </div>
-
-    </div>
-
-</div>
-
-}
-
-@if(showCreateWalletModal){
-
-<div class="trade-modal"
-     (click)="closeCreateWalletModal()">
-
-    <div class="modal-dialog"
-         (click)="$event.stopPropagation()">
-
-        <div class="modal-header">
-
-            <h4>Create Wallet</h4>
-
-            <button
-                class="close-btn"
-                (click)="closeCreateWalletModal()">
-
-                <i class="bi bi-x-lg"></i>
-
-            </button>
-
-        </div>
-
-        <div class="modal-body">
-
-            <div class="warning-box">
-                <i class="bi bi-exclamation-triangle"></i>
-                <p>Are you sure you want to create a wallet? Choose a start date to continue.</p>
             </div>
 
-            <div class="form-group">
+            <div class="modal-body">
 
-    <label>Wallet Start Date</label>
+                <form class="deposit-form">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" class="form-control" [(ngModel)]="depositTxnDate" name="depositTxnDate"
+                            [min]="minDepositDate" [max]="maxDate">
+                        @if (minDepositDate) {
+                        <small class="text-muted">Deposits allowed from {{ minDepositDate }} onward</small>
+                        }
+                    </div>
+                    <div class="form-group">
 
-    <input
-        type="date"
-        class="form-control"
-        [(ngModel)]="walletDate"
-        name="walletDate"
-        [max]="maxDate"
-        (ngModelChange)="onWalletDateChange()">
+                        <label>Amount</label>
 
-    @if (dateError) {
-        <small class="field-error">{{ dateError }}</small>
+                        <input type="number" class="form-control" placeholder="Enter amount"
+                            [(ngModel)]="depositTxnAmount" name="depositTxnAmount">
+
+                        @if (depositError) {
+                        <small class="field-error">{{ depositError }}</small>
+                        }
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-light" [disabled]="isDepositSubmitting" (click)="closeDepositModal()">
+
+                    Reset
+
+                </button>
+
+                <button class="btn btn-primary" [disabled]="isDepositSubmitting" (click)="submitDeposit()">
+                    @if (isDepositSubmitting) {
+                    <span class="btn-spinner"></span>
+                    <span>Saving...</span>
+                    } @else {
+                    <span>Save Deposit</span>
+                    }
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    }
+    @if(showWithdrawModal){
+
+    <div class="trade-modal" (click)="closeWithdrawModal()">
+
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+
+            <div class="modal-header">
+
+                <h4>Withdraw Funds</h4>
+
+                <button type="button" class="close-btn" (click)="closeWithdrawModal()">
+
+                    <i class="bi bi-x-lg"></i>
+
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <form class="deposite-form">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" class="form-control" [(ngModel)]="depositTxnDate" name="depositTxnDate"
+                            [min]="minDepositDate" [max]="maxDate">
+                        <!-- @if (minDepositDate) {
+                        <small class="text-muted">withdraw allowed from {{ minDepositDate }} onward</small>
+                        } -->
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Withdraw Amount</label>
+
+                        <input type="number" class="form-control" placeholder="Enter amount"
+                            [(ngModel)]="withdrawTxnAmount" name="withdrawTxnAmount">
+
+                        @if (withdrawError) {
+                        <small class="field-error">{{ withdrawError }}</small>
+                        }
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-light" [disabled]="isWithdrawSubmitting"
+                    (click)="closeWithdrawModal()">
+
+                    Reset
+
+                </button>
+
+                <button type="button" class="btn btn-danger" [disabled]="isWithdrawSubmitting"
+                    (click)="submitWithdraw()">
+                    @if (isWithdrawSubmitting) {
+                    <span class="btn-spinner"></span>
+                    <span>Withdrawing...</span>
+                    } @else {
+                    <i class="bi bi-arrow-up-right me-2"></i>
+                    <span>Withdraw</span>
+                    }
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
     }
 
-</div>
+    @if(showCreateWalletModal){
 
-            @if (walletDate) {
+    <div class="trade-modal" (click)="closeCreateWalletModal()">
+
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+
+            <div class="modal-header">
+
+                <h4>Create Wallet</h4>
+
+                <button class="close-btn" (click)="closeCreateWalletModal()">
+
+                    <i class="bi bi-x-lg"></i>
+
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="warning-box">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <p>Choose the Wallet Creation Date carefully. All deposits, withdrawals, and trade entries must be dated on or after the Wallet Creation Date.
+                       please make this message on wallet creation</p>
+                </div>
+
+                <div class="form-group">
+
+                    <label>Wallet Start Date</label>
+
+                    <input type="date" class="form-control" [(ngModel)]="walletDate" name="walletDate" [max]="maxDate"
+                        (ngModelChange)="onWalletDateChange()">
+
+                    @if (dateError) {
+                    <small class="field-error">{{ dateError }}</small>
+                    }
+
+                </div>
+
+                @if (walletDate) {
 
                 <div class="form-group checkbox-group">
                     <label class="checkbox-label">
@@ -258,48 +219,45 @@
 
                 @if (depositNow) {
 
-                    <div class="form-group">
-                        <label>Deposit Amount</label>
-                        <input
-                            type="number"
-                            class="form-control"
-                            placeholder="Enter amount"
-                            [(ngModel)]="depositAmount"
-                            name="depositAmount">
-                    </div>
+                <div class="form-group">
+                    <label>Deposit Amount</label>
+                    <input type="number" class="form-control" placeholder="Enter amount" [(ngModel)]="depositAmount"
+                        name="depositAmount">
+                </div>
 
                 }
 
-            }
+                }
 
-        </div>
+            </div>
 
-        <div class="modal-footer">
+            <div class="modal-footer">
 
-            <button
-                class="btn btn-light"
-                (click)="closeCreateWalletModal()">
+                <button class="btn btn-light" (click)="closeCreateWalletModal()">
 
-                Cancel
+                    Cancel
 
-            </button>
+                </button>
 
-           <button
-    class="btn btn-primary"
-    [disabled]="!walletDate || isSubmitting"
-    (click)="createWallet()">
-    @if (isSubmitting) {
-        <span class="btn-spinner"></span>
-        <span>Creating...</span>
-    } @else {
-        <span>Create Wallet</span>
-    }
-</button>
+                <button class="btn btn-primary" [disabled]="!walletDate || isSubmitting" (click)="createWallet()">
+                    @if (isSubmitting) {
+                    <span class="btn-spinner"></span>
+                    <span>Creating...</span>
+                    } @else {
+                    <span>Create Wallet</span>
+                    }
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
+    }
 
-}
+    <!-- @if (showJournalModal) {
+  <button (click)="goToJournal()">Journal</button>
+} -->
+
+<app-footer></app-footer>

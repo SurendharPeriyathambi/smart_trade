@@ -173,9 +173,9 @@
 
     grid-template-columns:
         180px
+        260px
         180px
-        180px
-        220px
+        146px
        ;
 
     min-width: 766px;
@@ -223,39 +223,49 @@
 
 /* Transaction Badge */
 
-.transaction-type {
+// .transaction-type {
 
-    display: inline-flex;
+//     display: inline-flex;
 
-    align-items: center;
+//     align-items: center;
 
-    justify-content: center;
+//     justify-content: center;
 
-    padding: 6px 14px;
+//     padding: 6px 14px;
 
-    border-radius: 999px;
+//     border-radius: 999px;
 
-    font-size: 13px;
+//     font-size: 13px;
 
-    font-weight: 600;
+//     font-weight: 600;
 
-}
+//       &.inward {
+//     background-color: #e6f7ee; 
+//     color: #1a9c5c;          
+//   }
 
-.deposit {
+//   &.outward {
+//     background-color: #fdecec; 
+//     color: #d93b3b;            
+//   }
 
-    background: #ECFDF3;
+// }
 
-    color: #16A34A;
+// .deposit {
 
-}
+//     background: #ECFDF3;
 
-.withdraw {
+//     color: #16A34A;
 
-    background: #FEF2F2;
+// }
 
-    color: #DC2626;
+// .withdraw {
 
-}
+//     background: #FEF2F2;
+
+//     color: #DC2626;
+
+// }
 
 /* Sticky Action */
 
@@ -553,4 +563,42 @@
     opacity: .4;
     cursor: not-allowed;
     pointer-events: none;
+}
+
+/* Action column - plain text + description */
+.transaction-action {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.3;
+}
+
+.transaction-desc {
+    font-size: 12px;
+    font-weight: 400;
+    color: #94A3B8;
+    margin-top: 2px;
+}
+
+/* Amount column - icon + colored text, no background */
+.amount-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+
+
+    i {
+        font-size: 13px;
+    }
+
+    &.inward {
+        color: #1a9c5c;   
+    }
+
+    &.outward {
+        color: #d93b3b;   
+    }
 }

@@ -1,163 +1,103 @@
 <section class="payment-history">
 
-    <!-- Header -->
-
-    
-
-    <!-- Search -->
-
     <div class="toolbar">
-<div class="payment-header">
-
-        <h5>Payment Transaction History</h5>
-
-    </div>
-        <div class="filter">
-
-            <select>
-
-                <option>All Transactions</option>
-                <option>Deposit</option>
-                <option>Withdraw</option>
-
-            </select>
-
+        <div class="payment-header">
+            <h5>Payment Transaction History</h5>
         </div>
-
     </div>
-
-    <!-- Table -->
 
     <div class="table-container">
 
         <div class="table-header">
-
             <div>Date</div>
-
             <div>Action</div>
-
             <div>Amount</div>
-
             <div>Closing Balance</div>
-
-            <!-- <div class="sticky-action">
-
-                Action
-
-            </div> -->
-
         </div>
 
         <div class="table-body">
-@if (tradinghistory.length === 0) {
-        <div class="empty-state">
-            <div class="empty-icon">
-                <i class="bi bi-graph-up"></i>
+            @if (tradinghistory.length === 0) {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <h6>No Payment yet</h6>
+                <p>Start tracking your Payment performance by adding your first trade.</p>
             </div>
-            <h6>No Payment yet</h6>
-            <p>Start tracking your Payment performance by adding your first trade.</p>
-            <!-- <button class="add-trade-btn" (click)="openAddTrade($event)">
-                <i class="bi bi-plus-lg"></i>
-                <span>Add Trade</span>
-            </button> -->
-        </div>
-    }@else {
-       
-          @for(transaction of tradinghistory;track transaction.id){
+            }@else {
+
+            @for(transaction of tradinghistory;track transaction.id){
 
             <div class="table-row">
 
                 <div>
-
                     {{transaction.created_date | date:'dd MMM yyyy'}}
-
                 </div>
 
                 <div>
+                    <div class="transaction-action">{{transaction.action}}</div>
+                    <div class="transaction-desc">{{transaction.description}}</div>
+                </div>
 
+                <div>
                     <span
-                        class="transaction-type"
-                        [class.deposit]="transaction.action === 'DEPOSIT'"
-                        [class.withdraw]="transaction.action==='WITHDRAW'">
-                        {{transaction.action}}
-
+                        class="amount-badge"
+                        [class.inward]="transaction.direction === 'Inward'"
+                        [class.outward]="transaction.direction === 'Outward'">
+                        ₹{{transaction.amount | number}}
+                        <i class="bi"
+                           [class.bi-arrow-up-right]="transaction.direction === 'Inward'"
+                           [class.bi-arrow-down-left]="transaction.direction === 'Outward'"></i>
+                        
                     </span>
-
                 </div>
 
                 <div>
-
-                    ₹{{transaction.amount | number}}
-
-                </div>
-
-                <div>
-
                     ₹{{transaction.balance | number}}
-                     
                 </div>
-
-                <!-- <div class="sticky-action">
-
-                    <button class="action-btn">
-
-                        <i class="bi bi-eye"></i>
-
-                    </button>
-
-                </div> -->
 
             </div>
 
             }
-    }
-          
-            <!-- @empty {
-
-        <div class="empty-state">
-            <i class="bi bi-inbox"></i>
-            <p>No payment history found.</p>
-        </div>
-
-    } -->
-
-        </div>
-
-    </div>
-
-  @if (tradinghistory.length > 0) {
-<div class="table-pagination">
-
-    <div class="pagination-info">
-        Showing
-        <strong>{{ tradinghistory.length }}</strong>
-        of
-        <strong>{{ totalRecords }}</strong>
-        trades
-    </div>
-
-    <div class="pagination-controls">
-
-        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">
-            <i class="bi bi-chevron-left"></i>
-        </button>
-
-        @for (p of pageNumbers; track $index) {
-            @if (p === '...') {
-                <span class="dots">...</span>
-            } @else {
-                <button class="page-number" [class.active]="p === currentPage" (click)="goToPage(+p)">
-                    {{ p }}
-                </button>
             }
-        }
 
-        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
-            <i class="bi bi-chevron-right"></i>
-        </button>
+        </div>
 
     </div>
 
-</div>
-}
+    @if (tradinghistory.length > 0) {
+    <div class="table-pagination">
+
+        <div class="pagination-info">
+            Showing
+            <strong>{{ tradinghistory.length }}</strong>
+            of
+            <strong>{{ totalRecords }}</strong>
+            trades
+        </div>
+
+        <div class="pagination-controls">
+
+            <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+
+            @for (p of pageNumbers; track $index) {
+            @if (p === '...') {
+            <span class="dots">...</span>
+            } @else {
+            <button class="page-number" [class.active]="p === currentPage" (click)="goToPage(+p)">
+                {{ p }}
+            </button>
+            }
+            }
+
+            <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+
+        </div>
+
+    </div>
+    }
 </section>

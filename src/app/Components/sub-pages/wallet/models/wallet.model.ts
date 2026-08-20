@@ -33,6 +33,7 @@ export interface PaymentHistory {
   created_date: string;
   updated_at: string;
   balance:number;
+  direction:string;
 }
 export interface PaymentListResponse {
   status: boolean;
@@ -93,7 +94,7 @@ export interface TradeListResponse {
      current_page: number;
      total_records: number;
     data_list: TradeHistoryList[];
-  };// array, not single object
+  };
 }
 export interface TradeUpdate {
   id: number;

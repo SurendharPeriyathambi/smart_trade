@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, Input } from '@angular/core';
 import { SubscriptionState } from '../../main-pages/subscriptions/subscription_state.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-subscription-summary',
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './subscription-summary.html',
   styleUrl: './subscription-summary.scss',
 })

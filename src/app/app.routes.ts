@@ -10,6 +10,8 @@ import { AboutUs } from './Components/main-pages/about-us/about-us';
 import { WeeklyReport } from './Components/sub-pages/weekly-report/weekly-report';
 import { ChartList } from './Components/chartList/chartlist';
 import { NewChart } from './Components/chart/view/newchart';
+import { Wallet } from './Components/sub-pages/wallet/wallet';
+import { WalletJournalModal } from './Components/sub-pages/wallet-journal-modal/wallet-journal-modal';
 
 
 
@@ -25,6 +27,8 @@ const routes: Routes = [
 {path:'chart',component:ChartList},
 {path:'newchart',component:NewChart},
 {path:'week',component:WeeklyReport},
+{ path: 'journal', component: WalletJournalModal },
+{ path: 'wallet', component: Wallet },
 {
     path: '',
     loadComponent: () =>

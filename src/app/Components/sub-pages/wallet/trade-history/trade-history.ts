@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TradeCreation, TradeHistoryList, TradeUpdate, WalletCreatation } from '../models/wallet.model';
 import { TradeHistoryUsecase } from './usecase/trade-history.usecase';
@@ -9,6 +9,7 @@ import { TradeHistoryRepositoryImpl } from './repository/trade-history.Repositor
 import { StorageEngine } from '../../../../../services/engine/storage_engine';
 import { finalize } from 'rxjs';
 import { LoaderService } from '../../../../../services/engine/loader.service';
+import { TradingNotes } from '../trading-notes/trading-notes';
 
 // Row shown in table = API model + local edit-state, nothing else
 export interface TradeRow extends TradeHistoryList {
@@ -95,6 +96,9 @@ isSavingTrade = false;
     this.showTradeModal = true;
   }
 
+  @ViewChild('tradingNotes') tradingNotesComp?: TradingNotes;
+
+
   saveTrade(): void {
 
     if (!this.walletId) {
@@ -121,6 +125,7 @@ isSavingTrade = false;
        
         this.resetForm();
         this.loadTrades(this.currentPage);
+        this.tradingNotesComp?.loadHistory(1);
          this.closeTradeModal();
          this.cdr.detectChanges()
         

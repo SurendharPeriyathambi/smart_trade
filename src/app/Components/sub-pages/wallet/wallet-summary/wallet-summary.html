@@ -1,8 +1,8 @@
 <div class="wallet-card">
 
-  @if (!walletCreated) {
 
-    <div class="empty-wallet-state">
+  @if (!walletCreated) {
+ <div class="empty-wallet-state">
 
       <div class="empty-wallet-icon">
         <i class="bi bi-wallet2"></i>
@@ -17,6 +17,7 @@
 
     </div>
 
+   
   } @else {
 
     <div class="card-header">
@@ -51,7 +52,7 @@
       <div class="action-row">
 
         <div>
-          <button class="add-btn">
+          <button class="add-btn"(click)="openJournal()" (click)="goToJournal()">
             <i class="bi bi-eye"></i>
             <span>View Journal</span>
           </button>

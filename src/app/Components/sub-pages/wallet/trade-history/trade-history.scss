@@ -199,11 +199,6 @@
 .table-header {
 
     display: grid;
-
-
-
-  
-
     height: 56px;
 
     align-items: center;
@@ -221,7 +216,6 @@
 .table-header>div {
 
     padding: 0 20px;
-
 }
 
 /* Sticky Action */
@@ -403,6 +397,7 @@
     background:transparent;
 
     transition:.2s;
+    margin-left: 14px;
 
 }
 

@@ -1,0 +1,227 @@
+<app-header></app-header>
+<div class="journal-page-wrapper">
+  <!-- <app-header></app-header> -->
+  <div class="journal-page">
+
+    <div class="page-title-row">
+      <button class="back-btn" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <h4 class="page-title">Trade Journal</h4>
+    </div>
+
+    <div class="journal-columns">
+
+      <!-- LEFT COLUMN -->
+      <div class="journal-col">
+
+        <div class="stats-row">
+
+          <div class="stat-card">
+            <span class="stat-label">Account Size</span>
+            <span class="stat-value">₹{{ accountSize | number:'1.0-0' }}</span>
+          </div>
+
+          <div class="stat-card profit">
+            <span class="stat-label">Total Profit</span>
+            <span class="stat-value">₹{{ totalProfit | number:'1.0-0' }}</span>
+          </div>
+
+          <div class="stat-card loss">
+            <span class="stat-label">Total Loss</span>
+            <span class="stat-value">₹{{ totalLoss | number:'1.0-0' }}</span>
+          </div>
+
+        </div>
+
+        <div class="journal-box calendar-box">
+
+          <div class="box-header">
+            <h5>Calendar</h5>
+          </div>
+
+          <div class="box-body">
+
+            <div class="calendar-header">
+              <div class="nav-buttons">
+                <button class="nav-btn" (click)="prevMonth()">
+                  <i class="bi bi-chevron-left"></i>
+                </button>
+                <button class="nav-btn" (click)="nextMonth()">
+                  <i class="bi bi-chevron-right"></i>
+                </button>
+              </div>
+              <h6>{{ monthLabel }}</h6>
+              <button class="today-btn" (click)="goToday()">Today</button>
+            </div>
+
+            @if (isRangeActive) {
+            <div class="range-info">
+              <span class="range-active">
+                {{ rangeStart | date:'dd MMM' }} → {{ rangeEnd | date:'dd MMM yyyy' }}
+                <button class="clear-range-btn" (click)="clearRange()">Clear</button>
+              </span>
+            </div>
+            }
+
+            <div class="calendar-grid">
+              <div class="week-row headers">
+                @for (day of weekDays; track day) {
+                <div class="day-label">{{ day }}</div>
+                }
+              </div>
+
+              <div class="week-row days">
+                @for (day of calendarDays; track $index) {
+                <div class="day-cell" [class.empty]="!day" [class.in-range]="isInRange(day)">
+                  @if (day) {
+                  @let pnl = getPnL(day);
+                  <span>{{ day }}</span>
+                  @if (pnl !== null) {
+                  <small class="pnl-amount" [class.profit]="pnl > 0" [class.loss]="pnl < 0">
+                    {{ pnl | number:'1.0-0' }}
+                  </small>
+                  }
+                  }
+                </div>
+                }
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+
+      <div class="journal-col">
+
+        <div class="filter-wrap">
+          <button class="filter-toggle-btn" [class.active]="showFilter" (click)="toggleFilter()">
+            <i class="bi bi-funnel"></i>
+            Filter
+          </button>
+
+          @if (isRangeActive && !showFilter) {
+          <div class="selected-range-chip">
+            <i class="bi bi-calendar-event"></i>
+            <span>{{ rangeStart | date:'dd MMM' }} – {{ rangeEnd | date:'dd MMM yyyy' }}</span>
+            <button class="chip-clear-btn" (click)="clearRange()">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+          }
+
+          @if (showFilter) {
+          <div class="filter-panel">
+
+            <div class="filter-fields">
+              <div class="filter-field">
+                <label>From</label>
+                <input type="date" [(ngModel)]="filterFrom" />
+              </div>
+              <div class="filter-field">
+                <label>To</label>
+                <input type="date" [(ngModel)]="filterTo" />
+              </div>
+            </div>
+
+            <div class="filter-actions">
+              <button class="apply-btn" (click)="applyFilter()">Apply</button>
+              <button class="clear-btn" (click)="clearFilter()">Clear</button>
+            </div>
+
+            @if (filterError) {
+            <span class="range-error">{{ filterError }}</span>
+            }
+
+            @if (isRangeActive) {
+            <div class="active-range-preview">
+              <i class="bi bi-check-circle-fill"></i>
+              Showing: {{ rangeStart | date:'dd MMM yyyy' }} – {{ rangeEnd | date:'dd MMM yyyy' }}
+            </div>
+            }
+
+          </div>
+          }
+        </div>
+
+        <div class="journal-box chart-box">
+
+          <div class="box-header">
+            <h5>Balance History</h5>
+
+          </div>
+
+          <div class="box-body">
+
+            <small class="chart-subtitle">
+              @if (isRangeActive) {
+              {{ rangeStart | date:'dd MMM' }} – {{ rangeEnd | date:'dd MMM yyyy' }}
+              } @else {
+              Trade balance over time
+              }
+            </small>
+
+            @if (filteredChartData.length === 0) {
+
+            <p class="no-data">No trades in this range</p>
+
+            } @else {
+
+            <svg [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight" class="line-chart">
+
+              @for (tick of yAxisTicks; track $index) {
+              <line [attr.x1]="padding.left" [attr.x2]="chartWidth - padding.right"
+                [attr.y1]="padding.top + (plotHeight / (yAxisTicks.length - 1)) * $index"
+                [attr.y2]="padding.top + (plotHeight / (yAxisTicks.length - 1)) * $index" class="grid-line" />
+              <text [attr.x]="padding.left - 10"
+                [attr.y]="padding.top + (plotHeight / (yAxisTicks.length - 1)) * $index + 4" class="axis-label y-label">
+                {{ tick | number:'1.0-0' }}
+              </text>
+              }
+
+              <polyline [attr.points]="linePoints" class="chart-line" />
+
+              @for (point of filteredChartData; track $index) {
+              <circle [attr.cx]="xPos($index)" [attr.cy]="yPos(point.value)" r="4" class="chart-dot" />
+              <text [attr.x]="xPos($index)" [attr.y]="chartHeight - 8" class="axis-label x-label">
+                {{ point.label }}
+              </text>
+              }
+
+            </svg>
+
+            }
+
+          </div>
+
+        </div>
+
+        <div class="stats-row">
+
+          <div class="stat-card profit">
+            <span class="stat-label">Biggest Win</span>
+            <span class="stat-value">₹{{ biggestWin | number:'1.0-0' }}</span>
+          </div>
+
+          <div class="stat-card loss">
+            <span class="stat-label">Biggest Loss</span>
+            <span class="stat-value">₹{{ biggestLoss | number:'1.0-0' }}</span>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-label">Average Win Ratio</span>
+            <span class="stat-value">{{ avgWinRatio }}%</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

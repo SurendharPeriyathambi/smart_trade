@@ -1,13 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-wallet-summary',
-  imports: [CommonModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './wallet-summary.html',
   styleUrl: './wallet-summary.scss',
 })
 export class WalletSummary {
+
+  constructor(private router: Router) {}
+
 
   @Input() walletCreated = false;
 
@@ -23,6 +28,8 @@ export class WalletSummary {
   @Output() createWalletClick = new EventEmitter<void>();
   @Output() depositClick = new EventEmitter<void>();
   @Output() withdrawClick = new EventEmitter<void>();
+  @Output() journalClick = new EventEmitter<void>();
+
 
   openCreateWallet(): void {
     this.createWalletClick.emit();
@@ -35,4 +42,16 @@ export class WalletSummary {
   openWithdraw(): void {
     this.withdrawClick.emit();
   }
+
+  openJournal(): void {
+  this.journalClick.emit();
+}
+
+// reloadPage() {
+//   window.location.reload();
+// }
+
+goToJournal(): void {
+  this.router.navigate(['/journal']);
+}
 }
