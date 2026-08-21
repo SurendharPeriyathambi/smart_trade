@@ -29,4 +29,4 @@ export class ChartService {
   getWasabiFile(path: string) {
     return this.http.get<any>(`${this.apiBaseUrl}/get_json?path=${path}`);
   }
-}
+} 
