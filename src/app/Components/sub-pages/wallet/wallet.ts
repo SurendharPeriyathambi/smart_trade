@@ -166,9 +166,11 @@ export class Wallet implements OnInit {
             this.toast.success(res.message || 'Deposit successful.');
             this.showDepositModal = false;
             this.resetDepositForm();
-            setTimeout(() => {
-              this.tradingNotesComp?.loadHistory(1);
-            }, 500);
+            // setTimeout(() => {
+            //   this.tradingNotesComp?.loadHistory(1);
+            // }, 500);
+            window.location.reload();
+
 
             this.cdr.detectChanges();
           } else {
@@ -219,6 +221,7 @@ export class Wallet implements OnInit {
     const payload: WalletTransactionRequest = {
       action: 'withdraw',
       amount: this.withdrawTxnAmount.toFixed(2),
+      date: this.getFormattedDate()
     };
 
     this.isWithdrawSubmitting = true;
@@ -250,6 +253,15 @@ export class Wallet implements OnInit {
         },
       });
   }
+
+
+private getFormattedDate(): string {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = today.getFullYear();
+  return `${day}-${month}-${year}`;
+}
 
   private resetWithdrawForm(): void {
     this.withdrawTxnAmount = null;
@@ -311,6 +323,7 @@ export class Wallet implements OnInit {
             this.showCreateWalletModal = false;
             this.cdr.detectChanges();
             this.resetCreateWalletForm();
+            window.location.reload();
             this.toast.success(res.message);
           } else {
             this.submitError = res.message || 'Failed to create wallet.';

@@ -127,6 +127,7 @@ isSavingTrade = false;
         this.loadTrades(this.currentPage);
         this.tradingNotesComp?.loadHistory(1);
          this.closeTradeModal();
+         window.location.reload();
          this.cdr.detectChanges()
         
       },
@@ -175,34 +176,82 @@ this.totalPages = Math.ceil(this.totalRecords / 5);
    closeTradeModal(): void {
     this.showTradeModal = false;
   }
-  saveEdit(trade: TradeRow): void {
+//   saveEdit(trade: TradeRow): void {
+
+//     if (this.walletId == null) {
+//   this.toast.error('Wallet not found.');
+//   return;
+// }
+
+//     const { isEditing, backup, ...rest } = trade;
+//  const payload: TradeUpdate = {
+//     ...rest,
+//     wallet_id: this.walletId,
+//    // or trade.lot_size if you add it to TradeHistoryList later
+//   };
+//   this.loader.show()
+//     this.usecase.updateTrade(payload).pipe( finalize(() => this.loader.hide())).subscribe({
+//       next: (res) => {
+//         this.toast.show(res.message);
+//         trade.isEditing = false;
+//         this.cdr.detectChanges()
+//         trade.backup = undefined;
+//       },
+//       error: (err) => {
+//         console.error(err);
+//         this.toast.error(err.message || 'Failed to update trade');
+//          this.cdr.detectChanges()
+//         this.cancelEdit(trade);
+//       },
+//     });
+//   }
+
+saveEdit(trade: TradeRow): void {
 
     if (this.walletId == null) {
-  this.toast.error('Wallet not found.');
-  return;
-}
+      this.toast.error('Wallet not found.');
+      return;
+    }
+
+    if (trade.backup && !this.hasTradeChanged(trade, trade.backup)) {
+      trade.isEditing = false;
+      trade.backup = undefined;
+      return;
+    }
+
     const { isEditing, backup, ...rest } = trade;
- const payload: TradeUpdate = {
-    ...rest,
-    wallet_id: this.walletId,
-   // or trade.lot_size if you add it to TradeHistoryList later
-  };
-  this.loader.show()
-    this.usecase.updateTrade(payload).pipe( finalize(() => this.loader.hide())).subscribe({
+    const payload: TradeUpdate = {
+      ...rest,
+      wallet_id: this.walletId,
+    };
+    this.loader.show();
+    this.usecase.updateTrade(payload).pipe(finalize(() => this.loader.hide())).subscribe({
       next: (res) => {
         this.toast.show(res.message);
         trade.isEditing = false;
-        this.cdr.detectChanges()
+        window.location.reload();
+        this.cdr.detectChanges();
         trade.backup = undefined;
       },
       error: (err) => {
         console.error(err);
         this.toast.error(err.message || 'Failed to update trade');
-         this.cdr.detectChanges()
+        this.cdr.detectChanges();
         this.cancelEdit(trade);
       },
     });
-  }
+}
+
+private hasTradeChanged(current: TradeRow, backup: TradeRow): boolean {
+  const fieldsToCompare: (keyof TradeRow)[] = [
+    'pair', 'direction', 'entry_price', 'stop_loss', 'take_profit',
+    'exit_price', 'lot_size', 'win_loss', 'profit', 'loss', 'reason', 'remark'
+  ];
+
+  return fieldsToCompare.some(field => current[field] !== backup[field]);
+}
+
+  
 
   cancelEdit(trade: TradeRow): void {
     if (trade.backup) {
@@ -259,14 +308,14 @@ this.totalPages = Math.ceil(this.totalRecords / 5);
     this.newTrade = this.emptyTrade();
   }
 
-  private emptyTrade(): TradeCreation {
+ private emptyTrade(): TradeCreation {
     return {
     wallet_id: 0, date: '', pair: '', lot_size: 1, direction: 'Buy',
       entry_price: 0, stop_loss: 0, take_profit: 0, exit_price: 0,
-      points_captured: 0, win_loss: 'Win', risk_reward: 0,
+      points_captured: 0, win_loss: 'WIN', risk_reward: 0,   
       profit: 0, loss: 0, reason: '', remark: '',
     };
-  }
+}
 
 
 
@@ -312,6 +361,14 @@ clearZero(event: FocusEvent): void {
   const input = event.target as HTMLInputElement;
   if (input.value === '0') {
     input.value = '';
+  }
+}
+
+onWinLossChange(trade: { win_loss: string; profit: number; loss: number }): void {
+  if (trade.win_loss === 'WIN') {
+    trade.loss = 0;
+  } else if (trade.win_loss === 'LOSS') {
+    trade.profit = 0;
   }
 }
 }

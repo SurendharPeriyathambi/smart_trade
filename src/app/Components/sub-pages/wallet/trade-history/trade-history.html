@@ -204,7 +204,7 @@
                     }
                     @else{
 
-                    <select class="table-select" [(ngModel)]="trade.win_loss">
+                    <select class="table-select" [(ngModel)]="trade.win_loss" (ngModelChange)="onWinLossChange(trade)">
 
                         <option value="WIN">WIN</option>
                         <option value="LOSS">LOSS</option>
@@ -506,7 +506,7 @@
                 <div class="form-group">
     <label>Win / Loss</label>
 
-    <select class="form-select" [(ngModel)]="newTrade.win_loss" name="win_loss">
+    <select class="form-select" [(ngModel)]="newTrade.win_loss" name="win_loss" (ngModelChange)="onWinLossChange(newTrade)">
 
         <option value="WIN">WIN</option>
         <option value="LOSS">LOSS</option>
@@ -514,17 +514,17 @@
     </select>
 
 </div>
-               <div class="form-group">
+             <div class="form-group">
     <label>Profit</label>
     <input type="number" class="form-control" [(ngModel)]="newTrade.profit" name="profit"
-        [disabled]="newTrade.win_loss === 'Loss'"
+        [disabled]="newTrade.win_loss !== 'WIN'"
         (focus)="clearZero($event)">
 </div>
 
 <div class="form-group ">
     <label>Loss</label>
     <input type="number" class="form-control" [(ngModel)]="newTrade.loss" name="loss"
-        [disabled]="newTrade.win_loss === 'Win'"
+        [disabled]="newTrade.win_loss !== 'LOSS'"
         (focus)="clearZero($event)">
 </div>
                 <div class="form-group ">
