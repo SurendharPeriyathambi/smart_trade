@@ -27,6 +27,6 @@ export class ChartService {
   //   return this.https.get<Apiresponse<any>>(`api/common/wasabi_file?path=${path}`);
   // }
   getWasabiFile(path: string) {
-    return this.http.get<any>(`${this.apiBaseUrl}/common/get_json?path=${path}`);
+    return this.http.get<any>(`${this.apiBaseUrl}/get_json?path=${path}`);
   }
 }
