@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, Input } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { SubscriptionState } from '../../main-pages/subscriptions/subscription_state.service';
+import { Coopen } from '../coopen/coopen';
+import { SubscriptionPlans } from '../subscription-plans/subscription-plans';
 
 @Component({
   selector: 'app-subscription-summary',
-  imports: [CommonModule],
+  imports: [CommonModule,Coopen,SubscriptionPlans],
   templateUrl: './subscription-summary.html',
   styleUrl: './subscription-summary.scss',
 })
@@ -33,5 +35,11 @@ export class SubscriptionSummary {
 
     return diffDays > 0 ? diffDays : 0;
   });
+
+  @Output() renewalClicked = new EventEmitter<void>();
+
+   onRenewalClick() {
+    this.renewalClicked.emit();
+  }
 }
 
