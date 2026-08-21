@@ -121,6 +121,7 @@ export interface WeeklkyVideoUrlResponce{
 export interface OrderRequest{
      amount : string,
     tag:string,
+    is_renew:boolean,
     plan_id:string,
     code:string
 }

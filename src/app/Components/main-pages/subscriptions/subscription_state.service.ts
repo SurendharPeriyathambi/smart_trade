@@ -444,7 +444,9 @@ export class SubscriptionState {
       },
     });
   }
-
+loadPlansForRenewal() {
+  this.loadPlans();
+}
   uploadImage(image: File) {
     if (this._uploading()) return;
     this._uploading.set(true);

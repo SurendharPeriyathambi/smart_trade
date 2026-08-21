@@ -119,10 +119,26 @@
       <div class="card-body">
         <!-- Plan Name -->
         <h3 class="plan-name-title">{{ subscription()?.plan_name || 'Demo' }}</h3>
-        <span class="remaing-days" *ngIf="subscriptionStatus() === 'active' || subscriptionStatus() === 'approved'">
-          Remaining: {{remainingDays()}} {{remainingDays() === 1 ? 'day': 'days'}}
-        </span>
+     @if (
+  subscriptionStatus() === 'active' ||
+  subscriptionStatus() === 'approved'
+) {
+  
+  @if (remainingDays() !== 0) {
+    <span class="remaing-days">
+      Remaining: {{ remainingDays() }}
+      {{ remainingDays() === 1 ? 'day' : 'days' }}
+    </span>
+  } @else {
+    <div class="d-flex justify-content-end">
+       <button class="renewal-btn" (click)="onRenewalClick()">
+      Renewal
+    </button>
+    </div>
+   
+  }
 
+}
         <!-- Subscription Information -->
         <div class="info-grid-2">
           <div class="info-row">
@@ -199,4 +215,5 @@
       </div>
 
     </div>
+ 
     </div>
