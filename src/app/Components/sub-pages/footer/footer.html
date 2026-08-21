@@ -2,68 +2,63 @@
 <footer class="footer">
   <div class="container my-lg-4 pt-sm-0">
     <div class="footer-content  d-md-flex justify-content-md-between">
-     
+
 
       <div class="footer-section">
         <!-- <h4 class="footer-title">Home</h4> -->
-  <div class="footer-section">
-  <ul class="nav footer-links">
-    <li class="nav-link px-5">
-      <a (click)="scrollTo('hero')" style="cursor:pointer">Home</a>
-    </li>
-    <li class="nav-link px-5">
-      <a routerLink="/about" style="cursor:pointer">About Us</a>
-    </li>
-    <li class="nav-link px-5">
-      <a (click)="scrollTo('courses')" style="cursor:pointer">Courses</a>
-    </li>
-  </ul> 
-</div>
+        <div class="footer-section">
+          <ul class="nav footer-links">
+            <li class="nav-link px-5">
+              <a (click)="scrollTo('hero')" style="cursor:pointer">Home</a>
+            </li>
+            <li class="nav-link px-5">
+              <a routerLink="/about" style="cursor:pointer">About Us</a>
+            </li>
+            <li class="nav-link px-5">
+              <a (click)="scrollTo('courses')" style="cursor:pointer">Courses</a>
+            </li>
+          </ul>
+        </div>
       </div>
 
-   
+
 
       <div class="footer-section">
-       <div class="social-links">
-  <a 
-    [href]="social.url" 
-    *ngFor="let social of socialLinks" 
-    class="social-icon"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <span>
-      <i [class]="social.icon"></i>
-    </span>
-  </a>
-</div>
+        <div class="social-links">
+          <a [href]="social.url" *ngFor="let social of socialLinks" class="social-icon" target="_blank"
+            rel="noopener noreferrer">
+            <span>
+              <i [class]="social.icon"></i>
+            </span>
+          </a>
+        </div>
       </div>
     </div>
-     <div class="footer-section d-lg-none d-md-none mt-2">
-        <!-- <h4 class="footer-title">Home</h4> -->
-        <ul class="nav footer-link">
-          <li class="nav-link" >
-            <a [href]="'#'">Disclaimer and Risk Disclosure Agreement</a>
-          </li>
-          <li class="nav-link" >
-            <a  (click)="openPrivacy()">Privacy Policy</a>
-          </li>
-        </ul>
-      </div>
+    <div class="footer-section d-lg-none d-md-none mt-2">
+      <!-- <h4 class="footer-title">Home</h4> -->
+      <ul class="nav footer-link">
+        <li class="nav-link">
+          <a [href]="'#'">Disclaimer and Risk Disclosure Agreement</a>
+        </li>
+        <li class="nav-link">
+          <a (click)="openPrivacy()">Privacy Policy</a>
+        </li>
+      </ul>
+    </div>
 
     <div class="footer-bottom">
-       <p class="copyright">
+      <p class="copyright">
         © {{ currentYear }} Smart Trade Academy. All rights reserved.
       </p>
-     
-     
-       <div class="footer-section d-lg-block d-md-block d-none">
-      
+
+
+      <div class="footer-section d-lg-block d-md-block d-none">
+
         <ul class="nav footer-links">
-          <li class="nav-link" >
+          <li class="nav-link">
             <a (click)="openTerms()">Disclaimer and Risk Disclosure Agreement</a>
           </li>
-          <li class="nav-link" >
+          <li class="nav-link">
             <a (click)="openPrivacy()">Privacy Policy</a>
           </li>
         </ul>
@@ -73,184 +68,219 @@
   <!-- Trigger -->
 
 
-<!-- Modal -->
-<div class="modal-backdrop" *ngIf="isPrivacyOpen">
-  <div class="modal-container">
+  <!-- Modal -->
+  <div class="modal-backdrop" *ngIf="isPrivacyOpen">
+    <div class="modal-container">
 
-    <!-- Header -->
-    <div class="modal-header">
-      <div>
-        <h2>Privacy Policy</h2>
-        <small>Last updated: March 2026</small>
+      <!-- Header -->
+      <div class="modal-header">
+        <div>
+          <h2>Privacy Policy</h2>
+          <small>Last updated: March 2026</small>
+        </div>
+        <button class="close-btn" (click)="closePrivacy()">✕</button>
       </div>
-      <button class="close-btn" (click)="closePrivacy()">✕</button>
-    </div>
 
-    <!-- Body -->
-    <div class="modal-body">
-      <button class="tag-btn">🔒 Your Privacy Matters</button>
-<div class="content-wrapper">
-   <h3 class="content-title">Master the Markets: Elite Institutional Trading Program</h3>
-      <p class="content-para">
-      Experience a learning journey that goes beyond traditional education. We provide an immersive environment designed to turn you into a professional, profitable trader.
-      </p>
+      <!-- Body -->
+      <div class="modal-body">
+        <button class="tag-btn">🔒 Your Privacy Matters</button>
+        <div class="content-wrapper">
+          <h3 class="content-title">Master the Markets: Elite Institutional Trading Program</h3>
+          <p class="content-para">
+            Experience a learning journey that goes beyond traditional education. We provide an immersive environment
+            designed to turn you into a professional, profitable trader.
+          </p>
 
-      <!-- <p class="content-para ">
+          <!-- <p class="content-para ">
         Mail at: <a href="#">webplatf@gmail.com</a> | Reach us: +91 7695828115
       </p> -->
-</div>
-     
-<div class="content-wrapper">
-   <h3 class="content-title">1.Comprehensive Curriculum: From Basics to Mastery</h3>
-      <p class="content-para">
-      We specialize in Smart Money Concepts (SMC), guiding you through the exact strategies used by institutional banks.
-      </p>
- <ul class="content-list">
-        <li class="content-item"> <span>Foundational Basics:</span>Start from the very beginning of market structure.</li>
-        <li class="content-item"> <span>Advanced Concepts:</span>Deep dive into liquidity, order blocks, and high-probability entry models.</li>
-        <li  class="content-item"> <span>Expert Mentorship:</span>Learn directly from successful funded traders who provide personalized guidance based on real-world results.</li>
-        
-      </ul>
-</div>
-     
-      <div class="content-wrapper">
-        <h3 class="content-title">2.Innovative Learning with High-End Visuals</h3>
-        <p>Say goodbye to boring, long lectures! We value your time and engagement.</p>
-      <ul class="content-list">
-        <li class="content-item"> <span>Graphic-Rich Videos:</span> Our lessons are designed with high-quality graphics and animations to make complex concepts easy to understand.</li>
-        <li class="content-item"> <span>Optimized Learning:</span>Our visual approach ensures you save time and stay engaged throughout the course, making the learning process fast and effective.</li>
-       
-        
-      </ul>
-    </div>
-      <div class="content-wrapper">
-        <h3 class="content-title">3.Real-World Trading Floor Experience</h3>
-        <p class="content-para">We don’t just teach; we provide a space for you to grow.</p>
+        </div>
 
-      <ul  class="content-list">
-        <li class="content-item"> <span>Trading Floor Access:</span>You have the exclusive option to use our professional trading floor.
-</li>
-        <li class="content-item"> <span>Collaborative Trading:</span>You aren't just here to study—you can trade live alongside our experienced traders, gaining insights from their real-time decisions and market analysis.
-</li>
-       
-        
-      </ul>
-    </div>
+        <div class="content-wrapper">
+          <h3 class="content-title">1.Comprehensive Curriculum: From Basics to Mastery</h3>
+          <p class="content-para">
+            We specialize in Smart Money Concepts (SMC), guiding you through the exact strategies used by institutional
+            banks.
+          </p>
+          <ul class="content-list">
+            <li class="content-item"> <span>Foundational Basics:</span>Start from the very beginning of market
+              structure.</li>
+            <li class="content-item"> <span>Advanced Concepts:</span>Deep dive into liquidity, order blocks, and
+              high-probability entry models.</li>
+            <li class="content-item"> <span>Expert Mentorship:</span>Learn directly from successful funded traders who
+              provide personalized guidance based on real-world results.</li>
+
+          </ul>
+        </div>
+
+        <div class="content-wrapper">
+          <h3 class="content-title">2.Innovative Learning with High-End Visuals</h3>
+          <p>Say goodbye to boring, long lectures! We value your time and engagement.</p>
+          <ul class="content-list">
+            <li class="content-item"> <span>Graphic-Rich Videos:</span> Our lessons are designed with high-quality
+              graphics and animations to make complex concepts easy to understand.</li>
+            <li class="content-item"> <span>Optimized Learning:</span>Our visual approach ensures you save time and stay
+              engaged throughout the course, making the learning process fast and effective.</li>
 
 
-    <div class="content-wrapper">
-        <h3 class="content-title">4.Data-Driven Performance Tracking</h3>
-        <p class="content-para">To become a pro, you must track like a pro.</p>
-      <ul class="content-list">
-        <li  class="content-item"> <span>Trading Journal Software:</span>We provide premium journaling software to all our students.</li>
-        <li  class="content-item"> <span>Performance Analytics:</span>Easily track your progress, analyze your win rates, and identify areas for improvement so you always know exactly where you stand in your trading journey.</li>
-       
-        
-      </ul>
-    </div>
+          </ul>
+        </div>
+        <div class="content-wrapper">
+          <h3 class="content-title">3.Real-World Trading Floor Experience</h3>
+          <p class="content-para">We don’t just teach; we provide a space for you to grow.</p>
 
-    <div class="content-wrapper">
-   <h3 class="content-title">5.Ultimate Flexibility</h3>
-      <p class="content-para">
-      Your schedule shouldn't stop your success.
-      </p>
-      <ul class="content-list">
-        <li  class="content-item"> <span>Trading Journal Software:</span>We provide premium journaling software to all our students.</li>
-        <li  class="content-item"> <span>Learn Anywhere:</span>There is no requirement to be physically present. Complete the entire course through our video modules at...</li>
-       
-        
-      </ul>
-</div>
+          <ul class="content-list">
+            <li class="content-item"> <span>Trading Floor Access:</span>You have the exclusive option to use our
+              professional trading floor.
+            </li>
+            <li class="content-item"> <span>Collaborative Trading:</span>You aren't just here to study—you can trade
+              live alongside our experienced traders, gaining insights from their real-time decisions and market
+              analysis.
+            </li>
 
- 
 
-    </div>
+          </ul>
+        </div>
 
-    <!-- Footer -->
-    <div class="modal-footer">
-      <span>© 2026 smarttrade. All rights reserved.</span>
-      <button class="accept-btn" (click)="closePrivacy()">I Understand</button>
-    </div>
 
-  </div>
-</div>
-<div class="modal-backdrop" *ngIf="isTermsOpen">
-  <div class="modal-container">
+        <div class="content-wrapper">
+          <h3 class="content-title">4.Data-Driven Performance Tracking</h3>
+          <p class="content-para">To become a pro, you must track like a pro.</p>
+          <ul class="content-list">
+            <li class="content-item"> <span>Trading Journal Software:</span>We provide premium journaling software to
+              all our students.</li>
+            <li class="content-item"> <span>Performance Analytics:</span>Easily track your progress, analyze your win
+              rates, and identify areas for improvement so you always know exactly where you stand in your trading
+              journey.</li>
 
-    <!-- Header -->
-    <div class="modal-header">
-      <div>
-        <h2>Terms of Service</h2>
-        <small>Last updated: March 2026</small>
+
+          </ul>
+        </div>
+
+        <div class="content-wrapper">
+          <h3 class="content-title">5.Ultimate Flexibility</h3>
+          <p class="content-para">
+            Your schedule shouldn't stop your success.
+          </p>
+          <ul class="content-list">
+            <li class="content-item"> <span>Trading Journal Software:</span>We provide premium journaling software to
+              all our students.</li>
+            <li class="content-item"> <span>Learn Anywhere:</span>There is no requirement to be physically present.
+              Complete the entire course through our video modules at...</li>
+
+
+          </ul>
+        </div>
+
+
+
       </div>
-      <button class="close-btn" (click)="closeTerms()">✕</button>
-    </div>
 
-    <!-- Body -->
-    <div class="modal-body">
-      <button class="tag-btn"><i class="bi bi-file-earmark-text"></i> Please Read Carefully</button>
-<div class="content-wrapper">
-   <h3 class="content-title">1. Educational Purposes Only</h3>
-      <p class="content-para">
-​The information provided by Smart Trade Academy, including but not limited to recorded videos, course materials, webinars, and communications, is for educational and informational purposes only. None of the content provided constitutes investment, tax, legal, or financial advice.      </p>
-
-      
-</div>
-     
-      <div class="content-wrapper">
-        <h3 class="content-title">2.  Not a SEBI Registered Advisor</h3>
-         <p class="content-para">
-      ​Smart Trade and its instructors are not registered with the Securities and Exchange Board of India (SEBI) or any other financial regulatory authority as investment advisors or brokers. We do not provide "buy" or "sell" signals, nor do we manage client funds. The strategies shared are based on personal experience and technical analysis theories.
-      </p>
-     
-    </div>
-      <div class="content-wrapper">
-        <h3 class="content-title">3. High-Risk Warning</h3>
-        <p class="content-para">​Trading in the Indian Stock Market (NSE/BSE), Forex, and Commodities involves a high level of risk.
-​Risk of Loss: You may sustain a loss of some or all of your initial investment. You should never trade with money that you cannot afford to lose.
-​Market Volatility: Financial markets are unpredictable. Leveraged trading (such as Intraday or Forex) can work against you as well as for you.</p>
+      <!-- Footer -->
+      <div class="modal-footer">
+        <span>© 2026 smarttrade. All rights reserved.</span>
+        <button class="accept-btn" (click)="closePrivacy()">I Understand</button>
+      </div>
 
     </div>
-
-
-    <div class="content-wrapper">
-        <h3 class="content-title">4.No Guarantees of Profit</h3>
-        <p class="content-para">
-          While our course discusses the potential for achieving an annual return of 20% to 30%, this is an estimate based on historical observations and not a guarantee.
-​Trading success depends on individual discipline, experience, risk management, and market conditions.
-​Past performance is not indicative of future results. Your personal results will vary, and there is no guarantee that you will achieve any profit at all</p>
-     
-    </div>
-
- 
-
- <div class="content-wrapper">
-        <h3 class="content-title">5. Limitation of Liability</h3>
-         <p class="content-para">​By enrolling in this course or using our website, you agree that Smart Trade and its representatives shall not be held responsible or liable for any financial losses, damages, or costs incurred as a result of your trading activities.
-​You and you alone are responsible for every trade you place.
-​Smart Trade does not guarantee the accuracy or completeness of the information provided in the recorded videos.</p>
-
-    </div>
-    <div class="content-wrapper">
-   <h3 class="content-title">6.Individual Responsibility</h3>
-      <p class="content-para">
-      The decision to enter any trade is yours alone. We strongly recommend that you consult with a certified financial professional and practice using a "demo account" before risking actual capital.</p>
-</div>
-    <div class="content-wrapper">
-   <h3 class="content-title">7. Intellectual Property</h3>
-      <p class="content-para">
-By accessing this course or website, you acknowledge that you have read, understood, and agreed to be bound by the terms of this Disclaimer. You accept full responsibility for your financial decisions.      </p>
-    
-      
-</div>
-    </div>
-
-    <!-- Footer -->
-    <div class="modal-footer">
-      <span>© 2026 smarttrade. All rights reserved.</span>
-      <button class="accept-btn" (click)="closeTerms()">I Understand</button>
-    </div>
-
   </div>
-</div>
+  <div class="modal-backdrop" *ngIf="isTermsOpen">
+    <div class="modal-container">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <div>
+          <h2>Terms of Service</h2>
+          <small>Last updated: March 2026</small>
+        </div>
+        <button class="close-btn" (click)="closeTerms()">✕</button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <button class="tag-btn"><i class="bi bi-file-earmark-text"></i> Please Read Carefully</button>
+        <div class="content-wrapper">
+          <h3 class="content-title">1. Educational Purposes Only</h3>
+          <p class="content-para">
+            ​The information provided by Smart Trade Academy, including but not limited to recorded videos, course
+            materials, webinars, and communications, is for educational and informational purposes only. None of the
+            content provided constitutes investment, tax, legal, or financial advice. </p>
+
+
+        </div>
+
+        <div class="content-wrapper">
+          <h3 class="content-title">2. Not a SEBI Registered Advisor</h3>
+          <p class="content-para">
+            ​Smart Trade and its instructors are not registered with the Securities and Exchange Board of India (SEBI)
+            or any other financial regulatory authority as investment advisors or brokers. We do not provide "buy" or
+            "sell" signals, nor do we manage client funds. The strategies shared are based on personal experience and
+            technical analysis theories.
+          </p>
+
+        </div>
+        <div class="content-wrapper">
+          <h3 class="content-title">3. High-Risk Warning</h3>
+          <p class="content-para">​Trading in the Indian Stock Market (NSE/BSE), Forex, and Commodities involves a high
+            level of risk.
+            ​Risk of Loss: You may sustain a loss of some or all of your initial investment. You should never trade with
+            money that you cannot afford to lose.
+            ​Market Volatility: Financial markets are unpredictable. Leveraged trading (such as Intraday or Forex) can
+            work against you as well as for you.</p>
+
+        </div>
+
+
+        <div class="content-wrapper">
+          <h3 class="content-title">4.No Guarantees of Profit</h3>
+          <p class="content-para">
+            While our course discusses the potential for achieving an annual return of 20% to 30%, this is an estimate
+            based on historical observations and not a guarantee.
+            ​Trading success depends on individual discipline, experience, risk management, and market conditions.
+            ​Past performance is not indicative of future results. Your personal results will vary, and there is no
+            guarantee that you will achieve any profit at all</p>
+
+        </div>
+
+
+
+        <div class="content-wrapper">
+          <h3 class="content-title">5. Limitation of Liability</h3>
+          <p class="content-para">​By enrolling in this course or using our website, you agree that Smart Trade and its
+            representatives shall not be held responsible or liable for any financial losses, damages, or costs incurred
+            as a result of your trading activities.
+            ​You and you alone are responsible for every trade you place.
+            ​Smart Trade does not guarantee the accuracy or completeness of the information provided in the recorded
+            videos.</p>
+
+        </div>
+        <div class="content-wrapper">
+          <h3 class="content-title">6.Individual Responsibility</h3>
+          <p class="content-para">
+            The decision to enter any trade is yours alone. We strongly recommend that you consult with a certified
+            financial professional and practice using a "demo account" before risking actual capital.</p>
+        </div>
+        <div class="content-wrapper">
+          <h3 class="content-title">7. Intellectual Property</h3>
+          <p class="content-para">
+            By accessing this course or website, you acknowledge that you have read, understood, and agreed to be bound
+            by the terms of this Disclaimer. You accept full responsibility for your financial decisions. </p>
+        </div>
+        <div class="content-wrapper">
+          <h3 class="content-title">8. ​Digital Content & No-Refund Policy</h3>
+          <p class="content-para">Due to the immediate access granted to proprietary trading strategies, recorded
+            materials, and LMS digital resources, all purchases are final and 100% non-refundable. Please review the
+            course curriculum and prerequisites carefully before completing your payment. By proceeding with the
+            purchase, you acknowledge and agree to these terms.</p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <span>© 2026 smarttrade. All rights reserved.</span>
+        <button class="accept-btn" (click)="closeTerms()">I Understand</button>
+      </div>
+
+    </div>
+  </div>
 </footer>
