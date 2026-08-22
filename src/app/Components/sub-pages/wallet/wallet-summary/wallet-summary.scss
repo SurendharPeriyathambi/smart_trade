@@ -132,7 +132,7 @@
 }
 
 .add-btn{
-    width:61%;
+    // width:61%;
     height:36px;
     border:none;
     border-radius:24px;
@@ -140,10 +140,12 @@
     color:#fff;
     font-weight:500;
     display:flex;
+    padding: 18px;
     justify-content:center;
     align-items:center;
     gap:10px;
     transition:.25s;
+    // font-size: 14px;
 }
 
 .add-btn:hover{
@@ -280,7 +282,9 @@
     }
 
     .add-btn{
-        width:50%;
+        // width:50%;
+        padding: 10px;
+        width: 100%;
     }
 
     .empty-wallet-state{
@@ -383,5 +387,19 @@
 @media (max-width: 767.98px) {
     .wallet-actions {
         flex-direction: column;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1496px) {
+    .add-btn{
+        font-size: 12px;
+    }
+
+    .wallet-action.deposit{
+        font-size: 12px;
+    }
+
+    .wallet-action.withdraw{
+        font-size: 12px;
     }
 }
