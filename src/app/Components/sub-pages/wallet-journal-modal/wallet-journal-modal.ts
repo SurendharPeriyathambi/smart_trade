@@ -19,7 +19,7 @@ interface ChartPoint {
 })
 export class WalletJournalModal implements OnInit {
 
-  constructor(private router: Router, private location: Location,private elRef: ElementRef) {}
+constructor(private router: Router, private location: Location,private elRef: ElementRef) {}
 
  
 @HostListener('document:click', ['$event'])
@@ -37,6 +37,59 @@ onDocumentClick(event: MouseEvent) {
   goBack(): void {
     this.location.back();
   }
+
+  chartType: 'line' | 'bar' = 'line';
+  chartPeriod: 'year' | 'month' | 'week' = 'month';
+
+selectedYear = 2026;
+selectedMonth = 7; 
+selectedWeek = 3;
+
+toggleChart(): void {
+  this.chartType = this.chartType === 'line' ? 'bar' : 'line';
+}
+
+years = [2024, 2025, 2026];
+
+months = [
+  { value: 0, label: 'January' },
+  { value: 1, label: 'February' },
+  { value: 2, label: 'March' },
+  { value: 3, label: 'April' },
+  { value: 4, label: 'May' },
+  { value: 5, label: 'June' },
+  { value: 6, label: 'July' },
+  { value: 7, label: 'August' },
+  { value: 8, label: 'September' },
+  { value: 9, label: 'October' },
+  { value: 10, label: 'November' },
+  { value: 11, label: 'December' }
+];
+
+weeks = [1, 2, 3, 4, 5];
+
+changeChartPeriod(
+  period: 'year' | 'month' | 'week'
+): void {
+
+  this.chartPeriod = period;
+
+  // Default values when switching
+  if (period === 'month') {
+    this.selectedYear = 2026;
+  }
+
+  if (period === 'week') {
+    this.selectedMonth = 7;
+    this.selectedYear = 2026;
+  }
+
+  this.onPeriodChange();
+}
+
+onPeriodChange(): void {
+  // filteredChartData automatically changes
+}
 
   readonly MAX_RANGE_DAYS = 30;
 
@@ -168,26 +221,127 @@ onDocumentClick(event: MouseEvent) {
   }
 
   // ---- Chart (sample data - trade balance over time) ----
-  chartData: ChartPoint[] = [
-    { label: 'Jul 21', value: 45000, fullDate: new Date(2026, 6, 21) },
-    { label: 'Jul 25', value: 47500, fullDate: new Date(2026, 6, 25) },
-    { label: 'Jul 29', value: 43200, fullDate: new Date(2026, 6, 29) },
-    { label: 'Aug 03', value: 51000, fullDate: new Date(2026, 7, 3) },
-    { label: 'Aug 07', value: 49800, fullDate: new Date(2026, 7, 7) },
-    { label: 'Aug 11', value: 58200, fullDate: new Date(2026, 7, 11) },
-    { label: 'Aug 15', value: 61000, fullDate: new Date(2026, 7, 15) },
-    { label: 'Aug 18', value: 65400, fullDate: new Date(2026, 7, 18) },
-  ];
+chartData: ChartPoint[] = [
 
-  get filteredChartData(): ChartPoint[] {
-    if (!this.rangeStart || !this.rangeEnd) {
-      return this.chartData;
-    }
-    const start = this.rangeStart;
-    const end = this.rangeEnd;
-    const filtered = this.chartData.filter(d => d.fullDate >= start && d.fullDate <= end);
-    return filtered.length > 0 ? filtered : this.chartData;
+  // 2025
+  { label: 'Jan 05', value: 42000, fullDate: new Date(2025, 0, 5) },
+  { label: 'Jan 12', value: 45000, fullDate: new Date(2025, 0, 12) },
+  { label: 'Jan 20', value: 43500, fullDate: new Date(2025, 0, 20) },
+
+  { label: 'Mar 04', value: 47000, fullDate: new Date(2025, 2, 4) },
+  { label: 'Mar 15', value: 49500, fullDate: new Date(2025, 2, 15) },
+
+  { label: 'Jul 08', value: 51000, fullDate: new Date(2025, 6, 8) },
+  { label: 'Jul 18', value: 53500, fullDate: new Date(2025, 6, 18) },
+
+  // 2026
+  { label: 'Jan 05', value: 44000, fullDate: new Date(2026, 0, 5) },
+  { label: 'Jan 15', value: 48000, fullDate: new Date(2026, 0, 15) },
+
+  { label: 'Jun 05', value: 52000, fullDate: new Date(2026, 5, 5) },
+  { label: 'Jun 15', value: 55000, fullDate: new Date(2026, 5, 15) },
+
+  { label: 'Jul 21', value: 45000, fullDate: new Date(2026, 6, 21) },
+  { label: 'Jul 25', value: 47500, fullDate: new Date(2026, 6, 25) },
+  { label: 'Jul 29', value: 43200, fullDate: new Date(2026, 6, 29) },
+
+  { label: 'Aug 03', value: 51000, fullDate: new Date(2026, 7, 3) },
+  { label: 'Aug 07', value: 49800, fullDate: new Date(2026, 7, 7) },
+  { label: 'Aug 11', value: 58200, fullDate: new Date(2026, 7, 11) },
+  { label: 'Aug 15', value: 61000, fullDate: new Date(2026, 7, 15) },
+  { label: 'Aug 18', value: 65400, fullDate: new Date(2026, 7, 18) },
+];
+  // get filteredChartData(): ChartPoint[] {
+  //   if (!this.rangeStart || !this.rangeEnd) {
+  //     return this.chartData;
+  //   }
+  //   const start = this.rangeStart;
+  //   const end = this.rangeEnd;
+  //   const filtered = this.chartData.filter(d => d.fullDate >= start && d.fullDate <= end);
+  //   return filtered.length > 0 ? filtered : this.chartData;
+  // }
+
+ get filteredChartData(): ChartPoint[] {
+
+  // YEAR
+  // No selection required
+  if (this.chartPeriod === 'year') {
+
+    return this.years.map(year => {
+
+      const data = this.chartData.filter(item =>
+        item.fullDate.getFullYear() === year
+      );
+
+      return {
+        label: year.toString(),
+        value: data.length
+          ? data[data.length - 1].value
+          : 0,
+        fullDate: new Date(year, 11, 31)
+      };
+
+    });
   }
+
+
+  // MONTH
+  // Selected YEAR → 12 months
+  if (this.chartPeriod === 'month') {
+
+    return this.months.map((month, index) => {
+
+      const data = this.chartData.filter(item =>
+        item.fullDate.getFullYear() === this.selectedYear &&
+        item.fullDate.getMonth() === index
+      );
+
+      return {
+        label: month.label.substring(0, 3),
+        value: data.length
+          ? data[data.length - 1].value
+          : 0,
+        fullDate: new Date(this.selectedYear, index, 1)
+      };
+
+    });
+  }
+
+
+  // WEEK
+  // Selected MONTH + YEAR → 4 weeks
+  return [1, 2, 3, 4].map(week => {
+
+    const startDay = ((week - 1) * 7) + 1;
+    const endDay = week * 7;
+
+    const data = this.chartData.filter(item => {
+
+      const date = item.fullDate;
+
+      return (
+        date.getFullYear() === this.selectedYear &&
+        date.getMonth() === this.selectedMonth &&
+        date.getDate() >= startDay &&
+        date.getDate() <= endDay
+      );
+
+    });
+
+    return {
+      label: `Week ${week}`,
+      value: data.length
+        ? data[data.length - 1].value
+        : 0,
+      fullDate: new Date(
+        this.selectedYear,
+        this.selectedMonth,
+        startDay
+      )
+    };
+
+  });
+}
 
   chartWidth = 420;
   chartHeight = 240;
@@ -241,4 +395,39 @@ onDocumentClick(event: MouseEvent) {
 
     return this.chartData[idx].value - this.chartData[idx - 1].value;
   }
+
+  barWidth = 14;
+
+barX(i: number): number {
+  return this.xPos(i) - this.barWidth / 2;
+}
+
+barY(value: number): number {
+  return this.yPos(value);
+}
+
+barHeight(value: number): number {
+  const bottom = this.padding.top + this.plotHeight;
+
+  return bottom - this.yPos(value);
+}
+
+getTradeCount(day: number | null): number {
+  if (!day) return 0;
+
+  const d = this.dateFor(day);
+
+  const tradeCounts: Record<string, number> = {
+    '2026-08-03': 1,
+    '2026-08-07': 1,
+    '2026-08-11': 4,
+    '2026-08-15': 2,
+    '2026-08-18': 2
+  };
+
+  const key =
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+  return tradeCounts[key] ?? 0;
+}
 }

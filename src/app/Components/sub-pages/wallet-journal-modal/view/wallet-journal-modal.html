@@ -73,15 +73,32 @@
 
               <div class="week-row days">
                 @for (day of calendarDays; track $index) {
-                <div class="day-cell" [class.empty]="!day" [class.in-range]="isInRange(day)">
+                <div class="day-cell" [class.empty]="!day" [class.in-range]="isInRange(day)"
+                  [class.has-pnl]="day && getPnL(day) !== null">
                   @if (day) {
+
                   @let pnl = getPnL(day);
-                  <span>{{ day }}</span>
-                  @if (pnl !== null) {
-                  <small class="pnl-amount" [class.profit]="pnl > 0" [class.loss]="pnl < 0">
-                    {{ pnl | number:'1.0-0' }}
+                  @let tradeCount = getTradeCount(day);
+
+                  <span class="day-number">
+                    {{ day }}
+                  </span>
+
+                  @if (tradeCount > 0) {
+                  <small class="trade-info">
+                    <span>{{ tradeCount }}</span>
+                    <i class="bi bi-arrow-left-right"></i>
                   </small>
                   }
+
+                  @if (pnl !== null) {
+                  <small class="pnl-amount" [class.profit]="pnl > 0" [class.loss]="pnl < 0">
+
+                    {{ pnl | number:'1.0-0' }}
+
+                  </small>
+                  }
+
                   }
                 </div>
                 }
@@ -99,10 +116,10 @@
       <div class="journal-col">
 
         <div class="filter-wrap">
-          <button class="filter-toggle-btn" [class.active]="showFilter" (click)="toggleFilter()">
+          <!-- <button class="filter-toggle-btn" [class.active]="showFilter" (click)="toggleFilter()">
             <i class="bi bi-funnel"></i>
             Filter
-          </button>
+          </button> -->
 
           @if (isRangeActive && !showFilter) {
           <div class="selected-range-chip">
@@ -147,49 +164,193 @@
           </div>
           }
         </div>
+        <div class="chart-period-wrapper">
 
-        <div class="journal-box chart-box">
+          <!-- PERIOD -->
+          <div class="period-tabs">
 
-          <div class="box-header">
-            <h5>Balance History</h5>
+            <button [class.active]="chartPeriod === 'year'" (click)="changeChartPeriod('year')">
+              Year
+            </button>
+
+            <button [class.active]="chartPeriod === 'month'" (click)="changeChartPeriod('month')">
+              Month
+            </button>
+
+            <button [class.active]="chartPeriod === 'week'" (click)="changeChartPeriod('week')">
+              Week
+            </button>
 
           </div>
 
+
+          <!-- MONTH -->
+          @if (chartPeriod === 'month') {
+
+          <!-- YEAR ONLY -->
+          <select class="period-select" [(ngModel)]="selectedYear" (ngModelChange)="onPeriodChange()">
+
+            @for (year of years; track year) {
+            <option [ngValue]="year">
+              {{ year }}
+            </option>
+            }
+
+          </select>
+
+          }
+
+
+          <!-- WEEK -->
+          @if (chartPeriod === 'week') {
+
+          <!-- MONTH -->
+          <select class="period-select" [(ngModel)]="selectedMonth" (ngModelChange)="onPeriodChange()">
+
+            @for (month of months; track month.value) {
+            <option [ngValue]="month.value">
+              {{ month.label }}
+            </option>
+            }
+
+          </select>
+
+
+          <!-- YEAR -->
+          <select class="period-select" [(ngModel)]="selectedYear" (ngModelChange)="onPeriodChange()">
+
+            @for (year of years; track year) {
+            <option [ngValue]="year">
+              {{ year }}
+            </option>
+            }
+
+          </select>
+
+          }
+
+        </div>
+
+
+        <div class="journal-box chart-box">
+
+          <!-- Chart Header -->
+          <div class="box-header">
+
+            <h5>Balance History</h5>
+
+            <button class="chart-toggle-btn" (click)="toggleChart()">
+              @if (chartType === 'line') {
+              <i class="bi bi-bar-chart"></i>
+              <span>Bar Chart</span>
+              } @else {
+              <i class="bi bi-graph-up"></i>
+              <span>Line Chart</span>
+              }
+            </button>
+
+          </div>
+
+
           <div class="box-body">
 
+            <!-- Subtitle -->
             <small class="chart-subtitle">
+
               @if (isRangeActive) {
-              {{ rangeStart | date:'dd MMM' }} – {{ rangeEnd | date:'dd MMM yyyy' }}
+
+              {{ rangeStart | date:'dd MMM' }}
+              –
+              {{ rangeEnd | date:'dd MMM yyyy' }}
+
               } @else {
+
               Trade balance over time
+
               }
+
             </small>
 
+
+            <!-- No Data -->
             @if (filteredChartData.length === 0) {
 
-            <p class="no-data">No trades in this range</p>
+            <p class="no-data">
+              No trades in this range
+            </p>
 
             } @else {
 
+            <!-- Chart -->
             <svg [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight" class="line-chart">
 
+              <!-- ================= Y AXIS GRID ================= -->
+
               @for (tick of yAxisTicks; track $index) {
+
               <line [attr.x1]="padding.left" [attr.x2]="chartWidth - padding.right"
                 [attr.y1]="padding.top + (plotHeight / (yAxisTicks.length - 1)) * $index"
                 [attr.y2]="padding.top + (plotHeight / (yAxisTicks.length - 1)) * $index" class="grid-line" />
+
+              <!-- Y Axis Label -->
+
               <text [attr.x]="padding.left - 10"
                 [attr.y]="padding.top + (plotHeight / (yAxisTicks.length - 1)) * $index + 4" class="axis-label y-label">
                 {{ tick | number:'1.0-0' }}
               </text>
+
               }
+
+
+              <!-- ================= LINE CHART ================= -->
+
+              @if (chartType === 'line') {
+
+              <!-- Line -->
 
               <polyline [attr.points]="linePoints" class="chart-line" />
 
+
+              <!-- Dots + X Labels -->
+
               @for (point of filteredChartData; track $index) {
+
+              <!-- Dot -->
+
               <circle [attr.cx]="xPos($index)" [attr.cy]="yPos(point.value)" r="4" class="chart-dot" />
+
+
+              <!-- Date Label -->
+
               <text [attr.x]="xPos($index)" [attr.y]="chartHeight - 8" class="axis-label x-label">
                 {{ point.label }}
               </text>
+
+              }
+
+              }
+
+
+              <!-- ================= BAR CHART ================= -->
+
+              @else {
+
+              @for (point of filteredChartData; track $index) {
+
+              <!-- Bar -->
+
+              <rect [attr.x]="barX($index)" [attr.y]="barY(point.value)" [attr.width]="barWidth"
+                [attr.height]="barHeight(point.value)" class="chart-bar" />
+
+
+              <!-- Date Label -->
+
+              <text [attr.x]="xPos($index)" [attr.y]="chartHeight - 8" class="axis-label x-label">
+                {{ point.label }}
+              </text>
+
+              }
+
               }
 
             </svg>

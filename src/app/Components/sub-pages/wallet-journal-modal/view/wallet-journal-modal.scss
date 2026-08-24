@@ -299,137 +299,540 @@ $brand-border: #c3d0f0;
 }
 
 .calendar-box {
+  background: #ffffff;
+  border-radius: 16px;
 
-  .day-cell .pnl-amount {
-    display: block;
-    font-size: 8.5px;
-    font-weight: 700;
-    line-height: 1;
-    margin-top: 1px;
+  .box-header {
+    padding-bottom: 16px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #edf0f5;
 
-    &.profit { color: #16a34a; }
-    &.loss   { color: #dc2626; }
+    h5 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+    }
   }
 
+  .box-body {
+    padding-top: 8px;
+  }
+
+  /* ================= HEADER ================= */
+
   .calendar-header {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+    gap: 16px;
+    margin-bottom: 16px;
 
     h6 {
       margin: 0;
+      font-size: 18px;
       font-weight: 700;
-      font-size: 15px;
-      flex: 1;
-      text-align: center;
       color: #1f2937;
+      text-align: center;
+      letter-spacing: 0.3px;
     }
 
-    .nav-buttons { display: flex; gap: 6px; }
-
-    .nav-btn {
-      border: 1px solid #e5e7eb;
-      background: #fff;
-      border-radius: 8px;
-      width: 28px;
-      height: 28px;
-      cursor: pointer;
-      font-size: 12px;
-      color: $brand;
-
-      &:hover {
-        background: $brand-light;
-        border-color: $brand-border;
-      }
-    }
-
-    .today-btn {
-      border: 1px solid $brand-border;
-      background: $brand-light;
-      color: $brand;
-      border-radius: 8px;
-      padding: 5px 10px;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: 600;
-    }
-  }
-
-  .range-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    font-size: 11.5px;
-    color: $brand;
-    font-weight: 600;
-    margin-bottom: 8px;
-
-    .range-active {
+    .nav-buttons {
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .clear-range-btn {
-      border: none;
-      background: none;
-      color: #dc2626;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: underline;
-      padding: 0;
+    .nav-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      &:hover { color: #b91c1c; }
+      border: 1px solid #d9e0ea;
+      border-radius: 10px;
+      background: #ffffff;
+
+      color: $brand;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      i {
+        font-size: 14px;
+      }
+
+      &:hover {
+        background: $brand-light;
+        border-color: $brand-border;
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    .today-btn {
+      justify-self: end;
+
+      height: 36px;
+      padding: 0 15px;
+
+      border: 1px solid $brand-border;
+      border-radius: 10px;
+
+      background: $brand-light;
+      color: $brand;
+
+      font-size: 13px;
+      font-weight: 600;
+
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: $brand;
+        color: #ffffff;
+      }
     }
   }
 
+  /* ================= RANGE ================= */
+
+  .range-info {
+    margin-bottom: 14px;
+
+    .range-active {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+
+      padding: 7px 12px;
+
+      background: $brand-light;
+      border-radius: 8px;
+
+      color: $brand;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .clear-range-btn {
+      border: none;
+      background: transparent;
+
+      color: #dc2626;
+      font-size: 11px;
+      font-weight: 600;
+
+      cursor: pointer;
+
+      &:hover {
+        color: #b91c1c;
+      }
+    }
+  }
+
+  /* ================= CALENDAR ================= */
+
   .calendar-grid {
-    border: 1px solid #eee;
-    border-radius: 10px;
-    overflow: hidden;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
   }
 
   .week-row {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
   }
 
-  .headers .day-label {
-    text-align: center;
-    font-weight: 600;
-    padding: 6px 0;
-    font-size: 10.5px;
-    color: $brand;
-    background: $brand-light;
+  /* Week Names */
+
+  .headers {
+    margin-bottom: 6px;
+
+    .day-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      height: 34px;
+
+      font-size: 12px;
+      font-weight: 700;
+
+      color: $brand;
+      background: $brand-light;
+
+      border-radius: 8px;
+    }
+  }
+
+  /* ================= DAY CELLS ================= */
+
+  .days {
+    row-gap: 6px;
   }
 
   .day-cell {
-    text-align: center;
-    padding: 4px 0;
-    border-top: 1px solid #f0f0f0;
-    font-size: 11.5px;
+    position: relative;
+
+    min-height: 76px;
+    padding: 10px 8px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    background: #ffffff;
+
+    border: 1px solid #e7eaf0;
+    border-radius: 10px;
+
+    font-size: 13px;
     color: #374151;
 
-    &.empty { cursor: default; }
+    transition: all 0.2s ease;
+
+    cursor: default;
+
+
+      &.has-pnl {     
+      border-color: $brand-border;
+      background: #fafcff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      transform: translateY(-1px);
+  }
+
+    &:not(.empty):hover {
+      border-color: $brand-border;
+      background: #fafcff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      transform: translateY(-1px);
+    }
+
+    /* Date Number */
 
     span {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
+      width: 100%;
+      height: auto;
+
+      display: block;
+
+      text-align: left;
+
+      font-size: 14px;
+      font-weight: 600;
+
+      color: #374151;
     }
+
+    /* PnL */
+
+    .pnl-amount {
+      margin-top: auto;
+      padding-top: 8px;
+
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+
+      &.profit {
+        color: #16a34a;
+      }
+
+      &.loss {
+        color: #dc2626;
+      }
+    }
+
+    /* Empty cells */
+
+    &.empty {
+      background: #fafbfc;
+      border-color: transparent;
+      opacity: 0.45;
+    }
+
+    /* Selected / Range */
 
     &.in-range {
       background: $brand-light;
-      span { font-weight: 700; color: $brand; }
+      border-color: $brand-border;
+
+      span {
+        color: $brand;
+        font-weight: 700;
+      }
     }
   }
 }
 
+.trade-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 2px;
+
+  margin-top: auto;
+  margin-bottom: 2px;
+
+  color: #6b7280;
+  font-weight: 500;
+
+  // important
+  font-size: 12px;
+  line-height: 1;
+
+  white-space: nowrap;
+
+  span {
+    display: inline-block;
+
+    width: auto;
+    height: auto;
+
+    font-size: 12px;
+    line-height: 1;
+
+    border-radius: 0;
+  }
+
+  i {
+    display: inline-block;
+
+    font-size: 8px;
+    line-height: 1;
+
+    width: auto;
+    height: auto;
+  }
+}
+
+// .calendar-box {
+//   background: #18181d;
+//   border: 1px solid #2c2d35;
+//   border-radius: 16px;
+//   color: #e5e7eb;
+
+//   .box-header {
+//     padding-bottom: 16px;
+//     margin-bottom: 8px;
+//     border-bottom: 1px solid #30313a;
+
+//     h5 {
+//       margin: 0;
+//       font-size: 18px;
+//       font-weight: 700;
+//       color: #f3f4f6;
+//     }
+//   }
+
+//   .box-body {
+//     padding-top: 8px;
+//   }
+
+//   /* ================= HEADER ================= */
+
+//   .calendar-header {
+//     display: grid;
+//     grid-template-columns: 1fr auto 1fr;
+//     align-items: center;
+//     gap: 16px;
+//     margin-bottom: 16px;
+
+//     h6 {
+//       margin: 0;
+//       font-size: 18px;
+//       font-weight: 700;
+//       color: #f3f4f6;
+//       text-align: center;
+//       letter-spacing: 0.3px;
+//     }
+
+//     .nav-buttons {
+//       display: flex;
+//       gap: 8px;
+//     }
+
+//     .nav-btn {
+//       width: 36px;
+//       height: 36px;
+
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+
+//       border: 1px solid #383943;
+//       border-radius: 10px;
+
+//       background: #24242b;
+//       color: #d1d5db;
+
+//       cursor: pointer;
+//       transition: all 0.2s ease;
+
+//       i {
+//         font-size: 14px;
+//       }
+
+//       &:hover {
+//         background: #30313a;
+//         border-color: #4b5563;
+//         color: #ffffff;
+//       }
+//     }
+
+//     .today-btn {
+//       justify-self: end;
+
+//       height: 36px;
+//       padding: 0 15px;
+
+//       border: 1px solid #3b82f6;
+//       border-radius: 10px;
+
+//       background: #1e293b;
+//       color: #60a5fa;
+
+//       font-size: 13px;
+//       font-weight: 600;
+
+//       cursor: pointer;
+//       transition: all 0.2s ease;
+
+//       &:hover {
+//         background: #2563eb;
+//         color: #ffffff;
+//       }
+//     }
+//   }
+
+//   /* ================= CALENDAR ================= */
+
+//   .calendar-grid {
+//     border: none;
+//     overflow: visible;
+//   }
+
+//   .week-row {
+//     display: grid;
+//     grid-template-columns: repeat(7, minmax(0, 1fr));
+//     gap: 6px;
+//   }
+
+//   /* Week Days */
+
+//   .headers {
+//     margin-bottom: 6px;
+
+//     .day-label {
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+
+//       height: 34px;
+
+//       font-size: 12px;
+//       font-weight: 700;
+
+//       color: #9ca3af;
+//       background: transparent;
+//     }
+//   }
+
+//   /* ================= DAY CARD ================= */
+
+//   .days {
+//     row-gap: 6px;
+//   }
+
+//   .day-cell {
+//     position: relative;
+
+//     min-height: 82px;
+//     padding: 10px 12px;
+
+//     display: flex;
+//     flex-direction: column;
+//     align-items: flex-start;
+//     justify-content: flex-start;
+
+//     background: #232329;
+
+//     border: 1px solid #30313a;
+//     border-radius: 10px;
+
+//     color: #d1d5db;
+
+//     transition: all 0.2s ease;
+
+//     &:not(.empty):hover {
+//       background: #292a32;
+//       border-color: #4b5563;
+//       transform: translateY(-2px);
+//       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+//     }
+
+//     /* Date */
+
+//     span {
+//       width: 100%;
+
+//       font-size: 15px;
+//       font-weight: 500;
+
+//       color: #d1d5db;
+//       text-align: left;
+//     }
+
+//     /* PNL */
+
+//     .pnl-amount {
+//       width: 100%;
+//       margin-top: auto;
+
+//       padding-top: 10px;
+
+//       text-align: right;
+
+//       font-size: 13px;
+//       font-weight: 700;
+
+//       &.profit {
+//         color: #6fcf97;
+//       }
+
+//       &.loss {
+//         color: #e57373;
+//       }
+//     }
+
+//     /* Empty */
+
+//     &.empty {
+//       background: #1b1b20;
+//       border-color: transparent;
+//       opacity: 0.35;
+//     }
+
+//     /* Range */
+
+//     &.in-range {
+//       background: #162131;
+//       border-color: #2563eb;
+
+//       span {
+//         color: #60a5fa;
+//         font-weight: 700;
+//       }
+//     }
+//   }
+// }
 .chart-box {
 
   .chart-subtitle {
@@ -457,6 +860,112 @@ $brand-border: #c3d0f0;
     font-size: 12px;
     margin-top: 16px;
   }
+
+    .box-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+    
+  
+ 
+ 
+
+
+  .chart-toggle-btn {
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 7px 11px;
+
+   border: 2px solid #143AA3;
+    border-radius: 8px;
+
+  //  background: #16207f;
+     color: #143AA3;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+    background: #143AA3;
+    color: white;
+  }
+    i {
+    font-size: 18px;
+  }
+
+  }
+
+  .chart-bar {
+    fill: $brand;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+
+}
+
+
+.chart-period-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+
+.period-tabs {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  background: #eef2fb;
+  border: 1px solid #c3d0f0;
+  border-radius: 8px;
+
+  button {
+    border: none;
+    background: transparent;
+    color: #143aa3;
+    padding: 6px 11px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &.active {
+      background: #16207f;
+      color: #fff;
+    }
+  }
+}
+
+.period-select {
+  height: 32px;
+  padding: 0 26px 0 9px;
+  border: 1px solid #c3d0f0;
+  border-radius: 7px;
+  background: #eef2fb;
+  color: #143aa3;
+  font-size: 11px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+
+  &:focus {
+    border-color: $brand;
+  }
 }
 
 @media (max-width: 900px) {
@@ -470,5 +979,135 @@ $brand-border: #c3d0f0;
 
   .filter-panel {
     width: min(280px, calc(100vw - 32px));
+  }
+}
+
+
+@media (max-width: 768px) {
+
+  .chart-period-wrapper {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .period-tabs {
+    button {
+      padding: 6px 10px;
+    }
+  }
+
+  .period-select {
+    min-width: 80px;
+  }
+
+}
+
+@media (max-width: 576px) {
+
+  .chart-period-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    width: 100%;
+  }
+
+  .period-tabs {
+    grid-column: 1 / -1;
+    width: 100%;
+
+    button {
+      flex: 1;
+      text-align: center;
+    }
+  }
+
+  .period-select {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .calendar-box {
+
+    .days {
+      row-gap: 6px;
+    }
+
+    .day-cell {
+      min-height: 72px;
+      height: auto;
+
+      padding: 8px 6px;
+
+      border-radius: 10px;
+
+      box-sizing: border-box;
+
+      span {
+        width: auto !important;
+        height: auto !important;
+
+        font-size: 12px;
+      }
+
+      .trade-info {
+        margin-top: auto;
+        margin-left: 0;
+
+        font-size: 8px;
+
+        span {
+          font-size: 8px;
+        }
+
+        i {
+          font-size: 7px;
+        }
+      }
+
+      .pnl-amount {
+        font-size: 9px;
+        margin-top: 3px;
+        padding-top: 0;
+      }
+    }
+
+    .headers .day-label {
+      padding: 8px 0;
+      font-size: 10px;
+    }
+  }
+
+}
+
+@media (max-width: 400px) {
+
+ .calendar-box {
+
+    .day-cell {
+      min-height: 64px;
+      padding: 7px 5px;
+      border-radius: 9px;
+
+      span {
+        font-size: 11px;
+      }
+
+      .trade-info {
+        font-size: 8px;
+
+        span {
+          font-size: 8px;
+        }
+
+        i {
+          font-size: 7px;
+        }
+      }
+
+      .pnl-amount {
+        font-size: 8px;
+      }
+    }
   }
 }
