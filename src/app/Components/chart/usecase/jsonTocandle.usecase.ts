@@ -1048,7 +1048,7 @@ public validateLinesPixelBased(
     const savedMax = this.chartstate.zoomMaxPrice;
 
     if (wasZoomed && savedMin != null && savedMax != null) {
-      this.chartstate.chart.priceScale('right').applyOptions({ autoScale: false });
+      this.chartstate.chart.priceScale('right').applyOptions({ autoScale: true });
     }
 
     this.chartstate.lineSeriesMap.forEach((series) => {

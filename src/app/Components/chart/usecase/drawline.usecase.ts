@@ -53,6 +53,7 @@ export class DrawingUsecase {
         lineStyle: previewLineStyle,
         priceLineVisible: false,
         lastValueVisible: false,
+        autoscaleInfoProvider: () => null, 
       });
       this.chartState.hasFirstPoint = true;
     } else {
