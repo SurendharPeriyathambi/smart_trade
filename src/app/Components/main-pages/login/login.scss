@@ -460,3 +460,251 @@ span{
     font-size: 14px;
   }
 }
+.close-btn-text {
+  background: none;
+  border: none;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+/* =========================================================
+   Device Limit Modal
+   ========================================================= */
+
+.device-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 1100;
+  padding: 20px;
+}
+
+.device-modal-container {
+  width: 100%;
+  max-width: 430px;
+
+  background: #ffffff;
+  border-radius: 18px;
+
+  box-shadow:
+    0 20px 50px rgba(15, 23, 42, 0.18),
+    0 4px 12px rgba(15, 23, 42, 0.08);
+
+  overflow: hidden;
+
+  animation: deviceModalShow 0.2s ease-out;
+}
+
+
+/* Header */
+
+.device-modal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+
+  padding: 24px 24px 18px;
+}
+
+.device-modal-icon {
+  width: 44px;
+  height: 44px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #eef4ff;
+  color: #2f6fed;
+
+  border-radius: 12px;
+
+  font-size: 20px;
+}
+
+.device-modal-title {
+  flex: 1;
+}
+
+.device-modal-title h2 {
+  margin: 0 0 5px;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.device-modal-title p {
+  margin: 0;
+
+  font-size: 12px;
+  line-height: 18px;
+
+  color: #64748b;
+}
+
+
+/* Close button */
+
+.device-modal-close {
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f8fafc;
+  color: #64748b;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.device-modal-close:hover {
+  background: #f1f5f9;
+  color: #111827;
+}
+
+
+/* Body */
+
+.device-modal-body {
+  padding: 4px 24px 24px;
+}
+
+.device-modal-body p {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 23px;
+
+  color: #475569;
+}
+
+
+/* Footer */
+
+.device-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+
+  padding: 16px 24px;
+
+  border-top: 1px solid #eef2f7;
+
+  background: #fafbfc;
+}
+
+
+/* Cancel */
+
+.device-cancel-btn {
+  padding: 9px 18px;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #475569;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.device-cancel-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+
+/* Continue */
+
+.device-confirm-btn {
+  padding: 9px 20px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #2f6fed;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.device-confirm-btn:hover {
+  background: #2459c7;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(47, 111, 237, 0.25);
+}
+
+
+/* Animation */
+
+@keyframes deviceModalShow {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+  .device-modal-backdrop {
+    padding: 16px;
+  }
+
+  .device-modal-container {
+    max-width: 100%;
+    border-radius: 15px;
+  }
+
+  .device-modal-header {
+    padding: 20px 20px 15px;
+  }
+
+  .device-modal-body {
+    padding: 4px 20px 20px;
+  }
+
+  .device-modal-footer {
+    padding: 14px 20px;
+  }
+}

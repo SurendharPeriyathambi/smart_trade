@@ -87,7 +87,17 @@ export class Header implements OnInit {
       },
       error: (err) => {
         this.loader.hide();
-        this.toast.error('Logout failed. Please try again.');
+        const message = err.error.message ||'Logout failed. Please try again.'
+        if(message.toLowerCase().includes('something went wrong')){
+          this.storage.clear();
+           localStorage.removeItem('pending_logout');
+          localStorage.removeItem('unload_time');
+          this.isLoggedIn = false;
+          this.toast.error(message);
+          setTimeout(() => this.router.navigate(['/login']), 2500);
+          return;
+        }
+        this.toast.error(message);
       },
     });
   }

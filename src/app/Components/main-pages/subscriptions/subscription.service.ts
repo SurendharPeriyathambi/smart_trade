@@ -47,6 +47,7 @@ export class SubscriptionService {
     getCourseDetails(): Observable<CourseResponse> {
         return this.http.get<CourseResponse>('api/course_details', true)
     }
+    
 
     getCourseVideoUrl(videoPath: string): Observable<ApiResponce<VideoUrlResponce>> {
         return this.http.get<ApiResponce<VideoUrlResponce>>(`api/admin/v1/common/get_video?path=${videoPath}`);

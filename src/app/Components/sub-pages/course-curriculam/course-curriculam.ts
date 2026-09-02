@@ -73,7 +73,7 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
   previewVideo: CourseVideo | null = null;
   videoPlayerOpen = false;
   showPlayer = false;
-
+  
   // Cache the sanitized embed URL so we don't re-sanitize on every change
   // detection cycle (Angular treats a new SafeResourceUrl instance as a
   // change even if the underlying string is identical).
@@ -326,7 +326,13 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
       return a?.order_sort - b?.order_sort;
     });
   }
+  getSortedLessons(lessons: CourseLesson[] | undefined): CourseLesson[] {
+    if (!lessons?.length) return [];
 
+    return [...lessons].sort((a, b) => {
+      return (a as any)?.order_sort - (b as any)?.order_sort;
+    });
+  }
   getLatestCreatedDate(lessons: CourseLesson[] | undefined): string {
     if (!lessons?.length) {
       return '';

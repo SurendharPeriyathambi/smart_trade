@@ -20,11 +20,11 @@ export class Login implements OnInit {
   isMobile = window.innerWidth < 768;
 
   private authService =inject (AuthServices);
-  private authState = inject (AuthStateService);
+  protected authState = inject (AuthStateService);
     private deviceService =
     inject(DeviceService);
- ip : string = '';
-   deviceId: string = '';
+    ip : string = '';
+    deviceId: string = '';
 
  constructor() {
    afterNextRender(() => {

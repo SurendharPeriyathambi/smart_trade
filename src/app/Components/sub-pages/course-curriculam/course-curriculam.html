@@ -27,7 +27,7 @@
   </div>
 
   <!--    Outer loop: lessonSection = CourseLesson -->
-  <div class="section" *ngFor="let lessonSection of course()?.lesson">
+  <div class="section" *ngFor="let lessonSection of getSortedLessons(course()?.lesson)">
     <div class="section-header" (click)="toggleLesson(lessonSection.id)">
       <div class="left">
         <span class="arrow" [class.open]="expandedLessonId === lessonSection.id">

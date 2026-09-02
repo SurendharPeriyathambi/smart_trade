@@ -2,6 +2,7 @@ import { HttpBackend, HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { environment } from '../../app/environment';
+import { url } from 'node:inspector';
 
 @Injectable({ providedIn: 'root' })
 export class HttpEngine {
@@ -54,4 +55,61 @@ getIp(): Observable<string> {
             }
         );
     }
-}
+
+       // ─────────────────────────────────────────────
+      // PUT
+     // ─────────────────────────────────────────────
+
+     put<T>(url:string,body:any,isProtected:boolean=true):Observable<T>{
+        return this.http.put<T>(`${this.baseurl}${url}`,body,{
+            headers:{
+                'x-protected': String(isProtected)
+            },
+            withCredentials:true
+        })
+     }
+
+     // ─────────────────────────────────────────────
+    // PATCH
+    // ─────────────────────────────────────────────
+
+        patch<T>(
+        url: string,
+        body: any,
+        isProtected: boolean = true
+    ): Observable<T> {
+
+        return this.http.patch<T>(
+            `${this.baseurl}${url}`,
+            body,
+            {
+                headers: {
+                    'x-protected': String(isProtected)
+                },
+                withCredentials: true
+            }
+        );
+    }
+
+     // ─────────────────────────────────────────────
+    // DELETE
+    // ─────────────────────────────────────────────
+
+    delete<T>(
+        url: string,
+        isProtected: boolean = true
+    ): Observable<T> {
+
+        return this.http.delete<T>(
+            `${this.baseurl}${url}`,
+            {
+                headers: {
+                    'x-protected': String(isProtected)
+                },
+                withCredentials: true
+            }
+        );
+    }
+
+
+}  
