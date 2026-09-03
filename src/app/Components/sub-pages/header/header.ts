@@ -38,7 +38,7 @@ export class Header implements OnInit {
     private toast: ToastService,
     private router: Router,
     private deviceService: DeviceService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.isLoggedIn = !!this.storage.getAccessToken();
@@ -87,10 +87,10 @@ export class Header implements OnInit {
       },
       error: (err) => {
         this.loader.hide();
-        const message = err.error.message ||'Logout failed. Please try again.'
-        if(message.toLowerCase().includes('something went wrong')){
+        const message = err.error.message || 'Logout failed. Please try again.'
+        if (message.toLowerCase().includes('session not found for this device')) {
           this.storage.clear();
-           localStorage.removeItem('pending_logout');
+          localStorage.removeItem('pending_logout');
           localStorage.removeItem('unload_time');
           this.isLoggedIn = false;
           this.toast.error(message);
