@@ -207,7 +207,7 @@
           <!-- MONTH -->
           <select class="period-select" [(ngModel)]="selectedMonth" (ngModelChange)="onPeriodChange()">
 
-            @for (month of months; track month.value) {
+            @for (month of availableMonths; track month.value) {
             <option [ngValue]="month.value">
               {{ month.label }}
             </option>
@@ -273,7 +273,7 @@
 
 
             <!-- No Data -->
-            @if (filteredChartData.length === 0) {
+            @if (chartData.length === 0) {
 
             <p class="no-data">
               No trades in this range
@@ -313,7 +313,7 @@
 
               <!-- Dots + X Labels -->
 
-              @for (point of filteredChartData; track $index) {
+              @for (point of chartData; track $index) {
 
               <!-- Dot -->
 
@@ -335,7 +335,7 @@
 
               @else {
 
-              @for (point of filteredChartData; track $index) {
+              @for (point of chartData; track $index) {
 
               <!-- Bar -->
 
