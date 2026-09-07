@@ -23,6 +23,6 @@ export class TradeHistoryService{
     return this.http.post<WalletRes<any>>(`api/journal/trade/edit`,trade)
   }
   deleteTrade(id:number):Observable<WalletRes<any>>{
-    return this.http.delete<WalletRes<any>>(`${this.url}/trade/delete/${id}`)
+    return this.http.delete<WalletRes<any>>(`api/journal/trade/delete/${id}`)
   }
 }

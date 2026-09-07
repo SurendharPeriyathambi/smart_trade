@@ -12,7 +12,7 @@
 
         <div class="header-right">
 
-            <button class="add-trade-btn" (click)="openAddTrade($event)"   [disabled]="!walletCreated">
+            <button class="add-trade-btn" (click)="openAddTrade($event)" [disabled]="!walletCreated">
 
                 <i class="bi bi-plus-lg"></i>
 
@@ -60,19 +60,19 @@
         </div>
 
         <div class="table-body">
-    @if (trades.length === 0) {
-        <div class="empty-state">
-            <div class="empty-icon">
-                <i class="bi bi-graph-up"></i>
+            @if (trades.length === 0) {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <h6>No trades yet</h6>
+                <p>Start tracking your trading performance by adding your first trade.</p>
+                <button class="add-trade-btn" (click)="openAddTrade($event)" [disabled]="!walletCreated">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>create Trade</span>
+                </button>
             </div>
-            <h6>No trades yet</h6>
-            <p>Start tracking your trading performance by adding your first trade.</p>
-            <button class="add-trade-btn" (click)="openAddTrade($event)"  [disabled]="!walletCreated">
-                <i class="bi bi-plus-lg"></i>
-                <span>create Trade</span>
-            </button>
-        </div>
-    }@else {   @for (trade of trades; track trade.id) {
+            }@else { @for (trade of trades; track trade.id) {
 
             <div class="table-row">
 
@@ -116,7 +116,8 @@
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.entry_price" (ngModelChange)="calculateTrade(trade)">
+                    <input type="number" class="table-input" [(ngModel)]="trade.entry_price"
+                        (ngModelChange)="calculateTrade(trade)">
 
                     }
 
@@ -131,7 +132,8 @@
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.stop_loss" (ngModelChange)="calculateTrade(trade)">
+                    <input type="number" class="table-input" [(ngModel)]="trade.stop_loss"
+                        (ngModelChange)="calculateTrade(trade)" (keydown)="preventSymbols($event)">
 
                     }
 
@@ -146,7 +148,8 @@
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.take_profit" (ngModelChange)="calculateTrade(trade)">
+                    <input type="number" class="table-input" [(ngModel)]="trade.take_profit"
+                        (ngModelChange)="calculateTrade(trade)" (keydown)="preventSymbols($event)">
 
                     }
 
@@ -160,7 +163,8 @@
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.exit_price" (ngModelChange)="calculateTrade(trade)">
+                    <input type="number" class="table-input" [(ngModel)]="trade.exit_price"
+                        (ngModelChange)="calculateTrade(trade)" (keydown)="preventSymbols($event)">
 
                     }
 
@@ -176,7 +180,7 @@
                     {{ trade.risk_reward }}
                 </div>
 
-                 <div>
+                <div>
 
                     @if(!trade.isEditing){
 
@@ -185,7 +189,8 @@
                     }
                     @else{
 
-                    <input type="number" class="table-input" [(ngModel)]="trade.lot_size" (ngModelChange)="calculateTrade(trade)">
+                    <input type="number" class="table-input" [(ngModel)]="trade.lot_size"
+                        (ngModelChange)="calculateTrade(trade)" (keydown)="preventSymbols($event)">
 
                     }
 
@@ -228,9 +233,9 @@
                     }
                     @else{
 
-<input type="number" class="table-input" [(ngModel)]="trade.profit"
-    [disabled]="trade.win_loss === 'LOSS'"
-    (focus)="clearZero($event)">
+                    <input type="number" class="table-input" [(ngModel)]="trade.profit"
+                        [disabled]="trade.win_loss === 'LOSS'" (focus)="clearZero($event)"
+                        (keydown)="preventSymbols($event)">
                     }
 
                 </div>
@@ -248,9 +253,9 @@
                     }
                     @else{
 
-                   <input type="number" class="table-input" [(ngModel)]="trade.loss"
-    [disabled]="trade.win_loss === 'WIN'"
-    (focus)="clearZero($event)">
+                    <input type="number" class="table-input" [(ngModel)]="trade.loss"
+                        [disabled]="trade.win_loss === 'WIN'" (focus)="clearZero($event)"
+                        (keydown)="preventSymbols($event)">
 
                     }
 
@@ -299,11 +304,10 @@
 
                     </button>
 
-                    <!-- <button class="action-btn danger" (click)="deleteTrade(trade)" title="Delete">
 
+                    <button class="action-btn danger" (click)="onDeleteClick(trade)" title="Delete">
                         <i class="bi bi-trash"></i>
-
-                    </button> -->
+                    </button>
 
                     }
                     @else{
@@ -326,46 +330,46 @@
             </div>
 
             }
-}
-         
+            }
+
         </div>
 
     </div>
-  @if (trades.length > 0) {
-<div class="table-pagination">
+    @if (trades.length > 0) {
+    <div class="table-pagination">
 
-    <div class="pagination-info">
-        Showing
-        <strong>{{ trades.length }}</strong>
-        of
-        <strong>{{ totalRecords }}</strong>
-        trades
-    </div>
+        <div class="pagination-info">
+            Showing
+            <strong>{{ trades.length }}</strong>
+            of
+            <strong>{{ totalRecords }}</strong>
+            trades
+        </div>
 
-    <div class="pagination-controls">
+        <div class="pagination-controls">
 
-        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">
-            <i class="bi bi-chevron-left"></i>
-        </button>
+            <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">
+                <i class="bi bi-chevron-left"></i>
+            </button>
 
-        @for (p of pageNumbers; track $index) {
+            @for (p of pageNumbers; track $index) {
             @if (p === '...') {
-                <span class="dots">...</span>
+            <span class="dots">...</span>
             } @else {
-                <button class="page-number" [class.active]="p === currentPage" (click)="goToPage(+p)">
-                    {{ p }}
-                </button>
+            <button class="page-number" [class.active]="p === currentPage" (click)="goToPage(+p)">
+                {{ p }}
+            </button>
             }
-        }
+            }
 
-        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
-            <i class="bi bi-chevron-right"></i>
-        </button>
+            <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+
+        </div>
 
     </div>
-
-</div>
-}
+    }
 </section>
 
 @if(showTradeModal){
@@ -411,18 +415,22 @@
                 </div>
 
                 <div class="form-group">
-    <label>Date</label>
-    <input type="date" class="form-control" [(ngModel)]="newTrade.date" name="date"
-        [attr.min]="minTradeDate">
-    @if(minTradeDate){
-        <small class="text-muted">Trades allowed from {{ minTradeDate }} onward</small>
-    }
-</div>
-
+                    <label>Date</label>
+                    <input type="date" class="form-control" [class.input-error]="tradeErrors['date']"
+                        [(ngModel)]="newTrade.date" name="date" [min]="minTradeDate" [max]="maxTradeDate"
+                        (ngModelChange)="tradeErrors['date'] = false">
+                    @if (tradeErrors['date']) {
+                    <small class="error-text">Date is required</small>
+                    }
+                </div>
                 <div class="form-group">
                     <label>Pair</label>
-                    <input type="text" class="form-control" placeholder="BTC / USDT" [(ngModel)]="newTrade.pair"
-                        name="pair">
+                    <input type="text" class="form-control" [class.input-error]="tradeErrors['pair']"
+                        placeholder="BTC / USDT" [(ngModel)]="newTrade.pair" name="pair"
+                        (ngModelChange)="tradeErrors['pair'] = false">
+                    @if (tradeErrors['pair']) {
+                    <small class="error-text">Pair is required</small>
+                    }
                 </div>
 
                 <div class="form-group">
@@ -441,7 +449,8 @@
                 <div class="form-group">
                     <label>Entry Price</label>
                     <input type="number" class="form-control" [(ngModel)]="newTrade.entry_price"
-                        (ngModelChange)="calculateTrade(newTrade)" name="entry_price"  (focus)="clearZero($event)">
+                        (ngModelChange)="calculateTrade(newTrade)" name="entry_price" (focus)="clearZero($event)"
+                        (keydown)="preventSymbols($event)">
                 </div>
 
                 <!-- ========================= -->
@@ -459,24 +468,26 @@
                 <div class="form-group">
                     <label>Stop Loss</label>
                     <input type="number" class="form-control" [(ngModel)]="newTrade.stop_loss"
-                        (ngModelChange)="calculateTrade(newTrade)" name="stop_loss"  (focus)="clearZero($event)">
+                        (ngModelChange)="calculateTrade(newTrade)" name="stop_loss" (focus)="clearZero($event)" min="0"
+                        step="any" (keydown)="preventSymbols($event)">
                 </div>
 
                 <div class="form-group">
                     <label>Take Profit</label>
                     <input type="number" class="form-control" [(ngModel)]="newTrade.take_profit"
-                        (ngModelChange)="calculateTrade(newTrade)" name="take_profit"  (focus)="clearZero($event)" >
+                        (ngModelChange)="calculateTrade(newTrade)" name="take_profit" (focus)="clearZero($event)"
+                        (keydown)="preventSymbols($event)">
                 </div>
                 <div class="form-group">
                     <label>Lot Size</label>
-                    <input type="number" class="form-control" [(ngModel)]="newTrade.lot_size"
-                         name="lot_size"  (focus)="clearZero($event)"> 
+                    <input type="number" class="form-control" [(ngModel)]="newTrade.lot_size" name="lot_size"
+                        (focus)="clearZero($event)" (keydown)="preventSymbols($event)">
                 </div>
 
                 <div class="form-group ">
                     <label>Risk / Reward</label>
                     <input type="text" class="form-control" placeholder="1 : 2" [(ngModel)]="newTrade.risk_reward"
-                        readonly name="risk_reward" >
+                        readonly name="risk_reward">
                 </div>
 
                 <!-- ========================= -->
@@ -494,39 +505,50 @@
                 <div class="form-group">
                     <label>Exit Price</label>
                     <input type="number" class="form-control" [(ngModel)]="newTrade.exit_price"
-                        (ngModelChange)="calculateTrade(newTrade)" name="exit_price">
+                        (ngModelChange)="calculateTrade(newTrade)" name="exit_price" (keydown)="preventSymbols($event)">
                 </div>
 
                 <div class="form-group">
                     <label>Points Captured</label>
                     <input type="number" class="form-control" [(ngModel)]="newTrade.points_captured" readonly
-                        name="points_captured">
+                        name="points_captured" (keydown)="preventSymbols($event)">
                 </div>
 
                 <div class="form-group">
-    <label>Win / Loss</label>
+                    <label>Win / Loss</label>
+                    <select class="form-select" [class.input-error]="tradeErrors['win_loss']"
+                        [(ngModel)]="newTrade.win_loss" name="win_loss"
+                        (ngModelChange)="onWinLossChange(newTrade); tradeErrors['win_loss'] = false">
+                        <option value="WIN">WIN</option>
+                        <option value="LOSS">LOSS</option>
+                    </select>
+                    @if (tradeErrors['win_loss']) {
+                    <small class="error-text">Select win or loss</small>
+                    }
+                </div>
 
-    <select class="form-select" [(ngModel)]="newTrade.win_loss" name="win_loss" (ngModelChange)="onWinLossChange(newTrade)">
+                <div class="form-group">
+                    <label>Profit</label>
+                    <input type="number" class="form-control" [class.input-error]="tradeErrors['profit']"
+                        [(ngModel)]="newTrade.profit" name="profit" [disabled]="newTrade.win_loss !== 'WIN'"
+                        (focus)="clearZero($event)" (keydown)="preventSymbols($event)"
+                        (ngModelChange)="tradeErrors['profit'] = false">
+                    @if (tradeErrors['profit']) {
+                    <small class="error-text">Profit must be greater than 0</small>
+                    }
+                </div>
 
-        <option value="WIN">WIN</option>
-        <option value="LOSS">LOSS</option>
+                <div class="form-group">
+                    <label>Loss</label>
+                    <input type="number" class="form-control" [class.input-error]="tradeErrors['loss']"
+                        [(ngModel)]="newTrade.loss" name="loss" [disabled]="newTrade.win_loss !== 'LOSS'"
+                        (focus)="clearZero($event)" (keydown)="preventSymbols($event)"
+                        (ngModelChange)="tradeErrors['loss'] = false">
+                    @if (tradeErrors['loss']) {
+                    <small class="error-text">Loss must be greater than 0</small>
+                    }
+                </div>
 
-    </select>
-
-</div>
-             <div class="form-group">
-    <label>Profit</label>
-    <input type="number" class="form-control" [(ngModel)]="newTrade.profit" name="profit"
-        [disabled]="newTrade.win_loss !== 'WIN'"
-        (focus)="clearZero($event)">
-</div>
-
-<div class="form-group ">
-    <label>Loss</label>
-    <input type="number" class="form-control" [(ngModel)]="newTrade.loss" name="loss"
-        [disabled]="newTrade.win_loss !== 'LOSS'"
-        (focus)="clearZero($event)">
-</div>
                 <div class="form-group ">
                     <label>Remarks</label>
                     <input type="text" class="form-control" [(ngModel)]="newTrade.remark" name="remark">
@@ -569,13 +591,13 @@
             </button>
 
             <button type="button" class="btn-save" [disabled]="isSavingTrade" (click)="saveTrade()">
-    @if (isSavingTrade) {
-        <span class="btn-spinner"></span>
-        <span>Saving...</span>
-    } @else {
-        <span>Save Trade</span>
-    }
-</button>
+                @if (isSavingTrade) {
+                <span class="btn-spinner"></span>
+                <span>Saving...</span>
+                } @else {
+                <span>Save Trade</span>
+                }
+            </button>
 
         </div>
 
@@ -584,3 +606,7 @@
 </div>
 
 }
+<app-confirm-cancel-dialog [open]="showConfirmDialog" [data]="selectedItem" title="Delete this Trade?"
+    message="This action can't be undone." confirmLabel="Yes, delete" cancelLabel="Cancel"
+    (confirmed)="deleteTrade($event)" (dismissed)="showConfirmDialog = false">
+</app-confirm-cancel-dialog>

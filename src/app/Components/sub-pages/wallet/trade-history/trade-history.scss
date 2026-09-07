@@ -1264,3 +1264,13 @@ color:#EF4444;
     opacity: .75;
     cursor: not-allowed;
 }
+.input-error {
+  border: 1px solid #DC2626 !important;
+}
+
+.error-text {
+  color: #DC2626;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}

@@ -10,7 +10,8 @@ export interface WalletBalance {
   wallet: string;
   total_profits: string;
   total_loss: string;
-}
+  total_withdraw:string,
+  total_deposit: string}
 
 export interface JournalSummaryData {
   balance: WalletBalance;

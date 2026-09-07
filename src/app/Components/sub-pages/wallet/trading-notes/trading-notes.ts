@@ -61,7 +61,7 @@ private usecase = inject(TradingPaymentUsecase);
   totalRecords = 0;
 totalPages = 0;
 currentPage = 1;
-pageSize = 10;
+pageSize = 15;
 loadHistory(page:number=1){
   this.loader.show();
   if (this.walletId == null) {

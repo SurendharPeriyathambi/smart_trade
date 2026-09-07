@@ -57,6 +57,8 @@ export class WalletJournalModal implements OnInit {
   accountSize = 0;
   totalProfit = 0;
   totalLoss = 0;
+  totalwithdraw=0;
+  totaldeposit=0;
   biggestWin = 0;
   biggestLoss = 0;
   avgWinRatio = 0;
@@ -88,6 +90,8 @@ export class WalletJournalModal implements OnInit {
           this.accountSize = parseFloat(balance.wallet);
           this.totalProfit = parseFloat(balance.total_profits);
           this.totalLoss = parseFloat(balance.total_loss);
+          this.totalwithdraw=parseFloat(balance.total_withdraw || "0.00");
+          this.totaldeposit=parseFloat(balance.total_deposit || "0.00");
 
           // Calendar data
           this.calendarEntries = calender_month;
@@ -165,7 +169,7 @@ export class WalletJournalModal implements OnInit {
 
   // ---- Chart ----
   chartType: 'line' | 'bar' = 'line';
-  chartPeriod: 'year' | 'month' | 'week' = 'month';
+  chartPeriod: 'year' | 'month' | 'week' = 'year';
 
   selectedYear = new Date().getFullYear();
   selectedMonth = new Date().getMonth();

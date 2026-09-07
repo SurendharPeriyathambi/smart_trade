@@ -121,6 +121,9 @@ export class Wallet implements OnInit {
     this.showDepositModal = false;
     this.resetDepositForm();
   }
+  resetDepositModel():void{
+    this.resetDepositForm();
+  }
 
   submitDeposit(): void {
     this.depositError = '';
@@ -200,6 +203,9 @@ export class Wallet implements OnInit {
 
   closeWithdrawModal(): void {
     this.showWithdrawModal = false;
+    this.resetWithdrawForm();
+  }
+  ResetWithdrawModal():void{
     this.resetWithdrawForm();
   }
 
@@ -393,4 +399,10 @@ private getFormattedDate(): string {
   // goToJournal(): void {
   //   this.router.navigate(['/journal']);
   // }
+  hasTrade = false;
+
+onTradeStatusChange(status: boolean): void {
+    this.hasTrade = status;
+    console.log(status)
+}
 }

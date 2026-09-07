@@ -52,7 +52,7 @@
       <div class="action-row">
 
         <div>
-          <button class="add-btn"(click)="openJournal()" (click)="goToJournal()">
+          <button class="add-btn"(click)="openJournal()" (click)="goToJournal()" [disabled]="!hasTrade()">
             <i class="bi bi-eye"></i>
             <span>View Journal</span>
           </button>

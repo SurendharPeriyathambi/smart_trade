@@ -1,7 +1,23 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  output,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TradeCreation, TradeHistoryList, TradeUpdate, WalletCreatation } from '../models/wallet.model';
+import {
+  TradeCreation,
+  TradeHistoryList,
+  TradeUpdate,
+  WalletCreatation,
+} from '../models/wallet.model';
 import { TradeHistoryUsecase } from './usecase/trade-history.usecase';
 import { ToastService } from '../../../../../services/engine/toast.service';
 import { TradeHistoryRepository } from './repository/trade-history.Repository';
@@ -10,6 +26,8 @@ import { StorageEngine } from '../../../../../services/engine/storage_engine';
 import { finalize } from 'rxjs';
 import { LoaderService } from '../../../../../services/engine/loader.service';
 import { TradingNotes } from '../trading-notes/trading-notes';
+import { ConfirmCancelDialogComponent } from './dialog-box';
+import { EventEmitter } from 'stream';
 
 // Row shown in table = API model + local edit-state, nothing else
 export interface TradeRow extends TradeHistoryList {
@@ -19,7 +37,7 @@ export interface TradeRow extends TradeHistoryList {
 
 @Component({
   selector: 'app-trade-history',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,ConfirmCancelDialogComponent],
   templateUrl: './trade-history.html',
   styleUrl: './trade-history.scss',
   providers: [
@@ -27,46 +45,47 @@ export interface TradeRow extends TradeHistoryList {
     { provide: TradeHistoryRepository, useClass: TradeHistoryRepositoryImpl },
   ],
 })
-export class TradeHistory implements OnInit,OnChanges{
- 
-
-
-@Input() walletCreated = false;
-@Input() walletId: number | null = null;
-@Input() walletCreateDate: string | null = null;
+export class TradeHistory implements OnInit, OnChanges {
+ tradeStatusChange = output<boolean>();
+  tradeErrors: { [key: string]: boolean } = {};
+  @Input() walletCreated = false;
+  @Input() walletId: number | null = null;
+  @Input() walletCreateDate: string | null = null;
+   showConfirmDialog = false;
+  selectedItem: any | null = null;
 
   private usecase = inject(TradeHistoryUsecase);
   private toast = inject(ToastService);
-  private loader=inject(LoaderService)
-  private cdr = inject(ChangeDetectorRef)
- 
+  private loader = inject(LoaderService);
+  private cdr = inject(ChangeDetectorRef);
 
   search = '';
   status = '';
   wallet_Id!: number; // set only after wallet loads
 
   totalRecords = 0;
-totalPages = 0;
-currentPage = 1;
+  totalPages = 0;
+  currentPage = 1;
+pageSize = 15;
   trades: TradeRow[] = [];
   showTradeModal = false;
-isSavingTrade = false;
+  isSavingTrade = false;
   newTrade: TradeCreation = this.emptyTrade();
+  
 
   ngOnInit(): void {
     // this.loadWallet();
-    // 
+    //
   }
-   ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['walletId'] && this.walletId != null) {
-    console.log('wallet id:', this.walletId);
-   this.loadTrades();
-  }
+      console.log('wallet id:', this.walletId);
+      this.loadTrades();
+    }
     if (changes['walletCreateDate'] && this.walletCreateDate != null) {
-    console.log('wallet walletCreateDate:', this.walletCreateDate);
-  //  this.loadTrades();
-  }
-
+      console.log('wallet walletCreateDate:', this.walletCreateDate);
+      //  this.loadTrades();
+    }
   }
 
   // yyyy-MM-dd required by <input type="date">
@@ -80,17 +99,18 @@ isSavingTrade = false;
 
   // Bind this to [attr.min] on the date input
   get minTradeDate(): string {
-    return this.walletCreateDate? this.toDateInputValue(this.walletCreateDate) : '';
+    return this.walletCreateDate ? this.toDateInputValue(this.walletCreateDate) : '';
   }
+ get maxTradeDate(): string {
+  const currentDay = new Date().toISOString().split('T')[0];
+  return currentDay;
+}
 
   openAddTrade(event: MouseEvent): void {
-
-  
-
-   if (!this.walletCreated  || this.walletId == null) {
-    this.toast.error('Please create a wallet first.');
-    return;
-  }
+    if (!this.walletCreated || this.walletId == null) {
+      this.toast.error('Please create a wallet first.');
+      return;
+    }
     event.stopPropagation();
     this.newTrade.wallet_id = this.walletId;
     this.showTradeModal = true;
@@ -99,115 +119,146 @@ isSavingTrade = false;
   @ViewChild('tradingNotes') tradingNotesComp?: TradingNotes;
 
 
-  saveTrade(): void {
+private validateTrade(): boolean {
+  this.tradeErrors = {};
+  let isValid = true;
 
-    if (!this.walletId) {
+  if (!this.newTrade.date) {
+    this.tradeErrors['date'] = true;
+    isValid = false;
+  }
+
+  if (!this.newTrade.pair || !this.newTrade.pair.trim()) {
+    this.tradeErrors['pair'] = true;
+    isValid = false;
+  }
+
+  if (!this.newTrade.win_loss) {
+    this.tradeErrors['win_loss'] = true;
+    isValid = false;
+  }
+
+  if (this.newTrade.win_loss === 'WIN' && (this.newTrade.profit == null || this.newTrade.profit <= 0)) {
+    this.tradeErrors['profit'] = true;
+    isValid = false;
+  }
+
+  if (this.newTrade.win_loss === 'LOSS' && (this.newTrade.loss == null || this.newTrade.loss <= 0)) {
+    this.tradeErrors['loss'] = true;
+    isValid = false;
+  }
+
+  return isValid;
+}
+ saveTrade(): void {
+  if (!this.walletId) {
     this.toast.error('Wallet not loaded yet');
     return;
   }
 
-  this.newTrade.wallet_id = this.walletId; 
- 
-    if (!this.newTrade.date) {
-      this.toast.error('Please select a trade date');
-      return;
-    }
+  this.newTrade.wallet_id = this.walletId;
 
-    if (this.minTradeDate && this.newTrade.date < this.minTradeDate) {
-      this.toast.error(`Trade date can't be before wallet creation date (${this.minTradeDate})`);
-      return;
-    }
-    this.isSavingTrade = true;
-    this.loader.show()
-    this.usecase.tradeCreate(this.newTrade).pipe( finalize(() =>{ this.loader.hide(); this.isSavingTrade = false;})).subscribe({
+  if (!this.validateTrade()) {
+    this.toast.error('Please fill all required fields');
+    return;
+  }
+
+  if (this.minTradeDate && this.newTrade.date < this.minTradeDate) {
+    this.toast.error(`Trade date can't be before wallet creation date (${this.minTradeDate})`);
+    return;
+  }
+
+  this.isSavingTrade = true;
+  this.loader.show();
+  this.usecase
+    .tradeCreate(this.newTrade)
+    .pipe(finalize(() => { this.loader.hide(); this.isSavingTrade = false; }))
+    .subscribe({
       next: (res) => {
         this.toast.show(res.message);
-       
         this.resetForm();
         this.loadTrades(this.currentPage);
         this.tradingNotesComp?.loadHistory(1);
-         this.closeTradeModal();
-         window.location.reload();
-         this.cdr.detectChanges()
-        
+        this.closeTradeModal();
+        window.location.reload();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error(err);
         this.toast.error(err.message || 'Failed to create trade');
-         this.cdr.detectChanges()
+        this.cdr.detectChanges();
       },
     });
-  }
-
+}
   // ...rest unchanged
 
   editTrade(trade: TradeRow): void {
     trade.backup = structuredClone(trade);
     trade.isEditing = true;
   }
+  
 
-
-
-
-loadTrades(page: number=1): void {
-  this.loader.show()
-   if (this.walletId == null) {
-    console.log("wallet id :",this.walletId)
-    return;
+  loadTrades(page: number = 1): void {
+    this.loader.show();
+    if (this.walletId == null) {
+      console.log('wallet id :', this.walletId);
+      return;
+    }
+    this.usecase
+      .getTradeLists(this.walletId, page)
+      .pipe(finalize(() => this.loader.hide()))
+      .subscribe({
+        next: (res) => {
+          this.trades = (res.data.data_list ?? []).map((t: TradeHistoryList) => ({
+            ...t,
+            isEditing: false,
+          }));
+          this.tradeStatusChange.emit(this.trades.length > 0);
+          this.currentPage = res.data.current_page;
+          this.totalRecords = res.data.total_records;
+          this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error(err);
+          this.toast.error(err.message || 'Failed to load trades');
+        },
+      });
   }
-  this.usecase.getTradeLists(this.walletId,page).pipe( finalize(() => this.loader.hide())).subscribe({
-    next: (res) => {
-     this.trades = (res.data.data_list ?? []).map((t: TradeHistoryList) => ({
-  ...t,
-  isEditing: false,
-}));
-
-      this.currentPage = res.data.current_page;
-this.totalRecords = res.data.total_records;
-this.totalPages = Math.ceil(this.totalRecords / 5);
-      this.cdr.detectChanges();
-    },
-    error: (err) => {
-      console.error(err);
-      this.toast.error(err.message || 'Failed to load trades');
-    },
-  });
-}
-   closeTradeModal(): void {
+  closeTradeModal(): void {
     this.showTradeModal = false;
   }
-//   saveEdit(trade: TradeRow): void {
+  //   saveEdit(trade: TradeRow): void {
 
-//     if (this.walletId == null) {
-//   this.toast.error('Wallet not found.');
-//   return;
-// }
+  //     if (this.walletId == null) {
+  //   this.toast.error('Wallet not found.');
+  //   return;
+  // }
 
-//     const { isEditing, backup, ...rest } = trade;
-//  const payload: TradeUpdate = {
-//     ...rest,
-//     wallet_id: this.walletId,
-//    // or trade.lot_size if you add it to TradeHistoryList later
-//   };
-//   this.loader.show()
-//     this.usecase.updateTrade(payload).pipe( finalize(() => this.loader.hide())).subscribe({
-//       next: (res) => {
-//         this.toast.show(res.message);
-//         trade.isEditing = false;
-//         this.cdr.detectChanges()
-//         trade.backup = undefined;
-//       },
-//       error: (err) => {
-//         console.error(err);
-//         this.toast.error(err.message || 'Failed to update trade');
-//          this.cdr.detectChanges()
-//         this.cancelEdit(trade);
-//       },
-//     });
-//   }
+  //     const { isEditing, backup, ...rest } = trade;
+  //  const payload: TradeUpdate = {
+  //     ...rest,
+  //     wallet_id: this.walletId,
+  //    // or trade.lot_size if you add it to TradeHistoryList later
+  //   };
+  //   this.loader.show()
+  //     this.usecase.updateTrade(payload).pipe( finalize(() => this.loader.hide())).subscribe({
+  //       next: (res) => {
+  //         this.toast.show(res.message);
+  //         trade.isEditing = false;
+  //         this.cdr.detectChanges()
+  //         trade.backup = undefined;
+  //       },
+  //       error: (err) => {
+  //         console.error(err);
+  //         this.toast.error(err.message || 'Failed to update trade');
+  //          this.cdr.detectChanges()
+  //         this.cancelEdit(trade);
+  //       },
+  //     });
+  //   }
 
-saveEdit(trade: TradeRow): void {
-
+  saveEdit(trade: TradeRow): void {
     if (this.walletId == null) {
       this.toast.error('Wallet not found.');
       return;
@@ -225,33 +276,44 @@ saveEdit(trade: TradeRow): void {
       wallet_id: this.walletId,
     };
     this.loader.show();
-    this.usecase.updateTrade(payload).pipe(finalize(() => this.loader.hide())).subscribe({
-      next: (res) => {
-        this.toast.show(res.message);
-        trade.isEditing = false;
-        window.location.reload();
-        this.cdr.detectChanges();
-        trade.backup = undefined;
-      },
-      error: (err) => {
-        console.error(err);
-        this.toast.error(err.message || 'Failed to update trade');
-        this.cdr.detectChanges();
-        this.cancelEdit(trade);
-      },
-    });
-}
+    this.usecase
+      .updateTrade(payload)
+      .pipe(finalize(() => this.loader.hide()))
+      .subscribe({
+        next: (res) => {
+          this.toast.show(res.message);
+          trade.isEditing = false;
+          window.location.reload();
+          this.cdr.detectChanges();
+          trade.backup = undefined;
+        },
+        error: (err) => {
+          console.error(err);
+          this.toast.error(err.message || 'Failed to update trade');
+          this.cdr.detectChanges();
+          this.cancelEdit(trade);
+        },
+      });
+  }
 
-private hasTradeChanged(current: TradeRow, backup: TradeRow): boolean {
-  const fieldsToCompare: (keyof TradeRow)[] = [
-    'pair', 'direction', 'entry_price', 'stop_loss', 'take_profit',
-    'exit_price', 'lot_size', 'win_loss', 'profit', 'loss', 'reason', 'remark'
-  ];
+  private hasTradeChanged(current: TradeRow, backup: TradeRow): boolean {
+    const fieldsToCompare: (keyof TradeRow)[] = [
+      'pair',
+      'direction',
+      'entry_price',
+      'stop_loss',
+      'take_profit',
+      'exit_price',
+      'lot_size',
+      'win_loss',
+      'profit',
+      'loss',
+      'reason',
+      'remark',
+    ];
 
-  return fieldsToCompare.some(field => current[field] !== backup[field]);
-}
-
-  
+    return fieldsToCompare.some((field) => current[field] !== backup[field]);
+  }
 
   cancelEdit(trade: TradeRow): void {
     if (trade.backup) {
@@ -261,35 +323,45 @@ private hasTradeChanged(current: TradeRow, backup: TradeRow): boolean {
     trade.isEditing = false;
   }
 
-  deleteTrade(trade: TradeRow): void {
-    this.loader.show()
-    this.usecase.deleteTrade(trade.id).pipe( finalize(() => this.loader.hide())).subscribe({
-      next: (res) => {
-        this.toast.success(res.message);
-        this.trades = this.trades.filter(t => t.id !== trade.id);
-        const isLastItemOnPage = this.trades.length === 1 && this.currentPage > 1;
-  this.loadTrades(isLastItemOnPage ? this.currentPage - 1 : this.currentPage);
-      },
-      error: (err) => {
-        console.error(err);
-       
-        this.toast.error(err.message || 'Failed to delete trade');
-      },
-    });
+  deleteTrade(trade: any|null): void {
+    this.showConfirmDialog = false;
+    console.log(trade.trade_id)
+    this.loader.show();
+    this.usecase
+      .deleteTrade(trade.trade_id)
+      .pipe(finalize(() => this.loader.hide()))
+      .subscribe({
+        next: (res) => {
+          this.toast.success(res.message);
+          this.trades = this.trades.filter((t) => t.id !== trade.trade_id);
+          const isLastItemOnPage = this.trades.length === 1 && this.currentPage > 1;
+          this.loadTrades(isLastItemOnPage ? this.currentPage - 1 : this.currentPage);
+          window.location.reload();
+          this.cdr.detectChanges();
+
+        },
+        error: (err) => {
+          console.error(err);
+
+          this.toast.error(err.message || 'Failed to delete trade');
+        },
+      });
   }
 
   // Generic so it works for both the Add-Trade form (TradeCreation)
   // and an in-row edit (TradeRow). Direction check is case-insensitive
   // since the modal uses 'Buy'/'Sell' and the table uses 'BUY'/'SELL'.
-  calculateTrade<T extends {
-    direction: string;
-    entry_price: number;
-    exit_price: number;
-    stop_loss: number;
-    take_profit: number;
-    points_captured: number;
-    risk_reward: number;
-  }>(trade: T): void {
+  calculateTrade<
+    T extends {
+      direction: string;
+      entry_price: number;
+      exit_price: number;
+      stop_loss: number;
+      take_profit: number;
+      points_captured: number;
+      risk_reward: number;
+    },
+  >(trade: T): void {
     trade.points_captured = trade.exit_price - trade.entry_price;
 
     let ratio = 0;
@@ -306,69 +378,91 @@ private hasTradeChanged(current: TradeRow, backup: TradeRow): boolean {
 
   private resetForm(): void {
     this.newTrade = this.emptyTrade();
+    this.tradeErrors = {};
   }
 
- private emptyTrade(): TradeCreation {
+  private emptyTrade(): TradeCreation {
     return {
-    wallet_id: 0, date: '', pair: '', lot_size: 1, direction: 'Buy',
-      entry_price: 0, stop_loss: 0, take_profit: 0, exit_price: 0,
-      points_captured: 0, win_loss: 'WIN', risk_reward: 0,   
-      profit: 0, loss: 0, reason: '', remark: '',
+      wallet_id: 0,
+      date: '',
+      pair: '',
+      lot_size: 1,
+      direction: 'Buy',
+      entry_price: 0,
+      stop_loss: 0,
+      take_profit: 0,
+      exit_price: 0,
+      points_captured: 0,
+      win_loss: 'WIN',
+      risk_reward: 0,
+      profit: 0,
+      loss: 0,
+      reason: '',
+      remark: '',
     };
-}
-
-
+  }
 
   goToPage(page: number): void {
-  if (page < 1 || page > this.totalPages || page === this.currentPage) return;
-  this.loadTrades(page);
-}
+    if (page < 1 || page > this.totalPages || page === this.currentPage) return;
+    this.loadTrades(page);
+  }
 
-prevPage(): void {
-  this.goToPage(this.currentPage - 1);
-}
+  prevPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
 
-nextPage(): void {
-  this.goToPage(this.currentPage + 1);
-}
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
+  }
 
-get pageNumbers(): (number | string)[] {
-  const total = this.totalPages;
-  const current = this.currentPage;
-  const pages: (number | string)[] = [];
+  get pageNumbers(): (number | string)[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const pages: (number | string)[] = [];
 
-  if (total <= 7) {
-    for (let i = 1; i <= total; i++) pages.push(i);
+    if (total <= 15) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+      return pages;
+    }
+
+    pages.push(1);
+    if (current > 4) pages.push('...');
+
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+
+    if (current < total - 3) pages.push('...');
+    pages.push(total);
+
     return pages;
   }
 
-  pages.push(1);
-  if (current > 4) pages.push('...');
+  // remove selectAll(), replace with:
+  clearZero(event: FocusEvent): void {
+    const input = event.target as HTMLInputElement;
+    if (input.value === '0') {
+      input.value = '';
+    }
+  }
 
-  const start = Math.max(2, current - 1);
-  const end = Math.min(total - 1, current + 1);
-  for (let i = start; i <= end; i++) pages.push(i);
+  onWinLossChange(trade: { win_loss: string; profit: number; loss: number }): void {
+    if (trade.win_loss === 'WIN') {
+      trade.loss = 0;
+    } else if (trade.win_loss === 'LOSS') {
+      trade.profit = 0;
+    }
+  }
+  preventSymbols(event: KeyboardEvent): void {
+  const blockedKeys = ['e', 'E', '+', '-'];
 
-  if (current < total - 3) pages.push('...');
-  pages.push(total);
-
-  return pages;
-}
-
-
-// remove selectAll(), replace with:
-clearZero(event: FocusEvent): void {
-  const input = event.target as HTMLInputElement;
-  if (input.value === '0') {
-    input.value = '';
+  if (blockedKeys.includes(event.key)) {
+    event.preventDefault();
   }
 }
-
-onWinLossChange(trade: { win_loss: string; profit: number; loss: number }): void {
-  if (trade.win_loss === 'WIN') {
-    trade.loss = 0;
-  } else if (trade.win_loss === 'LOSS') {
-    trade.profit = 0;
+ onDeleteClick(item: any): void {
+    this.selectedItem = item;      // pass the data in
+    this.showConfirmDialog = true;
   }
-}
+
 }

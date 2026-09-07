@@ -6,7 +6,7 @@
 
             <app-wallet-summary [walletCreated]="walletCreated" [currentBalance]="currentBalance"
                 [walletDate]="wallet?.create_date" (createWalletClick)="openCreateWalletModal()"
-                (depositClick)="openDepositModal()" (withdrawClick)="openWithdrawModal()" />
+                (depositClick)="openDepositModal()" (withdrawClick)="openWithdrawModal()" [hasTrade]="hasTrade"/>
 
             <!-- (journalClick)="openJournalModal()" -->
 
@@ -17,7 +17,7 @@
         <div class="col-lg-7">
 
             <div> <app-trade-history [walletCreated]="walletCreated" [walletId]="wallet?.id ?? null"
-                    [walletCreateDate]="wallet?.create_date ?? null">
+                    [walletCreateDate]="wallet?.create_date ?? null"  (tradeStatusChange)="onTradeStatusChange($event)">
                 </app-trade-history>
 
             </div>
@@ -73,7 +73,7 @@
 
             <div class="modal-footer">
 
-                <button class="btn btn-light" [disabled]="isDepositSubmitting" (click)="closeDepositModal()">
+                <button class="btn btn-light" [disabled]="isDepositSubmitting" (click)="resetDepositModel()">
 
                     Reset
 
@@ -144,7 +144,7 @@
             <div class="modal-footer">
 
                 <button type="button" class="btn btn-light" [disabled]="isWithdrawSubmitting"
-                    (click)="closeWithdrawModal()">
+                    (click)="ResetWithdrawModal()">
 
                     Reset
 
