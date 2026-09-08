@@ -1013,32 +1013,41 @@ public validateLinesPixelBased(
     }
   }
 
-  private renderAdminOverlay(): void {
-    this.adminLineSeriesMap.forEach((series) => {
-      try {
-        this.chartstate.chart.removeSeries(series);
-      } catch {}
-    });
-    this.adminLineSeriesMap.clear();
+private renderAdminOverlay(): void {
+  this.adminLineSeriesMap.forEach((series) => {
+    try {
+      this.chartstate.chart.removeSeries(series);
+    } catch {}
+  });
+  this.adminLineSeriesMap.clear();
 
-    if (!this.chartstate.hasSubmitted) return;
+  if (!this.chartstate.adminLines?.length) return;
 
-    this.chartstate.adminLines.forEach((line) => {
-      const series = this.chartstate.chart.addSeries(LineSeries, {
-        color: '#36F7B3', // single distinct color for ALL admin lines
-        lineWidth: 2,
-        lineStyle: LineStyle.Dotted,
-        priceLineVisible: false,
-        lastValueVisible: false,
-        crosshairMarkerVisible: false,
-      });
-      series.setData([
-        { time: Number(line.start_time), value: Number(line.start_price) },
-        { time: Number(line.end_time), value: Number(line.end_price) },
-      ]);
-      this.adminLineSeriesMap.set(String(line.id), series);
+  const linesToRender = this.chartstate.hasSubmitted
+    ? this.chartstate.adminLines
+    : [this.chartstate.adminLines[0]];
+
+  linesToRender.forEach((line) => {
+    const series = this.chartstate.chart.addSeries(LineSeries, {
+      color: '#36F7B3',
+      lineWidth: 2,
+      lineStyle: LineStyle.Dotted,
+      priceLineVisible: false,
+      lastValueVisible: false,
+      crosshairMarkerVisible: false,
+      priceScaleId: 'right', // put it back on the SAME scale as candles
+      autoscaleInfoProvider: (original: () => any) => {
+        // Always return the candle-driven range, ignoring this line's own values
+        return null;
+      },
     });
-  }
+    series.setData([
+      { time: Number(line.start_time), value: Number(line.start_price) },
+      { time: Number(line.end_time), value: Number(line.end_price) },
+    ]);
+    this.adminLineSeriesMap.set(String(line.id), series);
+  });
+}
 
   private renderLinesWithoutScaleReset(): void {
     if (!this.ensureChart()) return;

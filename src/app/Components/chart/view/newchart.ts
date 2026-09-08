@@ -565,7 +565,7 @@ export class NewChart implements OnInit, OnDestroy {
   }
 
   async loadLinesFromServer(): Promise<void> {
-    // this.loader.show();
+    this.loader.show();
 
     this.chartUseCase
       .getChart({
@@ -580,11 +580,11 @@ export class NewChart implements OnInit, OnDestroy {
             this.localDatabaseService,
           );
           this.JsonToCandleUsecase.renderLines();
-          // this.loader.hide();
+          this.loader.hide();
         },
         error: (err) => {
           console.error('[Chart] getChart failed:', err);
-          // this.loader.hide();
+          this.loader.hide();
         },
       });
   }
