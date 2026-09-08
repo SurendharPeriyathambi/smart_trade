@@ -48,6 +48,7 @@ export interface WalletChartRequest {
   wallet_id: number;
   month: string;
   year: string;
+  tag?:"weekly"|"monthly"|"yearly";
 }
 
 export interface WeeklyChartItem {

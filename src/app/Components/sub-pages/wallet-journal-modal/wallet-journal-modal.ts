@@ -359,13 +359,16 @@ loadChart(): void {
   if (this.chartPeriod === 'week') {
     payload.month = String(this.selectedMonth).padStart(2, '0');
     payload.year  = String(this.selectedYear);
+    payload.tag="weekly";
   } else if (this.chartPeriod === 'month') {
     payload.month = '';
     payload.year  = String(this.selectedYear);
+    payload.tag="monthly";
   } else {
     // year period → both empty, backend returns all years
     payload.month = '';
     payload.year  = '';
+    payload.tag="yearly"
   }
 
   this.loader.show();
