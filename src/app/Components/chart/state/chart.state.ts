@@ -146,4 +146,11 @@ get allTagsComplete(): boolean {
   if (keys.length === 0) return false; // not seeded yet — never allow submit prematurely
   return keys.every((tag) => (drawn[tag] ?? 0) === required[tag]);
 }
+get answerLineCount(): number {
+  return (this.adminLines ?? []).filter((l) => l.is_answer).length;
+}
+
+get totalAdminLineCount(): number {
+  return (this.adminLines ?? []).length;
+}
 }

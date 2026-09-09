@@ -302,55 +302,52 @@ export class NewChart implements OnInit, OnDestroy {
     this.JsonToCandleUsecase.renderLines();
   }
 
-  async submitAnswers(): Promise<void> {
-    if (this.JsonState.pendingSaves > 0) {
-      this.toast.info('Still saving your last edit — try again in a moment.');
-      return;
-    }
-
-    this.loader.show();
-    try {
-      this.JsonState.hasSubmitted = true;
-
-      const adminLines = await this.localDatabaseService.getByChartAndTask(
-        this.JsonState.chartId,
-        this.JsonState.taskId,
-      );
-      const userLines = await this.localDatabaseService.getUserByChartAndTask(
-        this.JsonState.chartId,
-        this.JsonState.taskId,
-      );
-
-      const resultsById = this.JsonToCandleUsecase.validateLinesPixelBased(adminLines, userLines);
-
-      this.JsonState.userLineResults.clear();
-      const matchedByTag: Record<string, number> = {};
-      let matched = 0;
-
-      for (const line of this.JsonState.newDrawLine.filter((l) => !l.is_delete)) {
-        const isCorrect =
-          line.localDbId != null ? (resultsById.get(line.localDbId) ?? false) : false;
-
-        this.JsonState.userLineResults.set(String(line.id), isCorrect);
-
-        if (isCorrect) {
-          matched++;
-          const tag = (line.tag ?? '').trim() || 'Untagged';
-          matchedByTag[tag] = (matchedByTag[tag] ?? 0) + 1;
-          // this.toast.success('Line correct! ✓');
-        } else {
-          // this.toast.info('Line incorrect — start or end point does not match.');
-        }
-      } // ← THIS was the missing brace — closes the for loop
-
-      this.JsonState.matchedCount = matched;
-      this.JsonState.matchedCountByTag = matchedByTag;
-      this.JsonToCandleUsecase.renderLines();
-      this.toast.success(`${matched} / ${this.JsonState.requiredLineCount} correct`);
-    } finally {
-      this.loader.hide();
-    }
+async submitAnswers(): Promise<void> {
+  if (this.JsonState.pendingSaves > 0) {
+    this.toast.info('Still saving your last edit — try again in a moment.');
+    return;
   }
+
+  this.loader.show();
+  try {
+    this.JsonState.hasSubmitted = true;
+
+    const adminLines = await this.localDatabaseService.getByChartAndTask(
+      this.JsonState.chartId,
+      this.JsonState.taskId,
+    );
+    const userLines = await this.localDatabaseService.getUserByChartAndTask(
+      this.JsonState.chartId,
+      this.JsonState.taskId,
+    );
+
+    const resultsById = this.JsonToCandleUsecase.validateLinesPixelBased(adminLines, userLines);
+
+    this.JsonState.userLineResults.clear();
+    const matchedByTag: Record<string, number> = {};
+    let matched = 0;
+
+    for (const line of this.JsonState.newDrawLine.filter((l) => !l.is_delete)) {
+      const isCorrect =
+        line.localDbId != null ? (resultsById.get(line.localDbId) ?? false) : false;
+
+      this.JsonState.userLineResults.set(String(line.id), isCorrect);
+
+      if (isCorrect) {
+        matched++;
+        const tag = (line.tag ?? '').trim() || 'Untagged';
+        matchedByTag[tag] = (matchedByTag[tag] ?? 0) + 1;
+      }
+    }
+
+    this.JsonState.matchedCount = matched;
+    this.JsonState.matchedCountByTag = matchedByTag;
+    this.JsonToCandleUsecase.renderLines();
+    this.toast.success(`${matched} / ${this.JsonState.requiredLineCount} correct`);
+  } finally {
+    this.loader.hide();
+  }
+}
   // ── NEW: retryDrawing() ──
   async retryDrawing(): Promise<void> {
     // Remove user-drawn lines from IndexedDB + memory

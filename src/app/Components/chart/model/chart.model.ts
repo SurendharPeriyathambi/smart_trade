@@ -30,6 +30,7 @@ export interface Answers {
   is_edit: boolean;
   tag:string;
   is_delete?: boolean;
+  is_answer?:boolean;
 }
 
 export interface LineRecord {

@@ -1025,7 +1025,7 @@ private renderAdminOverlay(): void {
 
   const linesToRender = this.chartstate.hasSubmitted
     ? this.chartstate.adminLines
-    : [this.chartstate.adminLines[0]];
+    : this.chartstate.adminLines.filter((l) => l.is_answer);
 
   linesToRender.forEach((line) => {
     const series = this.chartstate.chart.addSeries(LineSeries, {
@@ -1035,11 +1035,9 @@ private renderAdminOverlay(): void {
       priceLineVisible: false,
       lastValueVisible: false,
       crosshairMarkerVisible: false,
-      priceScaleId: 'right', // put it back on the SAME scale as candles
-      autoscaleInfoProvider: (original: () => any) => {
-        // Always return the candle-driven range, ignoring this line's own values
-        return null;
-      },
+      priceScaleId: 'right',
+      title: line.is_answer ? 'BOS' : '',
+      autoscaleInfoProvider: (original: () => any) => null,
     });
     series.setData([
       { time: Number(line.start_time), value: Number(line.start_price) },
@@ -1085,59 +1083,118 @@ private renderAdminOverlay(): void {
     }
   }
 
-  public async seedLinesFromServer(
-    serverLines: any[],
-    localdb: LocalDatabaseService,
-  ): Promise<void> {
-    this.chartstate.requiredLineCount = serverLines.length;
+public async seedLinesFromServer(
+  serverLines: any[],
+  localdb: LocalDatabaseService,
+): Promise<void> {
+  this.chartstate.requiredLineCount = serverLines.length;
 
-    
+  // Admin lines kept OUT of newDrawLine — never rendered/persisted as user
+  // answers, only used for validation + the post-submit overlay.
+  this.chartstate.adminLines = serverLines.map(
+    (server) =>
+      ({
+        id: uuidv4(),
+        answer_id: server.id ?? null,
+        task_id: this.chartstate.taskId,
+        chart_id: this.chartstate.chartId,
+        start_time: Number(server.start_time),
+        start_price: Number(server.start_price),
+        end_time: Number(server.end_time),
+        end_price: Number(server.end_price),
+        is_edit: false,
+        tag: (server.tag ?? '').trim(),
+      }) as Answers,
+  );
 
-    // Admin lines kept OUT of newDrawLine — never rendered/persisted as user
-    // answers, only used for validation + the post-submit overlay.
-    this.chartstate.adminLines = serverLines.map(
-  (server) =>
-    ({
+  // Per-tag required counts (e.g. { CHO: 3, STR: 2 }) — drives the header breakdown.
+  this.chartstate.requiredCountByTag = this.chartstate.adminLines.reduce(
+    (acc, line) => {
+      const tag = (line.tag ?? '').trim() || 'Untagged';
+      acc[tag] = (acc[tag] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+  this.chartstate.matchedCountByTag = {};
+
+  // Persist to answerChart so validateLinesAgainstDb() and any reload have
+  // something to read.
+  await localdb.saveAdminLines(
+    this.chartstate.chartId,
+    this.chartstate.taskId,
+    this.chartstate.adminLines,
+  );
+
+  // Clear-on-open: wipe any stale user draft lines from a previous session
+  // for this chart/task before loading a fresh in-memory array.
+  await localdb.deleteUserLinesByChartAndTask(this.chartstate.chartId, this.chartstate.taskId);
+  this.chartstate.newDrawLine = [];
+
+  // Reset submit/result state for the new session.
+  this.chartstate.hasSubmitted = false;
+  this.chartstate.matchedCount = 0;
+  this.chartstate.matchedCountByTag = {};
+  this.chartstate.userLineResults.clear();
+
+  // ── AUTO-DRAW the first admin line as a real user-drawn line ──
+  // Track it as a pending save so Submit stays blocked until this
+  // completes (submitAnswers() already checks pendingSaves > 0).
+  const firstAdminLine = this.chartstate.adminLines[0];
+  if (firstAdminLine) {
+    const autoDrawnLine: Answers = {
       id: uuidv4(),
-      answer_id: server.id ?? null,
       task_id: this.chartstate.taskId,
       chart_id: this.chartstate.chartId,
-      start_time: Number(server.start_time),
-      start_price: Number(server.start_price),
-      end_time: Number(server.end_time),
-      end_price: Number(server.end_price),
+      start_x: 0,
+      start_y: 0,
+      end_x: 0,
+      end_y: 0,
+      start_time: firstAdminLine.start_time,
+      start_price: firstAdminLine.start_price,
+      end_time: firstAdminLine.end_time,
+      end_price: firstAdminLine.end_price,
       is_edit: false,
-      tag: server.tag,
-    }) as Answers,
-);
+      tag: (firstAdminLine.tag ?? '').trim(),
+    };
 
-// Per-tag required counts (e.g. { CHO: 3, STR: 2 }) — drives the header breakdown.
-this.chartstate.requiredCountByTag = this.chartstate.adminLines.reduce(
-  (acc, line) => {
-    const tag = (line.tag ?? '').trim() || 'Untagged';
-    acc[tag] = (acc[tag] ?? 0) + 1;
-    return acc;
-  },
-  {} as Record<string, number>,
-);
-this.chartstate.matchedCountByTag = {};
+    this.chartstate.newDrawLine.push(autoDrawnLine);
 
-    // Persist to answerChart so validateLinesAgainstDb() and any reload have
-    // something to read.
-    await localdb.saveAdminLines(
-      this.chartstate.chartId,
-      this.chartstate.taskId,
-      this.chartstate.adminLines,
-    );
+    this.chartstate.pendingSaves++;
+    try {
+      const saved = await localdb.createUserAnswer({
+        answer_id: autoDrawnLine.answer_id ?? null,
+        chart_id: this.chartstate.chartId,
+        task_id: this.chartstate.taskId,
+        start_price: autoDrawnLine.start_price,
+        end_price: autoDrawnLine.end_price,
+        start_time: autoDrawnLine.start_time,
+        end_time: autoDrawnLine.end_time,
+        start_x: 0,
+        end_x: 0,
+        start_y: 0,
+        end_y: 0,
+        is_edit: false,
+        is_delete: false,
+        tag: autoDrawnLine.tag ?? '',
+      } as Answers);
 
-    // Clear-on-open: wipe any stale user draft lines from a previous session
-    // for this chart/task before loading a fresh in-memory array.
-    await localdb.deleteUserLinesByChartAndTask(this.chartstate.chartId, this.chartstate.taskId);
-    this.chartstate.newDrawLine = [];
+      autoDrawnLine.localDbId = (saved as Answers).id;
 
-    // Reset submit/result state for the new session.
-    this.chartstate.hasSubmitted = false;
-    this.chartstate.matchedCount = 0;
-    this.chartstate.userLineResults.clear();
+      if (autoDrawnLine.localDbId == null) {
+        console.error('[Chart] Auto-drawn line save did not return an id:', saved);
+      }
+    } catch (e) {
+      console.error('[Chart] Failed to save auto-drawn line:', e);
+      // Roll back so it doesn't sit in newDrawLine as an unsaved/broken entry
+      this.chartstate.newDrawLine = this.chartstate.newDrawLine.filter(
+        (l) => l.id !== autoDrawnLine.id,
+      );
+    } finally {
+      this.chartstate.pendingSaves--;
+    }
   }
+
+  this.renderLines();
+}
 }
