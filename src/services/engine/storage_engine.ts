@@ -5,8 +5,10 @@ import { AppStrings } from '../app_strings';
 @Injectable({ providedIn: 'root' })
 export class StorageEngine {
   private user_name = 'user_name';
+  private user_id = 'user_name';
   private user_email = 'user_email';
   private device_id = 'device_id';
+  private wallet_id ='wallet_id'
   constructor(private cookieService: CookieService) {}
 
   getAccessToken(): string {
@@ -33,6 +35,14 @@ export class StorageEngine {
   getEmail(): string {
     return localStorage.getItem(this.user_email) ?? '';
   }
+  
+  setId(id: any) {
+    localStorage.setItem(this.user_id, id);
+  }
+
+  getId(): string {
+    return localStorage.getItem(this.user_id) ?? '';
+  }
     setDeviceId(deviceId: string) {
     localStorage.setItem(this.device_id, deviceId);
   }
@@ -40,4 +50,15 @@ export class StorageEngine {
   getDeviceId(): string {
     return localStorage.getItem(this.device_id) ?? '';
   }
+   setWalletId(walletId: number): void {
+    localStorage.setItem(this.wallet_id, walletId.toString());
+  }
+
+  getWalletId(): number | null {
+    const id = localStorage.getItem(this.wallet_id);
+
+    return id ? Number(id) : null;
+  }
+
+
 }
