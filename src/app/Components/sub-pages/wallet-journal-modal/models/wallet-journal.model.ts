@@ -2,7 +2,7 @@ export interface CalendarEntry {
   date: string;
   trade_count: string;
   amount: string;
-  win_loss: 'WIN' | 'LOSS';
+  win_loss?: 'WIN' | 'LOSS';
   direction: 'Inward' | 'Outward';
 }
 

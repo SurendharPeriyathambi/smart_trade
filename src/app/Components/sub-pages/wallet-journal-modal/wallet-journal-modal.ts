@@ -155,7 +155,9 @@ export class WalletJournalModal implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           if (res.status) {
-            this.calendarEntries = res.data.calender_month || [];
+            // NOTE: unlike getSummary (where entries live at res.data.calender_month),
+            // getCalendar returns the entries array directly as res.data.
+            this.calendarEntries = (res.data as unknown as CalendarEntry[]) || [];
             this.cd.detectChanges();
           } else {
             this.toast.error(res.message);
