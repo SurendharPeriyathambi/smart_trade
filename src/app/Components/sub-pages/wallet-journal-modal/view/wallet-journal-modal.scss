@@ -883,13 +883,13 @@ $brand-border: #c3d0f0;
     padding: 7px 11px;
 
    border: 2px solid #143AA3;
-    border-radius: 8px;
+    border-radius: 50px;
 
   //  background: #16207f;
      color: #143AA3;
 
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 800;
 
     cursor: pointer;
     transition: all 0.2s ease;
@@ -941,7 +941,7 @@ $brand-border: #c3d0f0;
     padding: 6px 11px;
     border-radius: 6px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 800;
     cursor: pointer;
 
     &.active {

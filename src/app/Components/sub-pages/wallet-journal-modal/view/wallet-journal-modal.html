@@ -96,14 +96,14 @@
                   @if (tradeCount > 0) {
                   <small class="trade-info">
                     <span>{{ tradeCount }}</span>
-                    <i class="bi bi-arrow-left-right"></i>
+                    <i class="bi bi-arrow-left-right text-black"></i>
                   </small>
                   }
 
                   @if (pnl !== null) {
                   <small class="pnl-amount" [class.profit]="pnl > 0" [class.loss]="pnl < 0">
 
-                    {{ pnl | number:'1.0-0' }}
+                    {{ pnl | currency:'INR':'symbol':'1.0-0':'en-IN' }}
 
                   </small>
                   }

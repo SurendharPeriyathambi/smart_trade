@@ -44,7 +44,7 @@
   column-gap: 10px;
   align-items: center;
   font-family: system-ui, sans-serif;
-  max-width: 443px;
+  max-width: 395px;
   border: 1px solid #000;
 }
 
@@ -950,7 +950,7 @@
   min-height: 42px;
 
   border: 1px solid #2563eb;
-  border-radius: 8px;
+  border-radius: 50px;
 
   background: #ffffff;
   color: #2563eb;
@@ -987,7 +987,9 @@
       filter 0.25s ease,
       transform 0.25s ease;
   }
-
+span{
+  font-weight: bold !important;
+}
   // Arrow
   svg {
     display: block;
