@@ -65,6 +65,7 @@ export class Wallet implements OnInit {
 
   // whether a wallet exists yet — drives WalletSummary's empty vs full state
   walletCreated = false;
+  walletId!: number;
   currentBalance = 0;
 
   wallet!: WalletCreatationRes;
@@ -322,7 +323,7 @@ private getFormattedDate(): string {
           if (res.status) {
             this.walletCreated = true;
             this.currentBalance = res.data.amount;
-
+            this.walletId = res.data.id!;
             if (res.data.id != null) {
               this.storage.setWalletId(res.data.id);
             }

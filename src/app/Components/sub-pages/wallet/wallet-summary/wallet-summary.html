@@ -2,79 +2,79 @@
 
 
   @if (!walletCreated) {
- <div class="empty-wallet-state">
+  <div class="empty-wallet-state">
 
-      <div class="empty-wallet-icon">
-        <i class="bi bi-wallet2"></i>
-      </div>
-
-      <p class="empty-wallet-text">No wallet yet. Create one to start tracking your trades.</p>
-
-      <button class="create-wallet-btn" (click)="openCreateWallet()">
-        <i class="bi bi-plus-lg"></i>
-        <span>Create Wallet</span>
-      </button>
-
+    <div class="empty-wallet-icon">
+      <i class="bi bi-wallet2"></i>
     </div>
 
-   
+    <p class="empty-wallet-text">No wallet yet. Create one to start tracking your trades.</p>
+
+    <button class="create-wallet-btn" (click)="openCreateWallet()">
+      <i class="bi bi-plus-lg"></i>
+      <span>Create Wallet</span>
+    </button>
+
+  </div>
+
+
   } @else {
 
-    <div class="card-header">
+  <div class="card-header">
 
-      <h5>Wallet Summary</h5>
+    <h5>Wallet Summary</h5>
 
-      <!-- <button class="icon-btn">
+    <!-- <button class="icon-btn">
         <i class="bi bi-eye"></i>
       </button> -->
 
-    </div>
+  </div>
 
-    <div class="balance-section d-md-flex justify-content-md-between">
-<div>
-   <small>Current Balance</small>
+  <div class="balance-section d-md-flex justify-content-md-between">
+    <div>
+      <small>Current Balance</small>
 
       <h2>
         ₹{{ currentBalance | number:'1.2-2' }}
       </h2>
-</div>
-     <div>
+    </div>
+    <div>
       <small>Created Date:</small>
       <h5>{{ walletDate | date:'dd MMM yyyy'}}</h5>
-     </div>
-
     </div>
 
-    <div class="quick-actions">
+  </div>
 
-      <h6>Quick Actions</h6>
+  <div class="quick-actions">
 
-      <div class="action-row">
+    <h6>Quick Actions</h6>
 
-        <div>
-          <button class="add-btn"(click)="openJournal()" (click)="goToJournal()" [disabled]="!hasTrade()">
-            <i class="bi bi-eye"></i>
-            <span>View Journal</span>
-          </button>
-        </div>
+    <div class="action-row">
 
-        <div class="wallet-actions">
+      <div>
+        <button class="add-btn" (click)="goToJournal()" [disabled]="!hasTrade() || walletId == null">
+          <i class="bi bi-eye"></i>
+          <span>View Journal</span>
+        </button>
+      </div>
 
-          <button class="wallet-action deposit" (click)="openDeposit()">
-            <i class="bi bi-arrow-down-right"></i>
-            <span>Add Deposit</span>
-          </button>
+      <div class="wallet-actions">
 
-          <button class="wallet-action withdraw" (click)="openWithdraw()">
-            <i class="bi bi-arrow-up-right"></i>
-            <span>Withdraw</span>
-          </button>
+        <button class="wallet-action deposit" (click)="openDeposit()">
+          <i class="bi bi-arrow-down-right"></i>
+          <span>Add Deposit</span>
+        </button>
 
-        </div>
+        <button class="wallet-action withdraw" (click)="openWithdraw()">
+          <i class="bi bi-arrow-up-right"></i>
+          <span>Withdraw</span>
+        </button>
 
       </div>
 
     </div>
+
+  </div>
 
   }
 

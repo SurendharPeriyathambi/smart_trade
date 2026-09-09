@@ -27,7 +27,7 @@ const routes: Routes = [
 {path:'chart',component:ChartList},
 {path:'newchart',component:NewChart},
 {path:'week',component:WeeklyReport},
-{ path: 'journal', component: WalletJournalModal },
+{ path: 'journal/:walletId', component: WalletJournalModal },
 { path: 'wallet', component: Wallet },
 {
     path: '',

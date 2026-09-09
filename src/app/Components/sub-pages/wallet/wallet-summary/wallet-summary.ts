@@ -5,19 +5,21 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-wallet-summary',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './wallet-summary.html',
   styleUrl: './wallet-summary.scss',
 })
 export class WalletSummary {
-hasTrade = input<boolean>(false);
+  hasTrade = input<boolean>(false);
   constructor(private router: Router) {}
-
 
   @Input() walletCreated = false;
 
-  @Input() currentBalance : any;
-  @Input() walletDate : any;
+  // allow null | undefined — don't force a required number input
+  @Input() walletId: number | null = null;
+
+  @Input() currentBalance: any;
+  @Input() walletDate: any;
   date = new Date();
   @Input() totalDeposit = 15000;
   @Input() totalWithdraw = 2500;
@@ -29,7 +31,6 @@ hasTrade = input<boolean>(false);
   @Output() depositClick = new EventEmitter<void>();
   @Output() withdrawClick = new EventEmitter<void>();
   @Output() journalClick = new EventEmitter<void>();
-
 
   openCreateWallet(): void {
     this.createWalletClick.emit();
@@ -43,15 +44,15 @@ hasTrade = input<boolean>(false);
     this.withdrawClick.emit();
   }
 
-  openJournal(): void {
-  this.journalClick.emit();
-}
+  goToJournal(): void {
+    console.log('walletId at click time:', this.walletId, typeof this.walletId);
 
-// reloadPage() {
-//   window.location.reload();
-// }
+    // catches both null and undefined
+    if (this.walletId == null) {
+      console.error('Wallet ID is missing');
+      return;
+    }
 
-goToJournal(): void {
-  this.router.navigate(['/journal']);
-}
+    this.router.navigate(['/journal', this.walletId]);
+  }
 }

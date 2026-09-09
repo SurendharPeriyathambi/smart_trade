@@ -1,7 +1,7 @@
 import { CommonModule, Location } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Header } from '../header/header';
 import { JournalUseCase } from './usecase/wallet-journal.usecase';
 import { JournalService } from './services/wallet-journal.service';
@@ -9,8 +9,9 @@ import { JournalRepository } from './repository/wallet-journal.repository';
 import { JournalRepositoryImpl } from './repository/wallet-journal.repository.impl';
 import { StorageEngine } from '../../../../services/engine/storage_engine';
 import { ToastService } from '../../../../services/engine/toast.service';
-import { CalendarEntry , WalletChartRequest, WalletChartResponse } from './models/wallet-journal.model';
+import { CalendarEntry, WalletChartRequest, WalletChartResponse } from './models/wallet-journal.model';
 import { LoaderService } from '../../../../services/engine/loader.service';
+import { Subject, takeUntil } from 'rxjs';
 
 interface ChartPoint {
   label: string;
@@ -30,18 +31,20 @@ interface ChartPoint {
     { provide: JournalRepository, useClass: JournalRepositoryImpl },
   ],
 })
-export class WalletJournalModal implements OnInit {
+export class WalletJournalModal implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+  private loadCalendarCancel$ = new Subject<void>();
   private usecase = inject(JournalUseCase);
   private storage = inject(StorageEngine);
   private toast = inject(ToastService);
   private loader = inject(LoaderService);
   private cd = inject(ChangeDetectorRef);
 
-
   constructor(
     private router: Router,
     private location: Location,
     private elRef: ElementRef,
+    private route: ActivatedRoute,
   ) {}
 
   @HostListener('document:click', ['$event'])
@@ -53,12 +56,12 @@ export class WalletJournalModal implements OnInit {
     }
   }
 
-  // API data
+  // ---- API summary data ----
   accountSize = 0;
   totalProfit = 0;
   totalLoss = 0;
-  totalwithdraw=0;
-  totaldeposit=0;
+  totalwithdraw = 0;
+  totaldeposit = 0;
   biggestWin = 0;
   biggestLoss = 0;
   avgWinRatio = 0;
@@ -67,78 +70,97 @@ export class WalletJournalModal implements OnInit {
   calendarEntries: CalendarEntry[] = [];
 
   ngOnInit(): void {
-    this.loadSummary();
+    const walletId = this.route.snapshot.paramMap.get('walletId');
+    this.loadSummary(walletId);
   }
 
-  loadSummary(): void {
-    const userId = this.storage.getId();
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.loadCalendarCancel$.complete();
+  }
 
+  /**
+   * Loads wallet summary: balances, current-month calendar entries, and
+   * available years/months for the chart period selectors.
+   *
+   * NOTE: The API response does NOT include `selected_year` / `selected_month`.
+   * It only returns `calender_month` (entries for whatever the backend
+   * considers the current month) plus `years`/`months` lists as strings
+   * (e.g. "2026", "Sep"). We default the calendar view to *today's* date,
+   * since there is nothing else to derive it from.
+   */
+  loadSummary(walletId: unknown): void {
+    this.walletId = Number(walletId);
     this.loader.show();
 
-    this.usecase.getSummary(Number(userId)).pipe(
+    this.usecase
+      .getSummary(this.walletId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          if (res.status) {
+            const { balance, calender_month, years } = res.data;
 
-    )
-    .subscribe({
-      next: (res) => {
-        if (res.status) {
-          this.cd.detectChanges();
-          const { balance, calender_month, selected_year, selected_month, years, months } =
-            res.data;
-          this.walletId = Number(this.storage.getId());
+            // Balance bind
+            this.accountSize = parseFloat(balance.wallet);
+            this.totalProfit = parseFloat(balance.total_profits);
+            this.totalLoss = parseFloat(balance.total_loss);
+            this.totalwithdraw = parseFloat(balance.total_withdraw || '0.00');
+            this.totaldeposit = parseFloat(balance.total_deposit || '0.00');
 
-          //  Balance bind
-          this.accountSize = parseFloat(balance.wallet);
-          this.totalProfit = parseFloat(balance.total_profits);
-          this.totalLoss = parseFloat(balance.total_loss);
-          this.totalwithdraw=parseFloat(balance.total_withdraw || "0.00");
-          this.totaldeposit=parseFloat(balance.total_deposit || "0.00");
+            // Calendar data for the default (current) month returned by API
+            this.calendarEntries = calender_month || [];
 
-          // Calendar data
-          this.calendarEntries = calender_month;
+            // years comes back as string[] (e.g. ["2026"]) — normalize to number[]
+            this.years = (years || []).map((y: unknown) => Number(y));
 
-             
+            // Default calendar + chart selectors to TODAY (API gives no
+            // selected_year/selected_month to anchor on)
+            const today = new Date();
+            this.currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            this.selectedYear = today.getFullYear();
+            this.selectedMonth = today.getMonth();
 
-          // Year/Month from API
-          this.selectedYear = selected_year;
-          this.selectedMonth = selected_month - 1;
-          this.apiMonths   = months;
-          this.years = years;
-
-          // Calendar navigate to current month
-          this.currentMonth = new Date(selected_year, selected_month - 1, 1);
-
-          this.loadCalendar(
-            String(res.data.selected_month).padStart(2, '0'),
-            String(res.data.selected_year),
-          );
-          this.loadChart(); 
-        } else {
-          this.toast.error(res.message);
-        }
-        this.loader.hide();
-      },
-      error: (err) => {
-        this.toast.error(err?.error?.message || 'Something went wrong');
-        this.loader.hide();
-      },
-    });
+            this.cd.detectChanges();
+            this.loadChart();
+          } else {
+            this.toast.error(res.message);
+          }
+          this.loader.hide();
+        },
+        error: (err) => {
+          this.toast.error(err?.error?.message || 'Something went wrong');
+          this.loader.hide();
+        },
+      });
   }
 
+  /**
+   * Fetches calendar entries for a specific month/year. Called whenever the
+   * user navigates the calendar (prev/next/today).
+   */
   loadCalendar(month: string, year: string): void {
+    // cancel any in-flight request first, so rapid arrow clicks don't race
+    this.loadCalendarCancel$.next();
+
     this.loader.show();
     this.usecase
       .getCalendar({
         wallet_id: this.walletId,
-        month: month,
-        year: year,
+        month,
+        year,
       })
+      .pipe(takeUntil(this.loadCalendarCancel$), takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
           if (res.status) {
+            this.calendarEntries = res.data.calender_month || [];
             this.cd.detectChanges();
-            this.calendarEntries = res.data.calender_month;
-            this.loader.hide();
+          } else {
+            this.toast.error(res.message);
           }
+          this.loader.hide();
         },
         error: (err) => {
           this.toast.error(err?.error?.message || 'Calendar load failed');
@@ -159,12 +181,13 @@ export class WalletJournalModal implements OnInit {
     if (!entry) return null;
     return entry.direction === 'Inward' ? parseFloat(entry.amount) : parseFloat(entry.amount);
   }
+
   getTradeCount(day: number | null): number {
     if (!day) return 0;
     const d = this.dateFor(day);
     const key = `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
     const entry = this.calendarEntries.find((e) => e.date === key);
-    return entry ? parseInt(entry.trade_count) : 0;
+    return entry ? parseInt(entry.trade_count as unknown as string, 10) : 0;
   }
 
   // ---- Chart ----
@@ -179,13 +202,11 @@ export class WalletJournalModal implements OnInit {
   }
 
   years: number[] = [];
-  apiMonths: number[] = []; 
+  apiMonths: unknown[] = [];
 
   get availableMonths() {
-  return this.months.filter(m => 
-    this.apiMonths.includes(m.value) 
-  );
-}
+    return this.months.filter((m) => this.apiMonths.includes(m.value));
+  }
 
   months = [
     { value: 1, label: 'January' },
@@ -201,7 +222,8 @@ export class WalletJournalModal implements OnInit {
     { value: 11, label: 'November' },
     { value: 12, label: 'December' },
   ];
-    summarymonths = [
+
+  summarymonths = [
     { value: 1, label: 'January' },
     { value: 2, label: 'February' },
     { value: 3, label: 'March' },
@@ -216,17 +238,30 @@ export class WalletJournalModal implements OnInit {
     { value: 12, label: 'December' },
   ];
 
-changeChartPeriod(period: 'year' | 'month' | 'week'): void {
-  this.chartPeriod = period;
-  this.loadChart();     
-}
+  changeChartPeriod(period: 'year' | 'month' | 'week'): void {
+    this.chartPeriod = period;
+    this.loadChart();
+  }
 
-onPeriodChange(): void {
-  this.loadChart();     
-}
+  onPeriodChange(): void {
+    this.loadChart();
+  }
+
   // ---- Calendar ----
   currentMonth = new Date();
   weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  // Short month names for API calls (e.g. "Jan", "Feb"...) — matches the
+  // format the backend expects (same as the "months" field in the summary
+  // response: ["Sep"])
+  private readonly monthShortNames = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+
+  private monthNameFor(date: Date): string {
+    return this.monthShortNames[date.getMonth()];
+  }
 
   get calendarDays(): (number | null)[] {
     const year = this.currentMonth.getFullYear();
@@ -251,7 +286,7 @@ onPeriodChange(): void {
       1,
     );
     this.loadCalendar(
-      String(this.currentMonth.getMonth() + 1).padStart(2, '0'),
+      this.monthNameFor(this.currentMonth),
       String(this.currentMonth.getFullYear()),
     );
   }
@@ -263,7 +298,7 @@ onPeriodChange(): void {
       1,
     );
     this.loadCalendar(
-      String(this.currentMonth.getMonth() + 1).padStart(2, '0'),
+      this.monthNameFor(this.currentMonth),
       String(this.currentMonth.getFullYear()),
     );
   }
@@ -271,6 +306,10 @@ onPeriodChange(): void {
   goToday(): void {
     const today = new Date();
     this.currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.loadCalendar(
+      this.monthNameFor(this.currentMonth),
+      String(this.currentMonth.getFullYear()),
+    );
   }
 
   private dateFor(day: number): Date {
@@ -353,74 +392,75 @@ onPeriodChange(): void {
 
   chartData: ChartPoint[] = [];
 
-loadChart(): void {
-  const payload: WalletChartRequest = { wallet_id: this.walletId, month: '', year: '' };
+  loadChart(): void {
+    const payload: WalletChartRequest = { wallet_id: this.walletId, month: '', year: '' };
 
-  if (this.chartPeriod === 'week') {
-    payload.month = String(this.selectedMonth).padStart(2, '0');
-    payload.year  = String(this.selectedYear);
-    payload.tag="weekly";
-  } else if (this.chartPeriod === 'month') {
-    payload.month = '';
-    payload.year  = String(this.selectedYear);
-    payload.tag="monthly";
-  } else {
-    // year period → both empty, backend returns all years
-    payload.month = '';
-    payload.year  = '';
-    payload.tag="yearly"
+    if (this.chartPeriod === 'week') {
+      payload.month = String(this.selectedMonth).padStart(2, '0');
+      payload.year = String(this.selectedYear);
+      payload.tag = 'weekly';
+    } else if (this.chartPeriod === 'month') {
+      payload.month = '';
+      payload.year = String(this.selectedYear);
+      payload.tag = 'monthly';
+    } else {
+      // year period → both empty, backend returns all years
+      payload.month = '';
+      payload.year = '';
+      payload.tag = 'yearly';
+    }
+
+    this.loader.show();
+    this.usecase
+      .getChart(payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: WalletChartResponse) => {
+          if (res.status) {
+            this.chartData = this.mapChartData(res.data);
+            this.biggestWin = Number(res.data.total_win);
+            this.biggestLoss = Number(res.data.total_loss);
+            this.avgWinRatio = Number(res.data.win_percentage);
+            this.cd.detectChanges();
+          } else {
+            this.toast.error(res.message);
+          }
+          this.loader.hide();
+        },
+        error: (err) => {
+          this.toast.error(err?.error?.message || 'Chart data load failed');
+          this.loader.hide();
+        },
+      });
   }
 
-  this.loader.show();
-  this.usecase.getChart(payload).subscribe({
-    next: (res: WalletChartResponse) => {
-      if (res.status) {
-        this.cd.detectChanges();
-        this.chartData = this.mapChartData(res.data);
-        this.biggestWin=Number(res.data.total_win);
-        this.biggestLoss=Number(res.data.total_loss);
-        this.avgWinRatio=Number(res.data.win_percentage);
-         this.loader.hide();
-      } else {
-        this.toast.error(res.message);
-         this.loader.hide();
-      }
-    },
-    error: (err) => {
-      this.toast.error(err?.error?.message || 'Chart data load failed');
-      this.loader.hide();
-    },
-  });
-}
+  private mapChartData(data: WalletChartResponse['data']): ChartPoint[] {
+    if (data.view === 'weekly' && data.calender_month) {
+      return data.calender_month.map((item) => ({
+        label: `Week ${item.week}`,
+        value: parseFloat(item.amount),
+        fullDate: new Date(this.selectedYear, this.selectedMonth, (item.week - 1) * 7 + 1),
+      }));
+    }
 
-private mapChartData(data: WalletChartResponse['data']): ChartPoint[] {
-  if (data.view === 'weekly' && data.calender_month) {
-    return data.calender_month.map((item) => ({
-      label: `Week ${item.week}`,
-      value: parseFloat(item.amount),
-      fullDate: new Date(this.selectedYear, this.selectedMonth, (item.week - 1) * 7 + 1),
-    }));
+    if (data.view === 'monthly' && data.calender_year) {
+      return data.calender_year.map((item) => ({
+        label: item.month_name.substring(0, 3),
+        value: parseFloat(item.amount),
+        fullDate: new Date(this.selectedYear, item.month - 1, 1),
+      }));
+    }
+
+    if (data.view === 'yearly' && data.calender_years) {
+      return data.calender_years.map((item) => ({
+        label: item.year.toString(),
+        value: parseFloat(item.amount),
+        fullDate: new Date(item.year, 11, 31),
+      }));
+    }
+
+    return [];
   }
-
-  if (data.view === 'monthly' && data.calender_year) {
-    return data.calender_year.map((item) => ({
-      label: item.month_name.substring(0, 3),
-      value: parseFloat(item.amount),
-      fullDate: new Date(this.selectedYear, item.month - 1, 1),
-    }));
-  }
-
-  if (data.view === 'yearly' && data.calender_years) {
-    return data.calender_years.map((item) => ({
-      label: item.year.toString(),
-      value: parseFloat(item.amount),
-      fullDate: new Date(item.year, 11, 31),
-    }));
-  }
-
-  return [];
-}
-
 
   chartWidth = 420;
   chartHeight = 240;

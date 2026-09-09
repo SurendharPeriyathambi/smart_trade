@@ -18,7 +18,7 @@ export interface JournalSummaryData {
   selected_year: number;
   selected_month: number;
   years: number[];
-  months: number[];
+  months: string[];
   calender_month: CalendarEntry[];
 }
 

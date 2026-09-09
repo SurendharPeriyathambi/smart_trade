@@ -6,8 +6,9 @@
 
             <app-wallet-summary [walletCreated]="walletCreated" [currentBalance]="currentBalance"
                 [walletDate]="wallet?.create_date" (createWalletClick)="openCreateWalletModal()"
-                (depositClick)="openDepositModal()" (withdrawClick)="openWithdrawModal()" [hasTrade]="hasTrade"/>
-
+                (depositClick)="openDepositModal()" (withdrawClick)="openWithdrawModal()" [hasTrade]="hasTrade"
+                [walletId]="wallet?.id ?? null">
+            </app-wallet-summary>
             <!-- (journalClick)="openJournalModal()" -->
 
             <div class="mt-4"><app-trading-notes #tradingNotes [walletId]="wallet?.id ?? null" /></div>
@@ -17,7 +18,7 @@
         <div class="col-lg-7">
 
             <div> <app-trade-history [walletCreated]="walletCreated" [walletId]="wallet?.id ?? null"
-                    [walletCreateDate]="wallet?.create_date ?? null"  (tradeStatusChange)="onTradeStatusChange($event)">
+                    [walletCreateDate]="wallet?.create_date ?? null" (tradeStatusChange)="onTradeStatusChange($event)">
                 </app-trade-history>
 
             </div>
@@ -191,8 +192,9 @@
 
                 <div class="warning-box">
                     <i class="bi bi-exclamation-triangle"></i>
-                    <p>Choose the Wallet Creation Date carefully. All deposits, withdrawals, and trade entries must be dated on or after the Wallet Creation Date.
-                       please make this message on wallet creation</p>
+                    <p>Choose the Wallet Creation Date carefully. All deposits, withdrawals, and trade entries must be
+                        dated on or after the Wallet Creation Date.
+                        please make this message on wallet creation</p>
                 </div>
 
                 <div class="form-group">
@@ -260,4 +262,4 @@
   <button (click)="goToJournal()">Journal</button>
 } -->
 
-<app-footer></app-footer>
+    <app-footer></app-footer>
