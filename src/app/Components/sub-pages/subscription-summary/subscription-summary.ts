@@ -3,6 +3,8 @@ import { Component, computed, EventEmitter, inject, Input, Output, signal } from
 import { SubscriptionState } from '../../main-pages/subscriptions/subscription_state.service';
 import { Coopen } from '../coopen/coopen';
 import { SubscriptionPlans } from '../subscription-plans/subscription-plans';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-subscription-summary',
@@ -11,8 +13,10 @@ import { SubscriptionPlans } from '../subscription-plans/subscription-plans';
   styleUrl: './subscription-summary.scss',
 })
 export class SubscriptionSummary {
-
+  private route=inject(Router);
   private subState = inject(SubscriptionState);
+  
+  @Output() renewalClicked = new EventEmitter<void>();
 
   //    Directly from state — no @Input needed
   profile = this.subState.profile;
@@ -36,10 +40,12 @@ export class SubscriptionSummary {
     return diffDays > 0 ? diffDays : 0;
   });
 
-  @Output() renewalClicked = new EventEmitter<void>();
 
    onRenewalClick() {
     this.renewalClicked.emit();
   }
+  goToWallet() {
+  this.route.navigate(['/wallet']);
+}
 }
 
