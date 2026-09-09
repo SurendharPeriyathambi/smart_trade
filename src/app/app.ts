@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, signal } from '@angular/core';
 import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Router, RouterOutlet } from '@angular/router';
 import { ToastComponent } from "../services/engine/toast.component";
 import { Loader } from "./Components/sub-pages/loader/loader";
@@ -19,7 +19,7 @@ const CLOSE_THRESHOLD_MS = 5000;
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
 
   protected readonly title = signal('smart-trade-academy');
   loading$: any;
@@ -33,9 +33,9 @@ export class App {
   ) {
     this.loading$ = this.loaderService.loading$;
 
-    if (typeof window !== 'undefined') {
-      this._handleSessionOnLoad();
-    }
+    // if (typeof window !== 'undefined') {
+    //   this._handleSessionOnLoad();
+    // }
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -59,8 +59,23 @@ export class App {
       }
     });
   }
+  ngOnInit() {
+    // document.addEventListener('contextmenu', (e) => {
+    //   e.preventDefault();
+    // });
+    // document.addEventListener('keydown', (e: KeyboardEvent) => {
+    //   if (
+    //     e.key === 'F12' ||
+    //     (e.ctrlKey && e.shiftKey &&
+    //       ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
+    //     (e.ctrlKey && e.key.toUpperCase() === 'U')
+    //   ) {
+    //     e.preventDefault();
+    //   }
+    // });
+  }
 
-private _handleSessionOnLoad(): void {
+  private _handleSessionOnLoad(): void {
     const raw = localStorage.getItem('pending_logout');
     if (!raw) return;
 
@@ -76,32 +91,28 @@ private _handleSessionOnLoad(): void {
     // ✅ Real tab close detected — call full logout API now
     this.loaderService.show();
 
-    this.authService.logoutFromPreviousSession().subscribe({
-      next: () => {
-        this.storage.clear();
-        this.loaderService.hide();
-        this.router.navigate(['/login']);
-      },
-      error: () => {
-        // Even if API fails, clear local session
-        localStorage.removeItem('pending_logout');
-        this.storage.clear();
-        this.loaderService.hide();
-        this.router.navigate(['/login']);
-      }
-    });
+    // this.authService.logoutFromPreviousSession().subscribe({
+    //   next: () => {
+    //     this.storage.clear();
+    //     this.loaderService.hide();
+    //     this.router.navigate(['/login']);
+    //   },
+    //   error: () => {
+    //     // Even if API fails, clear local session
+    //     localStorage.removeItem('pending_logout');
+    //     this.storage.clear();
+    //     this.loaderService.hide();
+    //     this.router.navigate(['/login']);
+    //   }
+    // });
   }
 
   // ✅ ONLY stamps the time. NEVER calls logout here.
   // Logout decision is made on the NEXT load based on the time gap.
-  @HostListener('window:beforeunload')
+  // @HostListener('window:beforeunload')
+
+  // @HostListener('window:beforeunload')
   // onTabClose(): void {
-  //   const token = this.storage.getAccessToken();
-  //   if (!token) return;
-  //   localStorage.setItem('unload_time', Date.now().toString());
+  //   this.authService.storeLogoutData(); // stores token+email+ip+timestamp
   // }
-  @HostListener('window:beforeunload')
-  onTabClose(): void {
-    this.authService.storeLogoutData(); // stores token+email+ip+timestamp
-  }
 }

@@ -3,34 +3,59 @@ import { ChartState } from '../state/chart.state';
 import { ScreenPoint } from '../model/drawing.model';
 import { Answers } from '../model/chart.model';
 import { ToastService } from '../../../../services/engine/toast.service';
+import { MeasureUsecase } from './measurement.usecase';
 
 @Injectable({ providedIn: 'root' })
 export class SelectionUsecase {
   constructor(
     private chartState: ChartState,
     private toast: ToastService,
+        private measureUsecase: MeasureUsecase, // ✅ inject
+
   ) {}
 
   handleSelectClick(
     param: any,
     chartToScreenPoint: (time: number, price: number) => ScreenPoint | null,
     onSelectionChanged: () => void,
+    countBarsInRange?: (fromTime: number, toTime: number) => number,
+    measureCanvas?: any,
   ): void {
-    const sp: ScreenPoint = { x: param.point.x, y: param.point.y };
+   const sp: ScreenPoint = { x: param.point.x, y: param.point.y };
 
     if (this.getHandleAtPoint(sp, chartToScreenPoint)) return;
     if (this.chartState.isDraggingLine) return;
 
-    const hit = this.getLineAtPoint(sp, chartToScreenPoint);
-    if (hit) {
-      this.chartState.selectedLineId = hit.id!;
+    // 1) check trendlines first
+    const hitLine = this.getLineAtPoint(sp, chartToScreenPoint);
+    if (hitLine) {
+      this.chartState.selectedLineId = hitLine.id!;
+      this.chartState.selectedMeasureIndex = null; // ✅ clear the other selection type
       onSelectionChanged();
-      this.toast.success(`Line selected: ${hit.id!.toString().substring(0, 8)}…`);
-    } else {
-      this.clearSelection();
-      onSelectionChanged();
-      this.toast.info('Selection cleared');
+      this.toast.success(`Line selected: ${hitLine.id!.toString().substring(0, 8)}…`);
+      return;
     }
+
+    // 2) check measurements
+    const hitMeasureIndex = this.measureUsecase.getMeasurementAtPoint(sp, chartToScreenPoint);
+    if (hitMeasureIndex !== null) {
+      this.chartState.selectedMeasureIndex = hitMeasureIndex;
+      this.chartState.selectedLineId = null; // ✅ clear the other selection type
+      if (countBarsInRange && measureCanvas) {
+        this.measureUsecase.redrawAllMeasurements(measureCanvas, chartToScreenPoint, countBarsInRange);
+      }
+      onSelectionChanged();
+      this.toast.success('Measurement selected.');
+      return;
+    }
+
+    // 3) nothing hit — clear both
+    this.clearSelection();
+    if (countBarsInRange && measureCanvas) {
+      this.measureUsecase.redrawAllMeasurements(measureCanvas, chartToScreenPoint, countBarsInRange);
+    }
+    onSelectionChanged();
+    this.toast.info('Selection cleared');
   }
 
   getLineAtPoint(
@@ -74,6 +99,8 @@ export class SelectionUsecase {
 
   clearSelection(): void {
     this.chartState.selectedLineId = null;
+        this.chartState.selectedMeasureIndex = null; // ✅ clear both together
+
   }
 
   getTargetLine(

@@ -53,6 +53,7 @@ export class DrawingUsecase {
         lineStyle: previewLineStyle,
         priceLineVisible: false,
         lastValueVisible: false,
+        autoscaleInfoProvider: () => null, 
       });
       this.chartState.hasFirstPoint = true;
     } else {
@@ -118,9 +119,14 @@ export class DrawingUsecase {
         [start, end] = [end, start];
       }
     }
+const requiredTags = Object.keys(this.chartState.requiredCountByTag ?? {});
+let autoTag = 'Select a name';
+if (requiredTags.length === 1) {
+  autoTag = requiredTags[0];
+}
     const newLines: Answers = {
       id: uuidv4(),
-      task_id: this.chartState.testId,
+      task_id: this.chartState.taskId,
       chart_id: this.chartState.chartId,
       start_x: start.x,
       start_y: start.y,
@@ -131,6 +137,7 @@ export class DrawingUsecase {
       end_time: end.time,
       end_price: end.price,
       is_edit: false,
+      tag: autoTag
     };
 
     this.ToolsUsecase.pushUndo();
@@ -139,7 +146,7 @@ export class DrawingUsecase {
     this.chartState.pendingSaves++;
     try {
       const savedRecord = await this.localdb.createUserAnswer(this.toLineRecord(newLines, false, false));
-      newLines.localDbId = (savedRecord as any).id;
+      newLines.localDbId = (savedRecord as Answers).id;
     } finally {
       this.chartState.pendingSaves--;
     }
@@ -169,6 +176,7 @@ export class DrawingUsecase {
       end_y: e?.y ?? 0,
       is_edit: isEdit,
       is_delete: isDelete,
+      tag:line.tag
     };
   }
 

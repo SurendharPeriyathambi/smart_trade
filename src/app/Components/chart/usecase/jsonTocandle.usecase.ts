@@ -133,13 +133,13 @@ export class JsonToCandleUsecase {
         if (data.length <= bars) {
           this.chartstate.chart.timeScale().fitContent();
         } else {
-          const lastBar = data[data.length - 1].time;
-          const firstBar = data[data.length - bars].time;
-          const padding = (lastBar - firstBar) * 0.05;
-          this.chartstate.chart.timeScale().setVisibleRange({
-            from: firstBar - padding,
-            to: lastBar + padding,
-          });
+        const firstBar = data[0].time;
+        const lastBar = data[Math.min(bars - 1, data.length - 1)].time;
+        const padding = (lastBar - firstBar) * 0.05;
+        this.chartstate.chart.timeScale().setVisibleRange({
+          from: firstBar - padding,
+          to: lastBar + padding,
+        });
         }
       }
 
@@ -270,17 +270,12 @@ export class JsonToCandleUsecase {
     }
   }
 
-  public chartToScreenPoint(time: number, price: number): ScreenPoint | null {
-    try {
-      const x = this.chartstate.chart.timeScale().timeToCoordinate(time) as number | null;
-      const y = this.chartstate.candlestickSeries.priceToCoordinate(price) as number | null;
-      if (x == null || y == null || isNaN(x) || isNaN(y)) return null;
-      return { x, y };
-    } catch (err) {
-      console.debug('[Chart] chartToScreenPoint error:', err);
-      return null;
-    }
-  }
+ public chartToScreenPoint(time: number, price: number): ScreenPoint | null {
+  const x = this.chartstate.chart.timeScale().timeToCoordinate(time) as number | null;
+  const y = this.chartstate.candlestickSeries.priceToCoordinate(price) as number | null;
+  if (x == null || y == null || isNaN(x) || isNaN(y)) return null;
+  return { x, y };
+}
 
   public countBarsInRange(fromTime: number, toTime: number): number {
     return this.chartstate.chartData.filter((d: any) => d.time >= fromTime && d.time <= toTime)
@@ -434,6 +429,21 @@ export class JsonToCandleUsecase {
       if (!param?.point) return;
 
       if (this.chartstate.activeTool === 'measure') {
+        if (!this.chartstate.isMeasuring) {
+    const sp: ScreenPoint = { x: param.point.x, y: param.point.y };
+    const hitIndex = this.measureUsecase.getMeasurementAtPoint(sp, (t, p) => this.chartToScreenPoint(t, p));
+
+    if (hitIndex !== null) {
+      this.chartstate.selectedMeasureIndex = hitIndex;
+      this.measureUsecase.renderMeasureFrame(
+        measureCanvas,
+        (time, price) => this.chartToScreenPoint(time, price),
+        (from, to) => this.countBarsInRange(from, to),
+      );
+      return;
+    }
+    this.chartstate.selectedMeasureIndex = null;
+  }
         this.measureUsecase.handleMeasureClick(
           param,
           (sp) => this.screenToChartPoint(sp),
@@ -486,6 +496,8 @@ export class JsonToCandleUsecase {
               param,
               (time, price) => this.chartToScreenPoint(time, price),
               () => this.renderLines(),
+              (from, to) => this.countBarsInRange(from, to),   
+      measureCanvas,  
             );
           }
           this.chartstate.dragDistance = 0;
@@ -503,7 +515,7 @@ export class JsonToCandleUsecase {
           const cp = this.screenToChartPoint({ x: param.point.x, y: param.point.y });
           if (cp) {
             this.chartstate.measureEnd = cp;
-            this.measureUsecase.drawMeasureOverlay(
+            this.measureUsecase.renderMeasureFrame(
               measureCanvas,
               (time, price) => this.chartToScreenPoint(time, price),
               (from, to) => this.countBarsInRange(from, to),
@@ -528,7 +540,7 @@ export class JsonToCandleUsecase {
       this.chartstate.chart.timeScale().applyOptions({ visible: true });
 
       if (this.chartstate.measureStart && this.chartstate.measureEnd) {
-        this.measureUsecase.drawMeasureOverlay(
+        this.measureUsecase.renderMeasureFrame(
           measureCanvas,
           (time, price) => this.chartToScreenPoint(time, price),
           (from, to) => this.countBarsInRange(from, to),
@@ -554,15 +566,15 @@ export class JsonToCandleUsecase {
   }
 
   private async loadChartData(): Promise<void> {
-    if (isNaN(this.chartstate.testId) || this.chartstate.testId <= 0) {
-      this.chartstate.rawChartData = this.generateMockData();
-      this.chartstate.chartData = this.resampleData(
-        this.chartstate.rawChartData,
-        this.chartstate.activeTimeframe,
-      );
-      this.applyChartData();
-      return;
-    }
+    // if (isNaN(this.chartstate.testId) || this.chartstate.testId <= 0) {
+    //   this.chartstate.rawChartData = this.generateMockData();
+    //   this.chartstate.chartData = this.resampleData(
+    //     this.chartstate.rawChartData,
+    //     this.chartstate.activeTimeframe,
+    //   );
+    //   this.applyChartData();
+    //   return;
+    // }
   }
 
   public handleWheelZoom(event: WheelEvent, chartContainer: any): void {
@@ -640,26 +652,36 @@ export class JsonToCandleUsecase {
     };
     this.handleAnimationFrameId = requestAnimationFrame(draw);
   }
+public drawHandles(handleCanvas: any): void {
+  const ctx = this.chartstate.handleCanvasContext;
+  const canvas = handleCanvas?.nativeElement;
+  if (!ctx || !canvas) return;
 
-  public drawHandles(handleCanvas: any): void {
-    const ctx = this.chartstate.handleCanvasContext;
-    const canvas = handleCanvas?.nativeElement;
-    if (!ctx || !canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
 
-    const dpr = window.devicePixelRatio || 1;
-    ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+  this.chartstate.newDrawLine
+    .filter((l) => !l.is_delete)
+    .forEach((l) => this.drawLineLabel(ctx, l));
 
-    if (!this.chartstate.selectedLineId) return;
-    const line = this.chartstate.findLine(this.chartstate.selectedLineId);
-    if (!line) return;
+ if (this.chartstate.hasSubmitted) {
+  this.chartstate.adminLines.forEach((l) => this.drawLineLabel(ctx, l, true));
+}
+this.chartstate.newDrawLine
+  .filter((l) => !l.is_delete)
+  .forEach((l) => this.drawLineLabel(ctx, l));
 
-    const sp = this.chartToScreenPoint(line.start_time, line.start_price);
-    const ep = this.chartToScreenPoint(line.end_time, line.end_price);
-    if (!sp || !ep) return;
+  if (!this.chartstate.selectedLineId) return;
+  const line = this.chartstate.findLine(this.chartstate.selectedLineId);
+  if (!line) return;
 
-    this.drawHandle(ctx, sp.x, sp.y, this.chartstate.isExtendingLeftHandle);
-    this.drawHandle(ctx, ep.x, ep.y, this.chartstate.isExtendingRightHandle);
-  }
+  const sp = this.chartToScreenPoint(line.start_time, line.start_price);
+  const ep = this.chartToScreenPoint(line.end_time, line.end_price);
+  if (!sp || !ep) return;
+
+  this.drawHandle(ctx, sp.x, sp.y, this.chartstate.isExtendingLeftHandle);
+  this.drawHandle(ctx, ep.x, ep.y, this.chartstate.isExtendingRightHandle);
+}
 
   private drawHandle(ctx: CanvasRenderingContext2D, x: number, y: number, isActive: boolean): void {
     const radius = isActive ? 4 : 3;
@@ -679,6 +701,118 @@ export class JsonToCandleUsecase {
     ctx.stroke();
     ctx.restore();
   }
+  
+/** Draws the line's name centered above its midpoint. Skips lines whose midpoint can't be resolved to screen space and skips the line currently being renamed (the <input> overlay covers that spot instead). */
+private drawLineLabel(ctx: CanvasRenderingContext2D, line: Answers, isAdmin: boolean = false): void {
+  const text = (line.tag?.trim()) || (isAdmin ? '' : '');
+  if (!text) return; // only true for admin lines with no tag — those should stay invisible
+  if (this.chartstate.editingLabelLineId === String(line.id)) return;
+
+  const sp = this.chartToScreenPoint(line.start_time, line.start_price);
+  const ep = this.chartToScreenPoint(line.end_time, line.end_price);
+  if (!sp || !ep) return;
+
+  const midX = (sp.x + ep.x) / 2;
+  const midY = (sp.y + ep.y) / 2;
+  const isSelected = !isAdmin && this.chartstate.selectedLineId === line.id;
+  const isDark = this.chartstate.currentTheme === 'dark';
+  const isPlaceholder = !line.tag?.trim() && !isAdmin;
+
+  let bgColor: string, borderColor: string, textColor: string;
+  if (isAdmin) {
+    bgColor = 'rgba(54,247,179,0.85)';
+    borderColor = '#36F7B3';
+    textColor = '#0d1a15';
+  } else if (isPlaceholder) {
+    // Dashed/muted so it visually reads as "needs a tag"
+    bgColor = isDark ? 'rgba(255,165,0,0.25)' : 'rgba(255,193,89,0.35)';
+    borderColor = '#FFA500';
+    textColor = isDark ? '#FFA500' : '#8a5300';
+  } else if (isSelected) {
+    bgColor = isDark ? 'rgba(255,165,0,0.85)' : 'rgba(255,193,89,0.9)';
+    borderColor = isDark ? '#FFA500' : '#FF8C00';
+    textColor = isDark ? '#FFFFFF' : '#1e222d';
+  } else if (isDark) {
+    bgColor = 'rgba(30,34,45,0.85)';
+    borderColor = '#FF6B6B';
+    textColor = '#FFFFFF';
+  } else {
+    bgColor = 'rgba(255,255,255,0.9)';
+    borderColor = '#4ECDC4';
+    textColor = '#333333';
+  }
+
+  ctx.save();
+  ctx.font = '600 11px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+
+  const paddingX = 6;
+  const paddingY = 3;
+  const metrics = ctx.measureText(text);
+  const boxW = metrics.width + paddingX * 2;
+  const boxH = 16;
+  const labelY = midY - 10;
+
+  ctx.fillStyle = bgColor;
+  ctx.strokeStyle = borderColor;
+  ctx.lineWidth = 1;
+  if (isPlaceholder) ctx.setLineDash([2, 2]); // dashed border signals "not yet set"
+  this.roundRect(ctx, midX - boxW / 2, labelY - boxH, boxW, boxH, 4);
+  ctx.fill();
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = textColor;
+  ctx.fillText(text, midX, labelY - paddingY);
+  ctx.restore();
+}
+private roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, w: number, h: number, r: number,
+): void {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+/** Hit-tests a screen point against every line's label box (same geometry as drawLineLabel). Returns the matching line, or null. */
+public getLabelAtPoint(sp: ScreenPoint): Answers | null {
+  const ctx = this.chartstate.handleCanvasContext;
+  if (!ctx) return null;
+  ctx.save();
+  ctx.font = '600 11px Arial';
+
+  for (const line of this.chartstate.newDrawLine) {
+    if (line.is_delete) continue;
+    const text = line.tag?.trim() || 'Tag ▾'; // ← same fallback as drawLineLabel
+
+    const start = this.chartToScreenPoint(line.start_time, line.start_price);
+    const end = this.chartToScreenPoint(line.end_time, line.end_price);
+    if (!start || !end) continue;
+
+    const midX = (start.x + end.x) / 2;
+    const midY = (start.y + end.y) / 2;
+    const paddingX = 6;
+    const boxW = ctx.measureText(text).width + paddingX * 2;
+    const boxH = 16;
+    const labelY = midY - 10;
+
+    const left = midX - boxW / 2;
+    const top = labelY - boxH;
+    if (sp.x >= left && sp.x <= left + boxW && sp.y >= top && sp.y <= labelY) {
+      ctx.restore();
+      return line;
+    }
+  }
+  ctx.restore();
+  return null;
+}
+
 
   public clearHandlesCanvas(handleCanvas: any): void {
     const ctx = this.chartstate.handleCanvasContext;
@@ -732,6 +866,7 @@ export class JsonToCandleUsecase {
           end_y: 0,
           is_edit: line.is_edit ?? false,
           is_delete: false,
+          tag: line.tag ?? '',
         } as Answers);
         line.localDbId = saved.id;
       }
@@ -750,6 +885,25 @@ export class JsonToCandleUsecase {
         } catch {}
         this.chartstate.lineSeriesMap.delete(id);
       }
+      let t1 = Number(line.start_time);
+    let t2 = Number(line.end_time);
+    let p1 = Number(line.start_price);
+    let p2 = Number(line.end_price);
+
+    if (!Number.isFinite(t1) || !Number.isFinite(t2) || !Number.isFinite(p1) || !Number.isFinite(p2)) {
+      console.warn('[Chart] Skipping line with invalid numeric data:', line);
+      return;
+    }
+
+    // lightweight-charts requires strictly ascending times. Reversed or
+    // collapsed (equal) endpoints will otherwise throw on setData().
+    if (t1 === t2) {
+      t2 = t1 + 1;
+    } else if (t1 > t2) {
+      [t1, t2] = [t2, t1];
+      [p1, p2] = [p2, p1];
+    }
+
 
       let color = '#FF6B6B'; // default user-drawn
       const isSelected = this.chartstate.selectedLineId === line.id;
@@ -776,54 +930,72 @@ export class JsonToCandleUsecase {
         crosshairMarkerVisible: false,
       });
       series.setData([
-        { time: Number(line.start_time), value: Number(line.start_price) },
-        { time: Number(line.end_time), value: Number(line.end_price) },
-      ]);
+      { time: t1, value: p1 },
+      { time: t2, value: p2 },
+    ]);
       this.chartstate.lineSeriesMap.set(id, series);
     } catch (e) {
       console.error('[Chart] renderLine error:', e, line);
     }
   }
+public validateLinesPixelBased(
+  adminLines: Answers[],
+  userLines: Answers[],
+): Map<number, boolean> {
+  const results = new Map<number, boolean>();
 
-  public validateLinesPixelBased(
-    adminLines: Answers[],
-    userLines: Answers[],
-  ): Map<number, boolean> {
-    const results = new Map<number, boolean>();
-    const PIXEL_TOLERANCE = 5; // px — tune this to taste
+  const TIME_TOLERANCE_FRACTION = 0.02;
+  const PRICE_TOLERANCE_FRACTION = 0.02;
 
-    for (const user of userLines) {
-      let matched = false;
+  const visibleRange = this.chartstate.chart?.timeScale().getVisibleRange();
+  const timeSpan = visibleRange ? (visibleRange.to as number) - (visibleRange.from as number) : 0;
+  const timeTolerance = timeSpan > 0 ? timeSpan * TIME_TOLERANCE_FRACTION : 5 * 86400;
 
-      const userStartPx = this.chartToScreenPoint(user.start_time, user.start_price);
-      const userEndPx = this.chartToScreenPoint(user.end_time, user.end_price);
-      if (!userStartPx || !userEndPx) {
-        results.set(user.id!, false);
-        continue;
+  let priceTolerance = 0;
+  const height = 600;
+  const topPrice = this.chartstate.candlestickSeries?.coordinateToPrice(0) as number | null;
+  const botPrice = this.chartstate.candlestickSeries?.coordinateToPrice(height) as number | null;
+  if (topPrice != null && botPrice != null && !isNaN(topPrice) && !isNaN(botPrice)) {
+    priceTolerance = Math.abs(topPrice - botPrice) * PRICE_TOLERANCE_FRACTION;
+  }
+
+  for (const user of userLines) {
+    let matched = false;
+
+    for (const admin of adminLines) {
+      if ((user.tag ?? '').trim().toLowerCase() !== (admin.tag ?? '').trim().toLowerCase()) continue;
+
+      const effectivePriceTolerance =
+        priceTolerance > 0
+          ? priceTolerance
+          : Math.abs(admin.end_price - admin.start_price) * PRICE_TOLERANCE_FRACTION || 0.001;
+
+      // Direct: user.start↔admin.start, user.end↔admin.end
+      const directOk =
+        Math.abs(Number(user.start_time) - Number(admin.start_time)) <= timeTolerance &&
+        Math.abs(Number(user.start_price) - Number(admin.start_price)) <= effectivePriceTolerance &&
+        Math.abs(Number(user.end_time) - Number(admin.end_time)) <= timeTolerance &&
+        Math.abs(Number(user.end_price) - Number(admin.end_price)) <= effectivePriceTolerance;
+
+      // Reversed: user.start↔admin.end, user.end↔admin.start
+      const reversedOk =
+        Math.abs(Number(user.start_time) - Number(admin.end_time)) <= timeTolerance &&
+        Math.abs(Number(user.start_price) - Number(admin.end_price)) <= effectivePriceTolerance &&
+        Math.abs(Number(user.end_time) - Number(admin.start_time)) <= timeTolerance &&
+        Math.abs(Number(user.end_price) - Number(admin.start_price)) <= effectivePriceTolerance;
+
+      if (directOk || reversedOk) {
+        matched = true;
+        break;
       }
-
-      for (const admin of adminLines) {
-        const adminStartPx = this.chartToScreenPoint(admin.start_time, admin.start_price);
-        const adminEndPx = this.chartToScreenPoint(admin.end_time, admin.end_price);
-        if (!adminStartPx || !adminEndPx) continue;
-
-        const startDist = Math.hypot(
-          userStartPx.x - adminStartPx.x,
-          userStartPx.y - adminStartPx.y,
-        );
-        const endDist = Math.hypot(userEndPx.x - adminEndPx.x, userEndPx.y - adminEndPx.y);
-
-        if (startDist <= PIXEL_TOLERANCE && endDist <= PIXEL_TOLERANCE) {
-          matched = true;
-          break;
-        }
-      }
-
-      results.set(user.id!, matched);
     }
 
-    return results;
+    results.set(user.id!, matched);
   }
+
+  return results;
+}
+
   private removeLineSeries(id: string): void {
     const existing = this.chartstate.lineSeriesMap.get(id);
     if (existing) {
@@ -841,32 +1013,41 @@ export class JsonToCandleUsecase {
     }
   }
 
-  private renderAdminOverlay(): void {
-    this.adminLineSeriesMap.forEach((series) => {
-      try {
-        this.chartstate.chart.removeSeries(series);
-      } catch {}
-    });
-    this.adminLineSeriesMap.clear();
+private renderAdminOverlay(): void {
+  this.adminLineSeriesMap.forEach((series) => {
+    try {
+      this.chartstate.chart.removeSeries(series);
+    } catch {}
+  });
+  this.adminLineSeriesMap.clear();
 
-    if (!this.chartstate.hasSubmitted) return;
+  if (!this.chartstate.adminLines?.length) return;
 
-    this.chartstate.adminLines.forEach((line) => {
-      const series = this.chartstate.chart.addSeries(LineSeries, {
-        color: '#36F7B3', // single distinct color for ALL admin lines
-        lineWidth: 2,
-        lineStyle: LineStyle.Dotted,
-        priceLineVisible: false,
-        lastValueVisible: false,
-        crosshairMarkerVisible: false,
-      });
-      series.setData([
-        { time: Number(line.start_time), value: Number(line.start_price) },
-        { time: Number(line.end_time), value: Number(line.end_price) },
-      ]);
-      this.adminLineSeriesMap.set(String(line.id), series);
+  const linesToRender = this.chartstate.hasSubmitted
+    ? this.chartstate.adminLines
+    : [this.chartstate.adminLines[0]];
+
+  linesToRender.forEach((line) => {
+    const series = this.chartstate.chart.addSeries(LineSeries, {
+      color: '#36F7B3',
+      lineWidth: 2,
+      lineStyle: LineStyle.Dotted,
+      priceLineVisible: false,
+      lastValueVisible: false,
+      crosshairMarkerVisible: false,
+      priceScaleId: 'right', // put it back on the SAME scale as candles
+      autoscaleInfoProvider: (original: () => any) => {
+        // Always return the candle-driven range, ignoring this line's own values
+        return null;
+      },
     });
-  }
+    series.setData([
+      { time: Number(line.start_time), value: Number(line.start_price) },
+      { time: Number(line.end_time), value: Number(line.end_price) },
+    ]);
+    this.adminLineSeriesMap.set(String(line.id), series);
+  });
+}
 
   private renderLinesWithoutScaleReset(): void {
     if (!this.ensureChart()) return;
@@ -876,7 +1057,7 @@ export class JsonToCandleUsecase {
     const savedMax = this.chartstate.zoomMaxPrice;
 
     if (wasZoomed && savedMin != null && savedMax != null) {
-      this.chartstate.chart.priceScale('right').applyOptions({ autoScale: false });
+      this.chartstate.chart.priceScale('right').applyOptions({ autoScale: true });
     }
 
     this.chartstate.lineSeriesMap.forEach((series) => {
@@ -910,22 +1091,36 @@ export class JsonToCandleUsecase {
   ): Promise<void> {
     this.chartstate.requiredLineCount = serverLines.length;
 
+    
+
     // Admin lines kept OUT of newDrawLine — never rendered/persisted as user
     // answers, only used for validation + the post-submit overlay.
     this.chartstate.adminLines = serverLines.map(
-      (server) =>
-        ({
-          id: uuidv4(),
-          answer_id: server.id ?? null,
-          task_id: this.chartstate.taskId,
-          chart_id: this.chartstate.chartId,
-          start_time: Number(server.start_time),
-          start_price: Number(server.start_price),
-          end_time: Number(server.end_time),
-          end_price: Number(server.end_price),
-          is_edit: false,
-        }) as Answers,
-    );
+  (server) =>
+    ({
+      id: uuidv4(),
+      answer_id: server.id ?? null,
+      task_id: this.chartstate.taskId,
+      chart_id: this.chartstate.chartId,
+      start_time: Number(server.start_time),
+      start_price: Number(server.start_price),
+      end_time: Number(server.end_time),
+      end_price: Number(server.end_price),
+      is_edit: false,
+      tag: server.tag,
+    }) as Answers,
+);
+
+// Per-tag required counts (e.g. { CHO: 3, STR: 2 }) — drives the header breakdown.
+this.chartstate.requiredCountByTag = this.chartstate.adminLines.reduce(
+  (acc, line) => {
+    const tag = (line.tag ?? '').trim() || 'Untagged';
+    acc[tag] = (acc[tag] ?? 0) + 1;
+    return acc;
+  },
+  {} as Record<string, number>,
+);
+this.chartstate.matchedCountByTag = {};
 
     // Persist to answerChart so validateLinesAgainstDb() and any reload have
     // something to read.

@@ -8,7 +8,7 @@ import { getChartAnswer } from "../model/drawing.model";
 @Injectable({providedIn:'root'})
 export class ChartRepositoryImpl implements ChartRepository {
     service=inject(ChartService);
-        getWasabiFile(path: any): Observable<Apiresponse<any>> {
+        getWasabiFile(path: any): Observable<any> {
     return this.service.getWasabiFile(path)
   }
     getChart(payload: getChartAnswer): Observable<Apiresponse<any>> {

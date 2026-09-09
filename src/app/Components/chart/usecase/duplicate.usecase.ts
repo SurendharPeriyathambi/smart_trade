@@ -45,6 +45,8 @@ export class DuplicateUsecase {
       start_price: original.start_price + priceOffset,
       end_price: original.end_price + priceOffset,
       is_edit: false,
+          tag: original.tag ? `${original.tag} copy` : 'Line copy',
+
     };
 
     this.chartState.newDrawLine.push(duplicate);
@@ -60,6 +62,7 @@ export class DuplicateUsecase {
       start_x: 0, end_x: 0, start_y: 0, end_y: 0,
       is_edit: false,
       is_delete: false,
+      tag:duplicate.tag
     } as Answers);
 
     duplicate.localDbId = saved.id;

@@ -78,9 +78,11 @@ export interface CourseVideo {
     image: string;
     video: string;
     durations: string;
+    order_sort:number;
     is_watch: boolean;
     last_time_stamp: string;
     is_finshed: boolean;
+    created_at?:string
 }
 
 export interface CourseLesson {
@@ -119,6 +121,7 @@ export interface WeeklkyVideoUrlResponce{
 export interface OrderRequest{
      amount : string,
     tag:string,
+    is_renew:boolean,
     plan_id:string,
     code:string
 }

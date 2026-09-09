@@ -1,12 +1,16 @@
 import { Injectable, signal } from '@angular/core';
-import { ThemeMode } from '../model/drawing.model';
-import { Point } from 'lightweight-charts';
+import { Point, ThemeMode } from '../model/drawing.model';
+
 import { Answers } from '../model/chart.model';
 
 type ToolMode = 'trendline' | 'hline' | 'vline' | 'ray' | 'straightline' | 'select' | 'measure';
 
 @Injectable({ providedIn: 'root' })
 export class ChartState {
+  /** Per-tag totals, computed from adminLines on seed. e.g. { CHO: 3, STR: 2 } */
+public requiredCountByTag: Record<string, number> = {};
+/** Per-tag matched counts, computed on submit. e.g. { CHO: 2, STR: 1 } */
+public matchedCountByTag: Record<string, number> = {};
   candleSeries: any;
   //=================== variable for chart make ======================
   public savedTimeRange: { from: number; to: number } | null = null;
@@ -26,6 +30,7 @@ export class ChartState {
   public chart: any = null;
   currentTheme: ThemeMode = 'dark';
   public _blockContextMenu!: (e: Event) => void;
+  public allowedTags: { CHO: boolean; STR: boolean } = { CHO: true, STR: true };
 
   selectedLineId: string | null | any = null;
 
@@ -60,6 +65,8 @@ export class ChartState {
   measureEnd: Point | null | any = null;
   isMeasuring: boolean = false;
   measureCtx: CanvasRenderingContext2D | null | any = null;
+  measurements: Array<{ start: Point; end: Point }> = [];
+selectedMeasureIndex: number | null = null;
   public readonly MAX_UNDO = 20;
   public undoStack: Array<{ newDrawLine: Answers[] }> = [];
   newDrawLine: Answers[] = [];
@@ -79,6 +86,13 @@ export class ChartState {
   isExtendingRightHandle = false;
   extendingLineIdHandle: string | null = null;
   originalLineState: Answers | null = null;
+
+  
+  // ---- LABEL (name above line, click-to-edit) ----
+  editingLabelLineId: string | null = null;   // which line's label input is currently open
+  editingLabelValue: string = '';             // two-way bound to the inline <input>
+  editingLabelScreenX: number = 0;            // px position for the floating input, set on open
+  editingLabelScreenY: number = 0;
 
   // ---- ADMIN / SUBMIT / VALIDATION ----
   /** Admin (correct-answer) lines — kept OUT of newDrawLine so they never render
@@ -115,4 +129,21 @@ userLineResults: Map<string, boolean> = new Map();
   setLoading(status: boolean) {
     return this.loading.set(status);
   }
+get drawnCountByTag(): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const line of this.newDrawLine ?? []) {
+    if (line.is_delete) continue;
+    const tag = (line.tag ?? '').trim() || 'Untagged';
+    counts[tag] = (counts[tag] ?? 0) + 1;
+  }
+  return counts;
+}
+
+get allTagsComplete(): boolean {
+  const required = this.requiredCountByTag ?? {};
+  const drawn = this.drawnCountByTag;
+  const keys = Object.keys(required);
+  if (keys.length === 0) return false; // not seeded yet — never allow submit prematurely
+  return keys.every((tag) => (drawn[tag] ?? 0) === required[tag]);
+}
 }

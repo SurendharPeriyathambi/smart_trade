@@ -3,12 +3,13 @@ import { HttpEngine } from "../../../../services/engine/http_engine";
 import { inject, Injectable, signal } from "@angular/core";
 import { BannerService } from "../../sub-pages/hero/banner.service";
 import { Banner, DemoVideos } from "../../../../interfaces/banner_interface";
+import { LoaderService } from "../../../../services/engine/loader.service";
 
 @Injectable({ providedIn: 'root' })
 export class HomeService {
 
     private bannerService = inject(BannerService);
-
+private loaderService = inject(LoaderService);
     //  Raw State Signals
     protected banners = signal<Banner[]>([]);
     private demoVideos = signal<DemoVideos[]>([]);
@@ -49,21 +50,29 @@ export class HomeService {
     });
 }
 
-    openVideo(videoId: string) {
-        if (this._videoLoading()) return;
-        this._videoLoading.set(true);
+   openVideo(videoId: string) {
+  if (this._videoLoading()) return;
 
-        this.bannerService.getVideoUrl(videoId).subscribe({
-            next: (res) => {
-                if (res.status) {
-                    this.activeVideoUrl.set(res.data.cdn_url);
-                    this._isModalOpen.set(true)
-                }
-                this._videoLoading.set(false);
-            },
-            error: () => this._videoLoading.set(false)
-        });
+  this._videoLoading.set(true);
+this.loaderService.show()
+  this.bannerService.getVideoUrl(videoId).subscribe({
+    next: (res) => {
+
+      if (res.status) {
+        this.activeVideoUrl.set(res.data);
+        this._isModalOpen.set(true);
+      }
+
+      this._videoLoading.set(false);
+      this.loaderService.hide()
+    },
+
+    error: () => {
+      this._videoLoading.set(false);
+      this.loaderService.hide()
     }
+  });
+}
 
     closeVideo(): void {
         this.activeVideoUrl.set(null);

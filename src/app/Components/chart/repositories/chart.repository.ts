@@ -4,5 +4,5 @@ import { getChartAnswer } from "../model/drawing.model";
 
 export abstract class ChartRepository{
     abstract getChart(payload:getChartAnswer):Observable<Apiresponse<any>>;
-    abstract getWasabiFile(path: string): Observable<Apiresponse<any>>;
+    abstract getWasabiFile(path: string): Observable<any>;
 }

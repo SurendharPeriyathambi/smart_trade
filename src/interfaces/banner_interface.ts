@@ -20,5 +20,5 @@ export interface DemoVideos{
     thumbnail:string;
 }
 export interface VideoUrlResponce{
-    cdn_url: string;
+    data: string;
 }

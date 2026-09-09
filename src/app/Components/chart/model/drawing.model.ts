@@ -5,7 +5,7 @@ export type ThemeMode = 'dark' | 'light';
 export interface Point {
   x: number;
   y: number;
-  time: number;
+  time: number ;
   price: number;
 }
 

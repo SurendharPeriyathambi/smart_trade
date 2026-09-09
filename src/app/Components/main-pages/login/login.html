@@ -217,3 +217,64 @@ By accessing this course or website, you acknowledge that you have read, underst
 
   </div>
 </div>
+
+
+<!-- Device limit confirm modal -->
+<div
+  class="device-modal-backdrop"
+  *ngIf="authState.showDeviceLimitModal()"
+  (click)="authState.cancelDeviceLogin()"
+>
+  <div
+    class="device-modal-container"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- Header -->
+    <div class="device-modal-header">
+      <div class="device-modal-icon">
+        <i class="bi bi-phone"></i>
+      </div>
+
+      <div class="device-modal-title">
+        <h2>Device Limit Reached</h2>
+        <p>Only 2 devices can be signed in at once</p>
+      </div>
+
+      <button
+        class="device-modal-close"
+        (click)="authState.cancelDeviceLogin()"
+      >
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="device-modal-body">
+      <p>
+        You're already signed in on 2 devices.
+        Do you want to sign out of the oldest one and continue
+        signing in here?
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="device-modal-footer">
+      <button
+        class="device-cancel-btn"
+        (click)="authState.cancelDeviceLogin()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="device-confirm-btn"
+        (click)="authState.confirmDeviceLogin()"
+      >
+        Continue
+      </button>
+    </div>
+
+  </div>
+</div>
+

@@ -101,4 +101,8 @@ logoutFromPreviousSession(): Observable<any> {
       `api/auth/change_password`, payload
     );
   }
+ 
+  removeDevice(login_ip: string): Observable<LoginResponce<Datas>> {
+        return this.http.post(`api/auth/remove_devices`, { new_devices: login_ip });
+    }
 }

@@ -6,6 +6,8 @@ import { map, of, tap } from 'rxjs';
 import { Banner } from '../../../../interfaces/banner_interface';
 import { isPlatformBrowser } from '@angular/common';
 import { TransferState, makeStateKey } from '@angular/core';
+import { env } from 'process';
+import { environment } from '../../../environment';
 
 const BANNER_STATE_KEY = makeStateKey<Banner[]>('hero-banners');
 
@@ -14,7 +16,7 @@ export const bannerResolver: ResolveFn<Banner[]> = () => {
   const bannerService = inject(BannerService);
   const platformId = inject(PLATFORM_ID);
   const transferState = inject(TransferState);
-
+  
 
 
 
@@ -53,7 +55,7 @@ export const bannerResolver: ResolveFn<Banner[]> = () => {
         }
       }
     }),
-    map((res) => res.data.banner ?? [])
+    map((res) =>  res.data.banner ?? [])
   );
 };
 

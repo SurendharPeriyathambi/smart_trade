@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OrderRequest } from '../../../../interfaces/subscriptions_interface';
 import { SubscriptionService } from '../../main-pages/subscriptions/subscription.service';
@@ -25,6 +25,9 @@ export class Coopen {
   profile =  this.substate.profile;
 
   @Input() plan!: any;
+  @Input()isRenewal: boolean =false;
+  @Output() paymentDone = new EventEmitter<void>();
+
 
   couponCode = '';
 
@@ -71,7 +74,6 @@ export class Coopen {
     },
     error: (err) => {
       console.log(err);
-     
       this.toast.error(err.error.message || "Invalied Coupon ")
       this.loading.hide();
     }
@@ -108,6 +110,7 @@ export class Coopen {
       amount: String(this.total),
       tag: 'course',
       plan_id:this.plan.id,
+      is_renew:this.isRenewal,
       code:this.couponCode
     };
 
@@ -145,6 +148,7 @@ export class Coopen {
               this.resetBodyScroll();
                window.location.reload();
               // Call Verify Payment API here
+               this.paymentDone.emit();
             }
           };
 
