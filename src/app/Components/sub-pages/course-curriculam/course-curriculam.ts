@@ -24,6 +24,7 @@ import { VideoPlayerComponent, VideoStatus } from '../video-container/video-cont
 import { CustomPlayer, VideoPlayerData } from '../CustomPlayer/CustomPlayer';
 import { log } from 'console';
 import { LoaderService } from '../../../../services/engine/loader.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-course-curriculam',
@@ -32,6 +33,7 @@ import { LoaderService } from '../../../../services/engine/loader.service';
   styleUrl: './course-curriculam.scss',
 })
 export class CourseCurriculam implements OnInit, AfterViewInit {
+  private route=inject(Router);
   videoId = signal(0);
   private loaderService = inject(LoaderService);
   videoUrl: string | null = null;
@@ -653,4 +655,7 @@ export class CourseCurriculam implements OnInit, AfterViewInit {
      * to your Lumen API.
      */
   }
+    goToWallet() {
+  this.route.navigate(['/wallet']);
+}
 }

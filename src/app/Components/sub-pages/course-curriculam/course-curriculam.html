@@ -3,7 +3,26 @@
 <!-- LEFT -->
 
 <div class="curriculum-container">
-  <h2 class="fw-bold">{{course()?.title}}</h2>
+  <div class="course-header">
+    <h2 class="fw-bold course-title">
+      {{ course()?.title }}
+    </h2>
+
+    <div class="parent-btn">
+      <a class="view-journal-btn" (click)="goToWallet()">
+
+        <img src="/assets/images/trend.png" alt="View Journal" />
+
+        <span>View Journal</span>
+
+        <svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true">
+          <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+
+      </a>
+    </div>
+  </div>
   <div class="details-container">
     <div class="top-info-bar mb-3">
       <div class="left-section">
@@ -51,9 +70,8 @@
     <div class="lesson-list" [class.open]="expandedLessonId === lessonSection.id">
 
       <div class="video-scroll-track">
-      <div class="video-card"
-     *ngFor="let video of getSortedVideos(lessonSection.videos); let vi = index"
-     (click)="$event.stopPropagation()">
+        <div class="video-card" *ngFor="let video of getSortedVideos(lessonSection.videos); let vi = index"
+          (click)="$event.stopPropagation()">
 
           <div class="thumb-wrap" (click)="onThumbClick(video)">
             <img [src]="getThumbnail(video)" alt="" class="thumb-img" loading="lazy">
@@ -92,13 +110,14 @@
   <app-list-chart></app-list-chart>
 </div>
 <!-- Video Overlay -->
- @if(videoPlayerOpen && videoUrl){
+@if(videoPlayerOpen && videoUrl){
 <div *ngIf="videoPlayerOpen" class="video-overlay">
   <!-- <div class="video-modal"> -->
-      <app-custom-player [videoUrl]="videoUrl" [startTime]="startTime()"  watermarkLabel="{{ profile()?.name }} • {{ loginIp() }}"
-        (videoPaused)="onVideoPaused($event)" (videoClosed)="onVideoClosed($event)">
-      </app-custom-player>
+  <app-custom-player [videoUrl]="videoUrl" [startTime]="startTime()"
+    watermarkLabel="{{ profile()?.name }} • {{ loginIp() }}" (videoPaused)="onVideoPaused($event)"
+    (videoClosed)="onVideoClosed($event)">
+  </app-custom-player>
   <!-- </div> -->
 
 </div>
- }
+}
