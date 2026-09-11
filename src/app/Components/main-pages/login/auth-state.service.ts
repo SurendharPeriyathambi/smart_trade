@@ -87,7 +87,7 @@ export class AuthStateService {
          this.loader.hide();
 
          const ipList = (res.data as any)?.user_details?.login_devices ?? [];
-         if (!ipList.includes(device_id) && ipList.length > 2) {
+         if (ipList.includes(device_id) && ipList.length > 2) {
            // backend already issued valid tokens for this login — store them now
            // so the follow-up remove_devices call has an Authorization header,
            // but hold off on the toast/navigate until the user confirms

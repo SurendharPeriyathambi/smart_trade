@@ -41,7 +41,6 @@ export class Login implements OnInit {
       this.authState.setIp(res);
     } ,
     
-   
    })
   }
 

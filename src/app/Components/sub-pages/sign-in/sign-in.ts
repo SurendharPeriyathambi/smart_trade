@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, NgModule, OnInit, output } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthServices } from '../../main-pages/login/auth.service';
 import { StorageEngine } from '../../../../services/engine/storage_engine';
@@ -18,33 +24,30 @@ import { DeviceService } from '../../main-pages/login/device.service';
   styleUrl: './sign-in.scss',
 })
 export class SignIn {
-  
   goToSignup = output<void>();
   showPassword = false;
-  deviceId:string='';
+  deviceId: string = '';
 
-  protected authService  = inject (AuthStateService);
-  private deviceService=inject(DeviceService)
+  protected authService = inject(AuthStateService);
+  private deviceService = inject(DeviceService);
 
-   signInForm: FormGroup = inject(FormBuilder).group({
-    email:['',[Validators.required, Validators.email]],
-    password:['',[Validators.required,Validators.minLength(6)]]
-   });
+  signInForm: FormGroup = inject(FormBuilder).group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+  });
 
-  togglePassword(){
+  togglePassword() {
     this.showPassword = !this.showPassword;
   }
-  async onSubmit(){
-  if (this.signInForm.invalid) {
-    this.signInForm.markAllAsTouched();
-    return;
+  async onSubmit() {
+    if (this.signInForm.invalid) {
+      this.signInForm.markAllAsTouched();
+      return;
+    }
+    this.deviceId = await this.deviceService.getDeviceId();
+    const { email, password } = this.signInForm.value;
+    this.authService.login(email, password, this.deviceId);
   }
-  this.deviceId =
-        await this.deviceService.getDeviceId();
-  const {email,password}= this.signInForm.value;
-  this.authService.login(email,password,this.deviceId);
-  
-}
 
   get email() {
     return this.signInForm.get('email');
@@ -53,7 +56,7 @@ export class SignIn {
   get password() {
     return this.signInForm.get('password');
   }
-    openSignup() {
+  openSignup() {
     this.goToSignup.emit();
   }
 }
