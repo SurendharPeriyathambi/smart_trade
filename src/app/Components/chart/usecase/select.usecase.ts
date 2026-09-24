@@ -66,7 +66,7 @@ export class SelectionUsecase {
       if (line.is_delete) continue;
       const a = chartToScreenPoint(line.start_time, line.start_price);
       const b = chartToScreenPoint(line.end_time, line.end_price);
-      if (a && b && this.distanceToSegment(sp, a, b) < 10) return line;
+      if (a && b && this.distanceToSegment(sp, a, b) < 15) return line;
     }
     return null;
   }
@@ -99,7 +99,7 @@ export class SelectionUsecase {
 
   clearSelection(): void {
     this.chartState.selectedLineId = null;
-        this.chartState.selectedMeasureIndex = null; // ✅ clear both together
+        this.chartState.selectedMeasureIndex = null; 
 
   }
 
@@ -112,7 +112,7 @@ export class SelectionUsecase {
       if (selected && !selected.is_delete) {
         const a = chartToScreenPoint(selected.start_time, selected.start_price);
         const b = chartToScreenPoint(selected.end_time, selected.end_price);
-        if (a && b && this.distanceToSegment(sp, a, b) < 10) return selected;
+        if (a && b && this.distanceToSegment(sp, a, b) < 15) return selected;
       }
     }
     return this.getLineAtPoint(sp, chartToScreenPoint);

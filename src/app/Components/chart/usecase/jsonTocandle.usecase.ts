@@ -875,17 +875,74 @@ public getLabelAtPoint(sp: ScreenPoint): Answers | null {
     this.renderLines();
   }
 
+  // public renderLine(line: Answers, id: string): void {
+  //   if (!this.ensureChart()) return;
+  //   try {
+  //     const existing = this.chartstate.lineSeriesMap.get(id);
+  //     if (existing) {
+  //       try {
+  //         this.chartstate.chart.removeSeries(existing);
+  //       } catch {}
+  //       this.chartstate.lineSeriesMap.delete(id);
+  //     }
+  //     let t1 = Number(line.start_time);
+  //   let t2 = Number(line.end_time);
+  //   let p1 = Number(line.start_price);
+  //   let p2 = Number(line.end_price);
+
+  //   if (!Number.isFinite(t1) || !Number.isFinite(t2) || !Number.isFinite(p1) || !Number.isFinite(p2)) {
+  //     console.warn('[Chart] Skipping line with invalid numeric data:', line);
+  //     return;
+  //   }
+
+  //   // lightweight-charts requires strictly ascending times. Reversed or
+  //   // collapsed (equal) endpoints will otherwise throw on setData().
+  //   if (t1 === t2) {
+  //     t2 = t1 + 1;
+  //   } else if (t1 > t2) {
+  //     [t1, t2] = [t2, t1];
+  //     [p1, p2] = [p2, p1];
+  //   }
+
+
+  //     let color = '#FF6B6B'; // default user-drawn
+  //     const isSelected = this.chartstate.selectedLineId === line.id;
+  //     let lineStyle = LineStyle.Solid;
+  //     if (this.chartstate.hasSubmitted && this.chartstate.userLineResults.has(id)) {
+  //       const isCorrect = this.chartstate.userLineResults.get(id);
+  //       const isDarkTheme = this.chartstate.currentTheme === 'dark';
+  //       color = isCorrect
+  //         ? isDarkTheme
+  //           ? '#FFFFFF'
+  //           : '#000000' // White in dark theme, Black in light theme
+  //         : '#E74C3C'; // Red if incorrect
+  //       lineStyle = isCorrect ? LineStyle.Solid : LineStyle.Dotted;
+  //     } else if (isSelected) {
+  //       color = '#FFA500';
+  //     }
+
+  //     const series = this.chartstate.chart.addSeries(LineSeries, {
+  //       color,
+  //       lineWidth: 2,
+  //       lineStyle,
+  //       priceLineVisible: false,
+  //       lastValueVisible: false,
+  //       crosshairMarkerVisible: false,
+  //     });
+  //     series.setData([
+  //     { time: t1, value: p1 },
+  //     { time: t2, value: p2 },
+  //   ]);
+  //     this.chartstate.lineSeriesMap.set(id, series);
+  //   } catch (e) {
+  //     console.error('[Chart] renderLine error:', e, line);
+  //   }
+  // }
+
   public renderLine(line: Answers, id: string): void {
-    if (!this.ensureChart()) return;
-    try {
-      const existing = this.chartstate.lineSeriesMap.get(id);
-      if (existing) {
-        try {
-          this.chartstate.chart.removeSeries(existing);
-        } catch {}
-        this.chartstate.lineSeriesMap.delete(id);
-      }
-      let t1 = Number(line.start_time);
+  if (!this.ensureChart()) return;
+  try {
+    let t1 = Number(line.start_time);
     let t2 = Number(line.end_time);
     let p1 = Number(line.start_price);
     let p2 = Number(line.end_price);
@@ -895,8 +952,6 @@ public getLabelAtPoint(sp: ScreenPoint): Answers | null {
       return;
     }
 
-    // lightweight-charts requires strictly ascending times. Reversed or
-    // collapsed (equal) endpoints will otherwise throw on setData().
     if (t1 === t2) {
       t2 = t1 + 1;
     } else if (t1 > t2) {
@@ -904,48 +959,54 @@ public getLabelAtPoint(sp: ScreenPoint): Answers | null {
       [p1, p2] = [p2, p1];
     }
 
+    const isSelected = this.chartstate.selectedLineId === line.id;
 
-      let color = '#FF6B6B'; // default user-drawn
-      const isSelected = this.chartstate.selectedLineId === line.id;
-      let lineStyle = LineStyle.Solid;
-      if (this.chartstate.hasSubmitted && this.chartstate.userLineResults.has(id)) {
-        const isCorrect = this.chartstate.userLineResults.get(id);
-        const isDarkTheme = this.chartstate.currentTheme === 'dark';
-        color = isCorrect
-          ? isDarkTheme
-            ? '#FFFFFF'
-            : '#000000' // White in dark theme, Black in light theme
-          : '#E74C3C'; // Red if incorrect
-        lineStyle = isCorrect ? LineStyle.Solid : LineStyle.Dotted;
-      } else if (isSelected) {
-        color = '#FFA500';
-      }
+    let color = '#FF6B6B';
+    let lineStyle = LineStyle.Solid;
+    if (this.chartstate.hasSubmitted && this.chartstate.userLineResults.has(id)) {
+      const isCorrect = this.chartstate.userLineResults.get(id);
+      const isDarkTheme = this.chartstate.currentTheme === 'dark';
+      color = isCorrect
+        ? isDarkTheme ? '#FFFFFF' : '#000000'
+        : '#E74C3C';
+      lineStyle = isCorrect ? LineStyle.Solid : LineStyle.Dotted;
+    } else if (isSelected) {
+      color = '#FFA500';
+    }
 
-      const series = this.chartstate.chart.addSeries(LineSeries, {
+    let series = this.chartstate.lineSeriesMap.get(id);
+
+    if (!series) {
+      series = this.chartstate.chart.addSeries(LineSeries, {
         color,
         lineWidth: 2,
         lineStyle,
         priceLineVisible: false,
         lastValueVisible: false,
         crosshairMarkerVisible: false,
+        autoscaleInfoProvider: () => null,
       });
-      series.setData([
+      this.chartstate.lineSeriesMap.set(id, series);
+    } else {
+      series.applyOptions({ color, lineStyle });
+    }
+
+    series.setData([
       { time: t1, value: p1 },
       { time: t2, value: p2 },
     ]);
-      this.chartstate.lineSeriesMap.set(id, series);
-    } catch (e) {
-      console.error('[Chart] renderLine error:', e, line);
-    }
+  } catch (e) {
+    console.error('[Chart] renderLine error:', e, line);
   }
+}
 public validateLinesPixelBased(
   adminLines: Answers[],
   userLines: Answers[],
 ): Map<number, boolean> {
   const results = new Map<number, boolean>();
 
-  const TIME_TOLERANCE_FRACTION = 0.02;
-  const PRICE_TOLERANCE_FRACTION = 0.02;
+  const TIME_TOLERANCE_FRACTION = 0.07;
+  const PRICE_TOLERANCE_FRACTION = 0.07;
 
   const visibleRange = this.chartstate.chart?.timeScale().getVisibleRange();
   const timeSpan = visibleRange ? (visibleRange.to as number) - (visibleRange.from as number) : 0;
@@ -1013,76 +1074,158 @@ public validateLinesPixelBased(
     }
   }
 
-private renderAdminOverlay(): void {
-  this.adminLineSeriesMap.forEach((series) => {
-    try {
-      this.chartstate.chart.removeSeries(series);
-    } catch {}
-  });
-  this.adminLineSeriesMap.clear();
+// private renderAdminOverlay(): void {
+//   this.adminLineSeriesMap.forEach((series) => {
+//     try {
+//       this.chartstate.chart.removeSeries(series);
+//     } catch {}
+//   });
+//   this.adminLineSeriesMap.clear();
 
-  if (!this.chartstate.adminLines?.length) return;
+//   if (!this.chartstate.adminLines?.length) return;
+
+//   const linesToRender = this.chartstate.hasSubmitted
+//     ? this.chartstate.adminLines
+//     : this.chartstate.adminLines.filter((l) => l.is_answer);
+
+//   linesToRender.forEach((line) => {
+//     const series = this.chartstate.chart.addSeries(LineSeries, {
+//       color: '#36F7B3',
+//       lineWidth: 2,
+//       lineStyle: LineStyle.Dotted,
+//       priceLineVisible: false,
+//       lastValueVisible: false,
+//       crosshairMarkerVisible: false,
+//       priceScaleId: 'right',
+//       title: line.is_answer ? 'BOS' : '',
+//       autoscaleInfoProvider: (original: () => any) => null,
+//     });
+//     series.setData([
+//       { time: Number(line.start_time), value: Number(line.start_price) },
+//       { time: Number(line.end_time), value: Number(line.end_price) },
+//     ]);
+//     this.adminLineSeriesMap.set(String(line.id), series);
+//   });
+// }
+
+private renderAdminOverlay(): void {
+  if (!this.chartstate.adminLines?.length) {
+    this.adminLineSeriesMap.forEach((series) => {
+      try { this.chartstate.chart.removeSeries(series); } catch {}
+    });
+    this.adminLineSeriesMap.clear();
+    return;
+  }
 
   const linesToRender = this.chartstate.hasSubmitted
     ? this.chartstate.adminLines
     : this.chartstate.adminLines.filter((l) => l.is_answer);
 
+  const currentIds = new Set(linesToRender.map((l) => String(l.id)));
+
+  this.adminLineSeriesMap.forEach((series, id) => {
+    if (!currentIds.has(id)) {
+      try { this.chartstate.chart.removeSeries(series); } catch {}
+      this.adminLineSeriesMap.delete(id);
+    }
+  });
+
   linesToRender.forEach((line) => {
-    const series = this.chartstate.chart.addSeries(LineSeries, {
-      color: '#36F7B3',
-      lineWidth: 2,
-      lineStyle: LineStyle.Dotted,
-      priceLineVisible: false,
-      lastValueVisible: false,
-      crosshairMarkerVisible: false,
-      priceScaleId: 'right',
-      title: line.is_answer ? 'BOS' : '',
-      autoscaleInfoProvider: (original: () => any) => null,
-    });
+    const id = String(line.id);
+    let series = this.adminLineSeriesMap.get(id);
+
+    if (!series) {
+      series = this.chartstate.chart.addSeries(LineSeries, {
+        color: '#36F7B3',
+        lineWidth: 2,
+        lineStyle: LineStyle.Dotted,
+        priceLineVisible: false,
+        lastValueVisible: false,
+        crosshairMarkerVisible: false,
+        priceScaleId: 'right',
+        title: line.is_answer ? 'BOS' : '',
+        autoscaleInfoProvider: (original: () => any) => null,
+      });
+      this.adminLineSeriesMap.set(id, series);
+    }
+
     series.setData([
       { time: Number(line.start_time), value: Number(line.start_price) },
       { time: Number(line.end_time), value: Number(line.end_price) },
     ]);
-    this.adminLineSeriesMap.set(String(line.id), series);
   });
 }
 
+  // private renderLinesWithoutScaleReset(): void {
+  //   if (!this.ensureChart()) return;
+
+  //   const wasZoomed = this.chartstate.isZoomed;
+  //   const savedMin = this.chartstate.zoomMinPrice;
+  //   const savedMax = this.chartstate.zoomMaxPrice;
+
+  //   if (wasZoomed && savedMin != null && savedMax != null) {
+  //     this.chartstate.chart.priceScale('right').applyOptions({ autoScale: true });
+  //   }
+
+  //   this.chartstate.lineSeriesMap.forEach((series) => {
+  //     try {
+  //       this.chartstate.chart.removeSeries(series);
+  //     } catch {}
+  //   });
+  //   this.chartstate.lineSeriesMap.clear();
+
+  //   this.chartstate.newDrawLine
+  //     .filter((line) => !line.is_delete)
+  //     .forEach((line) => this.renderLine(line, String(line.id)));
+
+  //   // Admin overlay — only visible post-submit, rendered on its own map so
+  //   // it's never confused with (or overwritten by) user line rendering.
+  //   this.renderAdminOverlay();
+
+  //   this.chartstate.chart.timeScale().applyOptions({ visible: true });
+
+  //   if (wasZoomed && savedMin != null && savedMax != null) {
+  //     this.chartstate.chart.priceScale('right').applyOptions({ autoScale: false });
+  //     this.chartstate.chart
+  //       .priceScale('right')
+  //       .setVisiblePriceRange({ minValue: savedMin, maxValue: savedMax });
+  //   }
+  // }
+
   private renderLinesWithoutScaleReset(): void {
-    if (!this.ensureChart()) return;
+  if (!this.ensureChart()) return;
 
-    const wasZoomed = this.chartstate.isZoomed;
-    const savedMin = this.chartstate.zoomMinPrice;
-    const savedMax = this.chartstate.zoomMaxPrice;
+  const wasZoomed = this.chartstate.isZoomed;
+  const savedMin = this.chartstate.zoomMinPrice;
+  const savedMax = this.chartstate.zoomMaxPrice;
 
-    if (wasZoomed && savedMin != null && savedMax != null) {
-      this.chartstate.chart.priceScale('right').applyOptions({ autoScale: true });
+  // if (wasZoomed && savedMin != null && savedMax != null) {
+  //   this.chartstate.chart.priceScale('right').applyOptions({ autoScale: true });
+  // }
+
+  const currentLineIds = new Set(
+    this.chartstate.newDrawLine.filter((l) => !l.is_delete).map((l) => String(l.id)),
+  );
+  this.chartstate.lineSeriesMap.forEach((series, id) => {
+    if (!currentLineIds.has(id)) {
+      try { this.chartstate.chart.removeSeries(series); } catch {}
+      this.chartstate.lineSeriesMap.delete(id);
     }
+  });
 
-    this.chartstate.lineSeriesMap.forEach((series) => {
-      try {
-        this.chartstate.chart.removeSeries(series);
-      } catch {}
-    });
-    this.chartstate.lineSeriesMap.clear();
+  this.chartstate.newDrawLine
+    .filter((line) => !line.is_delete)
+    .forEach((line) => this.renderLine(line, String(line.id)));
 
-    this.chartstate.newDrawLine
-      .filter((line) => !line.is_delete)
-      .forEach((line) => this.renderLine(line, String(line.id)));
+  this.renderAdminOverlay();
 
-    // Admin overlay — only visible post-submit, rendered on its own map so
-    // it's never confused with (or overwritten by) user line rendering.
-    this.renderAdminOverlay();
+  this.chartstate.chart.timeScale().applyOptions({ visible: true });
 
-    this.chartstate.chart.timeScale().applyOptions({ visible: true });
-
-    if (wasZoomed && savedMin != null && savedMax != null) {
-      this.chartstate.chart.priceScale('right').applyOptions({ autoScale: false });
-      this.chartstate.chart
-        .priceScale('right')
-        .setVisiblePriceRange({ minValue: savedMin, maxValue: savedMax });
-    }
+  if (wasZoomed && savedMin != null && savedMax != null) {
+    this.chartstate.chart.priceScale('right').applyOptions({ autoScale: false });
+    this.chartstate.chart.priceScale('right').setVisiblePriceRange({ minValue: savedMin, maxValue: savedMax });
   }
-
+}
 public async seedLinesFromServer(
   serverLines: any[],
   localdb: LocalDatabaseService,
