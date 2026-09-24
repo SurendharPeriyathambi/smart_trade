@@ -21,11 +21,11 @@ export class Coopen {
   service = inject(SubscriptionService);
   loading = inject(LoaderService);
   toast = inject(ToastService);
-  
-  profile =  this.substate.profile;
+
+  profile = this.substate.profile;
 
   @Input() plan!: any;
-  @Input()isRenewal: boolean =false;
+  @Input() isRenewal: boolean = false;
   @Output() paymentDone = new EventEmitter<void>();
 
 
@@ -37,50 +37,50 @@ export class Coopen {
   tax = 0;
   total = 0;
 
-   couponApplied = false;
+  couponApplied = false;
 
   ngOnInit() {
     this.calculateTotal();
   }
 
   applyCoupon() {
-  if (!this.couponCode.trim()) {
-    alert('Please enter a coupon code');
-    return;
+    if (!this.couponCode.trim()) {
+      alert('Please enter a coupon code');
+      return;
+    }
+
+    this.loading.show();
+
+    this.service.getCouponDiscount(this.couponCode).subscribe({
+      next: (res) => {
+        const amount = Number(this.plan.amount);
+        const type = String(res.data.discount_type).trim().toLowerCase();
+        const value = Number(res.data.value);
+
+        this.discountType = type;
+        this.discountValue = value;
+
+        if (type === 'percentage' || type === 'percent') {
+          this.discount = (amount * value) / 100;
+        } else if (type === 'flat' || type === 'fixed' || type === 'amount') {
+          this.discount = value;
+        } else {
+          console.warn('Unknown discount_type:', res.data.discount_type);
+          this.discount = 0;
+        }
+        this.couponApplied = true;
+        this.calculateTotal();
+        this.loading.hide();
+      },
+      error: (err) => {
+        console.log(err);
+        this.toast.error(err.error.message || "Invalied Coupon ")
+        this.loading.hide();
+      }
+    });
   }
 
-  this.loading.show();
-
-  this.service.getCouponDiscount(this.couponCode).subscribe({
-    next: (res) => {
-      const amount = Number(this.plan.amount);
-      const type = String(res.data.discount_type).trim().toLowerCase();
-      const value = Number(res.data.value);
-
-      this.discountType = type;
-      this.discountValue = value;
-
-      if (type === 'percentage' || type === 'percent') {
-        this.discount = (amount * value) / 100;
-      } else if (type === 'flat' || type === 'fixed' || type === 'amount') {
-        this.discount = value;
-      } else {
-        console.warn('Unknown discount_type:', res.data.discount_type);
-        this.discount = 0;
-      }
-      this.couponApplied = true;
-      this.calculateTotal();
-      this.loading.hide();
-    },
-    error: (err) => {
-      console.log(err);
-      this.toast.error(err.error.message || "Invalied Coupon ")
-      this.loading.hide();
-    }
-  });
-}
-
- // NEW: local-only removal, no API call
+  // NEW: local-only removal, no API call
   removeCoupon() {
     this.couponCode = '';
     this.discount = 0;
@@ -94,11 +94,11 @@ export class Coopen {
     const amount = Number(this.plan.amount);
     const subtotal = Math.max(amount - this.discount, 0);
 
-  // 18% GST
-  this.tax = +(subtotal * 0.18).toFixed(2);
+    // 18% GST
+    this.tax = +(subtotal * 0.18).toFixed(2);
 
-  // Final Total
-  this.total = +(subtotal + this.tax).toFixed(2)
+    // Final Total
+    this.total = +(subtotal + this.tax).toFixed(2)
   }
 
   order: any = [];
@@ -109,9 +109,9 @@ export class Coopen {
     const payload: OrderRequest = {
       amount: String(this.total),
       tag: 'course',
-      plan_id:this.plan.id,
-      is_renew:this.isRenewal,
-      code:this.couponCode
+      plan_id: this.plan.id,
+      is_renew: this.isRenewal,
+      code: this.couponCode
     };
 
     this.service.getOrder(payload).subscribe({
@@ -120,7 +120,7 @@ export class Coopen {
         this.toast.success(res.message)
         if (res.status) {
           this.order = res.data;
-          
+
           const options: any = {
             key: res.data.apiKey,
             amount: res.data.amount,
@@ -146,9 +146,9 @@ export class Coopen {
               console.log('Payment Success');
               console.log(response);
               this.resetBodyScroll();
-               window.location.reload();
+              window.location.reload();
               // Call Verify Payment API here
-               this.paymentDone.emit();
+              this.paymentDone.emit();
             }
           };
 
@@ -165,7 +165,7 @@ export class Coopen {
       },
       error: (err) => {
         console.log(err);
-         this.toast.error(err.error.message)
+        this.toast.error(err.error.message)
         this.loading.hide();
       }
     });
